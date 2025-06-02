@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha</title>
+    <link rel="stylesheet" type="text/css" href="../CSS/recuperar-senha.css">
+</head>
+<body>
+    <!-- Cabeçalho da página -->
+    <div class="header">
+        <h1>Recuperação de Senha</h1>
+    </div>
+
+    <!-- Container principal -->
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Redefina sua senha</h2>
+        </div>
+
+        <!-- Mensagens do servidor -->
+        <div th:if="${erro}" class="error-message" th:text="${erro}"></div>
+        <div th:if="${mensagem}" class="success-message" th:text="${mensagem}"></div>
+
+        <!-- Formulário de recuperação de senha -->
+        <form class="form-content" th:action="@{/usuario/atualizar-senha}" method="post" onsubmit="return validatePasswordForm()">
+            <!-- Campo oculto com o login -->
+            <input type="hidden" name="login" th:value="${login}"/>
+
+            <!-- Nova senha -->
+            <label for="newPassword">Nova Senha:</label>
+            <input type="password" id="newPassword" name="novaSenha" placeholder="Digite sua nova senha" required>
+
+            <!-- Confirmação da nova senha -->
+            <label for="confirmPassword">Confirmar Nova Senha:</label>
+            <input type="password" id="confirmPassword" name="confirmarSenha" placeholder="Confirme sua nova senha" required>
+
+            <!-- Mensagem de erro do JS -->
+            <div id="error-message" class="error"></div>
+
+            <!-- Botão de envio -->
+            <div class="form-footer">
+                <button type="submit">Atualizar Senha</button>
+            </div>
+        </form>
+    </div>
+    <script th:src="../JavaScript/recuperar-senha.js"></script>
+</body>
+</html>

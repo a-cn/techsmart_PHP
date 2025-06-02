@@ -1,0 +1,61 @@
+/* CONTAINER PADRÃO DE CADA RELATÓRIO */
+.grafico-container {
+    margin-bottom: 3rem;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
+
+/* REFERENTE À TABELA DETALHADA DE ESTOQUE DE PRODUTOS */
+.tabelaEstoque {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.tabelaEstoque th,
+.tabelaEstoque td {
+    padding: 8px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+tr.estoque-baixo {
+    background-color: #ffe5e5;
+}
+
+tr.estoque-normal {
+    background-color: #e5ffe5;
+}
+
+tr.estoque-alto {
+    background-color: #fffbe5;
+}
+
+/* REFERENTE AO GRÁFICO DE LINHA DE PREVISÃO DE DEMANDA */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.filtros label {
+    font-weight: bold;
+}
+
+.filtros select {
+    min-width: 200px;
+    padding: 5px;
+}
+
+/* REFERENTE À TABELA DETALHADA DE STATUS DA PRODUÇÃO */
+tr.acabado {
+    background-color: #e5ffe5; /* verde claro */
+}
+
+tr.semiacabado {
+    background-color: #fffbe5; /* amarelo claro */
+}

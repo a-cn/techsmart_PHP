@@ -1,0 +1,306 @@
+/*/
+    Estilo de classes para janelas
+/*/
+.titulo-janela {
+    color: #1e90ff;
+    /* Cor dos títulos */
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.janela-cadastro {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    /* Ocupa toda a largura disponível */
+}
+
+.oculta {
+    display: none;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: #333;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+textarea {
+    resize: vertical;
+    /* Permite redimensionar verticalmente */
+}
+
+.btn-cadastrar {
+    background-color: #1e90ff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    align-self: flex-start;
+    /* Alinha o botão à esquerda */
+}
+
+.btn-cadastrar:hover {
+    background-color: #007bff;
+}
+
+.janela-consulta {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    /* Ocupa toda a largura disponível */
+}
+
+.pesquisa {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    /* Espaçamento entre o campo e o botão */
+}
+
+.pesquisa input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    flex-grow: 1;
+    /* O campo de pesquisa ocupa o espaço restante */
+}
+
+
+button.btn-pesquisar {
+    background-color: #1e90ff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-pesquisar:hover {
+    background-color: #007bff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.form-container {
+    width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-header {
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    margin: -20px -20px 20px -20px;
+}
+
+.form-footer {
+    background-color: #003366;
+    padding: 10px;
+    text-align: center;
+    border-radius: 0 0 5px 5px;
+    margin: 20px -20px -20px -20px;
+}
+
+.form-footer button {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.form-footer button:hover {
+    background-color: #0055cc;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-content label {
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+.form-content input[type="text"],
+.form-content input[type="email"],
+.form-content input[type="password"],
+.form-content input[type="date"],
+.form-content input[type="number"],
+.form-content select {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    /* Rótulos e campos ficam em colunas */
+}
+
+.form-row .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+.form-row .form-group:last-child {
+    margin-right: 0;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+}
+
+::placeholder {
+    color: #b0b0b0;
+}
+
+.form-control::placeholder {
+    color: #b0b0b0;
+}
+
+/* Overlay */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    display: none;
+}
+
+/* Popup base */
+#janela-mensagens.popup-bordeglass {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    padding: 20px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    background-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    z-index: 1000;
+    display: none;
+    text-align: center;
+}
+
+/* Tipos de mensagem */
+#janela-mensagens.erro {
+    background-color: rgba(255, 0, 0, 0.3);
+    border: 1px solid rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
+    color: black; /*#8B0000; */
+}
+
+#janela-mensagens.sucesso {
+    background-color: rgba(0, 255, 0, 0.3);
+    border: 1px solid rgba(0, 128, 0, 0.7);
+    box-shadow: 0 0 12px rgba(0, 128, 0, 0.5);
+    color: black; /*#006400; */
+}
+
+#janela-mensagens.alerta {
+    background-color: rgba(255, 255, 0, 0.3);
+    border: 1px solid rgba(255, 165, 0, 0.7);
+    box-shadow: 0 0 12px rgba(255, 165, 0, 0.5);
+    color: black; /*#8B8000; */
+}
+
+/* Botões padrão */
+#janela-mensagens button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.5);
+    color: black;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid #0006;
+    transition: background 0.3s ease;
+}
+
+#janela-mensagens button:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* Botões de confirmação (escondidos por padrão) */
+#btn-sim,
+#btn-nao {
+    display: none;
+}

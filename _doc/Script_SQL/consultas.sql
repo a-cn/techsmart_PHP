@@ -1,0 +1,41 @@
+-- PADRÕES DE CONSULTA
+-- Autora: Amanda Caetano Nasser
+-- Última alteração em: 25/04/2025
+
+USE TechSmartDB;
+
+-- CONSULTAR TELA DE USUÁRIOS
+select * from Tipo_Usuario
+select * from Usuario
+select * from Endereco
+
+-- CONSULTAR TELA DE PEDIDOS E FEEDBACK
+select * from Usuario
+select * from Pedido
+select * from ProdutoFinal
+select * from Pedido_ProdutoFinal
+select * from Feedback
+
+-- CONSULTAR TELA DE FORNECEDOR
+select * from Fornecedor
+select * from Endereco
+
+-- CONSULTAR TELA DE COMPONENTE
+select * from Componente
+select * from Fornecedor
+select * from Fornecedor_Componente
+
+-- CONSULTAR TELA DE PRODUÇÃO
+select * from Producao
+select * from Etapa_Producao
+select * from Componente
+select * from ProdutoFinal
+
+-- CONSULTAR TELA DE PRODUTOS
+select * from ProdutoFinal
+select * from Producao
+
+-- CONSULTAR TELA DE MOVIMENTAÇÕES
+select * from Movimentacao
+select * from Pedido
+select * from ProdutoFinal

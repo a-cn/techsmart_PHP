@@ -1,0 +1,59 @@
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8"> <!-- garantir suporte a caracteres especiais. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Ajusta a escala da página para se adaptar a diferentes tamanhos de tela -->
+    <link rel="stylesheet" type="text/css" href="front/css/_styles.css">
+    <link rel="stylesheet" type="text/css" href="front/css/borderglass.css">
+    <link rel="stylesheet" type="text/css" href="front/css/janelas.css">
+    <script src="front/scr/script.js"></script>
+    <script src="front/scr/janelas.js"></script>
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="login-background">
+        <video id="videoBKG" autoplay muted loop>
+            <source src="imgs/Login1.mp4" type="video/MP4">
+        </video>
+        <div class="login-container borderglass"> <!-- Cria o contêiner que envolve o formulário de login. -->
+            <span class="login-container-header">Login</span>
+            <form id="formLogin" method="POST" action="back/login.php">
+                <input type="email" placeholder="Email" id="loginEmail" name="login[email]">
+                <a href="front/autocadastro_usuario.php" class="register-link">Cadastre-se</a>
+                <!-- Direciona para a página de Cadastro de Usuário -->
+                <input type="password" placeholder="Senha" id="loginSenha" name="login[senha]">
+                <!-- Direciona para a página de Recuperação de Senha -->
+                <a href="front/recuperar-senha.html" class="forgot-password">Esqueceu a senha?</a>
+
+                <button class="separator" type="submit">Entrar</button>
+                <!-- Aqui é onde aparecerá a mensagem de erro ao digitar credenciais inválidas -->
+                <div class="separator" id="mensagemErro"></div>
+            </form>
+        </div>
+    </div>
+    <!-- Overlay e Popup -->
+    <div id="overlay"></div>
+    <div id="janela-mensagens" class="popup-bordeglass">
+        <h2 id="popup-titulo"></h2>
+        <p id="popup-texto"></p>
+        <button id="btn-sim">Sim</button>
+        <button id="btn-nao">Não</button>
+        <button id="btn-fechar">Fechar</button>
+    </div>
+
+    <script src="front/scr/index.js"></script>
+    <script>
+        // Chama a função para obter um vídeo aleatório e atualiza o player
+        const videoAleatorio = obterVideoAleatorio();
+
+        // Obtém o elemento de vídeo do HTML
+        const videoElement = document.getElementById("videoBKG");
+
+        // Atualiza o video de fundo
+        atualizarVideo(videoElement, videoAleatorio);
+    </script>
+</body>
+
+</html>
