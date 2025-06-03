@@ -28,7 +28,7 @@ if ($result) {
 <script src="scr/script.js"></script>
 <div>
     <div class="janela-cadastro oculta" id="divCadastroUsuario">
-        <span class="titulo-janela">Cadastro de Usuário</span>
+        <span class="titulo-janela" id="form-usr-titulo">Cadastro de Usuário</span>
         <form id="form-cadastro" class="form-content" action="../back/putUsuario.php" method="POST" onsubmit="return validateForm()" novalidate>
 
             <!-- Seleção entre CPF e CNPJ -->
@@ -99,6 +99,9 @@ if ($result) {
                         class="form-control" required>
                 </div>
             </div>
+            <div class="form-group" style="margin-top: -20px;">
+                <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
+            </div>
 
             <div class="form-row">
                 <div class="form-group">
@@ -161,7 +164,7 @@ if ($result) {
                 </div>
             </div>
 
-            <!--div class="form-row">
+            <div class="form-row">
                 <div class="form-group">
                     <label for="senha">Senha:</label>
                     <input type="password" id="senha" name="senha" maxlength="15" placeholder="Digite sua senha"
@@ -172,7 +175,10 @@ if ($result) {
                     <input type="password" id="confirmSenha" name="senha" maxlength="15"
                         placeholder="Confirme sua senha" required>
                 </div>
-            </div-->
+            </div>
+            <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
+                <small style="color: #1976d2; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
+            </div>
 
             <!-- Campo para selecionar perguntas de segurança, puxando-as do banco de dados -->
             <!--div>
@@ -265,15 +271,178 @@ if ($result) {
         toggleCPFCNPJ();
     });
 
+    //Configuração da tabela de registros (botões, funções, DataTables)
     document.addEventListener("DOMContentLoaded", function () {
+        //Para a exibição de registros ativos:
+        const botoesAtivos = [
+            {
+                text: 'Adicionar Usuário',
+                action: function () {
+                    limpaCadastro(); // Limpa campos
+                    document.getElementById("form-usr-titulo").innerText = "Cadastro de Usuário"; // Título padrão
+                    alternaCadastroConsulta("divCadastroUsuario", "divConsultaUsuarios");
+                }
+            },
+            {
+                text: 'Alterar Usuário',
+                action: function () {
+                    var selectedRow = oTable.row({ selected: true }).data(); // Pega os dados diretamente do DataTables
+                    if (selectedRow) {
+                        console.log("Dados para edição:", selectedRow);
+                        marcarCheckboxCPFCNPJ(selectedRow["cpf_cnpj"]);
+                        toggleCPFCNPJ();
+                        preencherFormulario('form-cadastro', selectedRow);
+                        document.getElementById("form-usr-titulo").innerText = "Alterar Usuário"; // Altera título
+                        document.getElementById("senha").value = ""; //Evita que o campo "senha" venha preenchido ao editar
+                        document.getElementById("confirmSenha").value = ""; //Evita que o campo "senha" venha preenchido ao editar
+                        alternaCadastroConsulta("divCadastroUsuario", "divConsultaUsuarios");
+                    } else {
+                        mostrarMensagem("Aviso","Por favor, selecione uma linha.","alerta");
+                    }
+                }
+            },
+            {
+                text: 'Inativar Usuário',
+                action: function () {
+                    var selectedRow = oTable.row({ selected: true }).data();
+                    if (!selectedRow) {
+                        mostrarMensagem("Aviso","Por favor, selecione uma linha.","alerta");
+                        return;
+                    }
+                    mostrarDialogo(
+                        "Confirmar Inativação",
+                        "Deseja realmente inativar este usuário?",
+                        () => {
+                            // aoConfirmar
+                            fetch('../back/arquivar_usuario.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ usuario_id: selectedRow.usuario_id })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.sucesso) {
+                                    mostrarMensagem("Sucesso","Usuário inativado com sucesso.","sucesso");
+                                    oTable.ajax.reload();
+                                } else {
+                                    mostrarMensagem("Erro","Erro ao inativar usuário.","erro");
+                                }
+                            });
+                        },
+                        () => {
+                            // aoCancelar
+                            console.log("Inativação cancelada.");
+                        },
+                        "alerta"
+                    );
+                }
+            },
+            {
+                text: 'Ver Inativos', //Ao clicar em "Ver Inativos", a tabela será reconstruída para comportar os botoesInativos
+                action: function () {
+                    oTable.destroy();
+                    oTable = new DataTable('#tabelaUsuarios', {
+                        ajax: {
+                            url: '../back/getUsuarios.php?ativo=0',
+                            dataSrc: ''
+                        },
+                        columns: [
+                            { data: 'usuario_id' },
+                            { data: 'descricao' },
+                            { data: 'nome' },
+                            { data: 'cpf_cnpj' },
+                            { data: 'data_nascimento' },
+                            { data: 'email' },
+                            { data: 'num_principal' },
+                            { data: 'num_recado' }
+                        ],
+                        select: true,
+                        language: { url: "data/datatables-pt_br.json" },
+                        buttons: botoesInativos,
+                        layout: {
+                            bottomStart: 'buttons'
+                        }
+                    });
+                }
+            },
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ];
+        //Para a exibição de registros inativos:
+        const botoesInativos = [
+            {
+                text: 'Reativar Usuário',
+                action: function () {
+                    var selectedRow = oTable.row({ selected: true }).data();
+                    if (!selectedRow) {
+                        mostrarMensagem("Aviso", "Por favor, selecione uma linha.", "alerta");
+                        return;
+                    }
+                    mostrarDialogo(
+                        "Confirmar Reativação",
+                        "Deseja reativar este usuário?",
+                        () => {
+                            fetch('../back/reativar_usuario.php', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ usuario_id: selectedRow.usuario_id })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.sucesso) {
+                                    mostrarMensagem("Sucesso", "Usuário reativado com sucesso.", "sucesso");
+                                    oTable.ajax.reload();
+                                } else {
+                                    mostrarMensagem("Erro", "Erro ao reativar usuário.", "erro");
+                                }
+                            });
+                        },
+                        () => {
+                            console.log("Reativação cancelada.");
+                        },
+                        "alerta"
+                    );
+                }
+            },
+            {
+                text: 'Ver Ativos', //Ao clicar em "Ver Inativos", a tabela será reconstruída para comportar os botoesAtivos
+                action: function () {
+                    oTable.destroy();
+                    oTable = new DataTable('#tabelaUsuarios', {
+                        ajax: {
+                            url: '../back/getUsuarios.php?ativo=1',
+                            dataSrc: ''
+                        },
+                        columns: [
+                            { data: 'usuario_id' },
+                            { data: 'descricao' },
+                            { data: 'nome' },
+                            { data: 'cpf_cnpj' },
+                            { data: 'data_nascimento' },
+                            { data: 'email' },
+                            { data: 'num_principal' },
+                            { data: 'num_recado' }
+                        ],
+                        select: true,
+                        language: { url: "data/datatables-pt_br.json" },
+                        buttons: botoesAtivos,
+                        layout: {
+                            bottomStart: 'buttons'
+                        }
+                    });
+                }
+            },
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ];
+
+        //Inicializa a tabela com os registros de usuários ativos
         var oTable = new DataTable('#tabelaUsuarios', {
             ajax: {
-                url: '../back/getUsuarios.php', // Endpoint PHP
+                url: '../back/getUsuarios.php?ativo=1', // Endpoint PHP
                 dataSrc: '' // DataTables já entende JSON como array de objetos
             },
             columns: [
                 { data: 'usuario_id' },
-                { data: 'fk_tipo_usuario' },
+                { data: 'descricao' },
                 { data: 'nome' },
                 { data: 'cpf_cnpj' },
                 { data: 'data_nascimento' },
@@ -283,31 +452,7 @@ if ($result) {
             ],
             select: true,
             language: { url: "data/datatables-pt_br.json" },
-            buttons: [
-                /*{
-                    text: 'Novo Usuário',
-                    action: function () {
-                        limpaCadastro();
-                        alternaCadastroConsulta("divCadastroUsuario", "divConsultaUsuarios");
-                    }
-                },*/
-                {
-                    text: 'Alterar Usuário',
-                    action: function () {
-                        var selectedRow = oTable.row({ selected: true }).data(); // Pega os dados diretamente do DataTables
-                        if (selectedRow) {
-                            console.log("Dados para edição:", selectedRow);
-                            marcarCheckboxCPFCNPJ(selectedRow["cpf_cnpj"]);
-                            toggleCPFCNPJ();
-                            preencherFormulario('form-cadastro', selectedRow);
-                            alternaCadastroConsulta("divCadastroUsuario", "divConsultaUsuarios");
-                        } else {
-                            mostrarMensagem("Aviso","Por favor, selecione uma linha.","alerta");
-                        }
-                    }
-                },
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
+            buttons: botoesAtivos,
             layout: {
                 bottomStart: 'buttons'
             }

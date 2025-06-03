@@ -111,6 +111,9 @@ if ($result) {
                     <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná" class="form-control" required>
                 </div>
             </div>
+            <div class="form-group" style="margin-top: -20px;">
+                <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
+            </div>
 
             <div class="form-row">
                 <div class="form-group">
@@ -173,6 +176,9 @@ if ($result) {
                     <label for="confirmSenha">Confirmar Senha:</label>
                     <input type="password" id="confirmSenha" name="confirmSenha" maxlength="15" placeholder="Confirme sua senha" required>
                 </div>
+            </div>
+            <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
+                <small style="color: #1976d2; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
             </div>
 
             <!-- Campo para selecionar perguntas de segurança, puxando-as do banco de dados -->

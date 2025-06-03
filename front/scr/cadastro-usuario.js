@@ -24,6 +24,46 @@ document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
     e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
 });
 
+//Função chamada ao buscar pelo CEP
+document.getElementById('cep')?.addEventListener('blur', function () {
+    const cep = this.value.replace(/\D/g, '');
+    const erroCep = document.getElementById('erroCep');
+    erroCep.style.display = 'none';
+    erroCep.textContent = '';
+    if (cep.length !== 8) {
+        erroCep.textContent = 'CEP inválido.';
+        erroCep.style.display = 'block';
+        return;
+    }
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.erro) {
+                erroCep.textContent = 'CEP não encontrado.';
+                erroCep.style.display = 'block';
+                return;
+            }
+            document.getElementById('logradouro').value = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro || '';
+            document.getElementById('cidade').value = data.localidade || '';
+            document.getElementById('estado').value = data.uf || '';
+        })
+        .catch(() => {
+            erroCep.textContent = 'Erro ao buscar o CEP.';
+            erroCep.style.display = 'block';
+        });
+});
+
+//Esconde o texto de regras de senha até que o usuário clique no campo correspondente
+const campoSenha = document.getElementById("senha");
+const regraSenha = document.getElementById("regraSenha");
+campoSenha.addEventListener("focus", function () {
+    regraSenha.style.display = "block";
+});
+campoSenha.addEventListener("blur", function () {
+    regraSenha.style.display = "none";
+});
+
 //Função de validação completa do formulário de cadastro de usuário
 function validateForm() {
     const tipoPessoa = document.querySelector('input[name="tipo_pessoa"]:checked');

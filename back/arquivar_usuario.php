@@ -15,8 +15,8 @@ $params = [$usuarioId];
 $stmt = sqlsrv_query($conn, $sql, $params);
 
 if ($stmt) {
-    echo json_encode(['success' => true, 'message' => 'Operação concluída']);
+    echo json_encode(['sucesso' => true, 'message' => 'Operação concluída']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Erro na operação']);
+    echo json_encode(['sucesso' => false, 'message' => 'Erro na operação']);
 }
 ?>
