@@ -57,25 +57,45 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                 <?php endif; ?>
                 <?php if (esconderSeCliente()): ?>
                 {
-                    text: 'Arquivar Registro',
+                    text: 'Inativar Feedback',
                     action: function () {
-                        const data = oTable.row({ selected: true }).data();
-                        if (!data) return mostrarMensagem("Aviso", "Selecione um feedback.", "alerta");
-
-                        mostrarDialogo("Arquivar Feedback", "Deseja arquivar este feedback?", () => {
-                            const formData = new FormData();
-                            formData.append("feedback_id", data.feedback_id);
-                            fetch("../back/desativar_feedback.php", {
-                                method: "POST",
-                                body: formData
-                            }).then(() => oTable.ajax.reload());
-                        }, null, "alerta");
+                        var selectedRow = oTable.row({ selected: true }).data();
+                        if (!selectedRow) {
+                            mostrarMensagem("Aviso", "Por favor, selecione um feedback.", "alerta");
+                            return;
+                        }
+                        mostrarDialogo(
+                            "Confirmar Inativação",
+                            "Deseja realmente inativar este feedback?",
+                            () => {
+                                // aoConfirmar
+                                fetch('../back/desativar_feedback.php', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ feedback_id: selectedRow.feedback_id })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.sucesso) {
+                                        mostrarMensagem("Sucesso", "Feedback inativado com sucesso.", "sucesso");
+                                        oTable.ajax.reload();
+                                    } else {
+                                        mostrarMensagem("Erro", "Erro ao inativar feedback.", "erro");
+                                    }
+                                });
+                            },
+                            () => {
+                                // aoCancelar
+                                console.log("Inativação cancelada.");
+                            },
+                            "alerta"
+                        );
                     }
                 },
                 <?php endif; ?>
                 <?php if (esconderSeCliente()): ?>
                 {
-                    text: 'Ver Arquivados',
+                    text: 'Ver Inativos',
                     action: function () {
                         oTable.destroy();
                         carregarTabela(0);
