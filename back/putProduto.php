@@ -5,14 +5,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'valida_campo_obrigatorio_back.php'; //Chama a função para validar campos obrigatórios
 
     $id=$_POST["produtofinal_id"];
-    $fk_producao=1;//$_POST["fk_Producao"]; 
+    $fk_producao = campoObrigatorio('fk_producao', 'Linha de Produção Associada ao Produto'); 
     $nome=campoObrigatorio('nome', 'Nome do Produto');
     $descricao=campoObrigatorio('descricao', 'Descrição do Produto');
     $valor_venda=campoObrigatorio('valor_venda', 'Valor de Venda do Produto');
-    $quantidade=campoObrigatorio('quantidade', 'Qunatidade do Produto');
-    $nivel_minimo=0;//$_POST["nivel_minimo"];
-    $nivel_maximo=0;//$_POST["nivel_maximo"];
-    $ativo=1;//$_POST["ativo"];
+    $quantidade=campoObrigatorio('quantidade', 'Quantidade do Produto');
+    $nivel_minimo=campoObrigatorio('nivel_minimo', 'Nível Mínimo de Estoque do Produto');
+    $nivel_maximo=campoObrigatorio('nivel_maximo', 'Nível Máximo de Estoque do Produto');
+    $tempo_producao_dias=campoObrigatorio('tempo_prod', 'Tempo de Produção do Produto');
+    $ativo=1;
     
     // Se $id for vazio inclui o produto, senão vai atualizar os dados do $id informado
     if (empty($id)) {
@@ -24,6 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ,[quantidade]
                 ,[nivel_minimo]
                 ,[nivel_maximo]
+                ,[tempo_producao_dias]
                 ,ativo)
             VALUES
                 ($fk_producao
@@ -33,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ,$quantidade
                 ,$nivel_minimo
                 ,$nivel_maximo
+                ,$tempo_producao_dias
                 ,$ativo)";
     } else {
         $sql= "UPDATE [dbo].[ProdutoFinal] SET
@@ -43,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ,[quantidade] = $quantidade
             ,[nivel_minimo] = $nivel_minimo
             ,[nivel_maximo] = $nivel_maximo
+            ,[tempo_producao_dias] = $tempo_producao_dias
             ,[ativo] = $ativo
         WHERE produtofinal_id = $id";
     }
