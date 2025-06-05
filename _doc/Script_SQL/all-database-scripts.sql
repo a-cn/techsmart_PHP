@@ -4,7 +4,7 @@
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 01/06/2025
+-- Última alteração em: 05/06/2025
 
 
 USE master; -- Acessa o banco de dados "master"
@@ -170,7 +170,7 @@ GO
 CREATE TABLE Componente (
 	componente_id	INT				NOT NULL	IDENTITY(1,1),
 	nome			VARCHAR(50)		NOT NULL,
-	especificacao	VARCHAR(100),
+	especificacao	VARCHAR(100)	NOT NULL,
 	quantidade		INT				NOT NULL,
 	nivel_minimo	INT				NOT NULL,
 	nivel_maximo	INT				NOT NULL,
@@ -225,7 +225,7 @@ CREATE TABLE ProdutoFinal (
 	produtofinal_id		INT				NOT NULL	IDENTITY(1,1),
 	fk_producao			INT				NOT NULL,
 	nome				VARCHAR(50)		NOT NULL,
-	descricao			VARCHAR(100),
+	descricao			VARCHAR(100)	NOT NULL,
 	valor_venda			FLOAT			NOT NULL,
 	quantidade			INT				NOT NULL,
 	nivel_minimo		INT				NOT NULL,
@@ -332,10 +332,10 @@ GO
 -- Indica quais fornecedores estão associados a quais componentes.
 -- ================================================================================
 CREATE TABLE Fornecedor_Componente (
-	fornecedor_componente_id	INT	NOT NULL	IDENTITY(1,1),
-	fk_fornecedor				INT	NOT NULL,
-	fk_componente				INT NOT NULL,
-	custo_componente			FLOAT,
+	fornecedor_componente_id	INT		NOT NULL	IDENTITY(1,1),
+	fk_fornecedor				INT		NOT NULL,
+	fk_componente				INT		NOT NULL,
+	custo_componente			FLOAT	NOT NULL,
 	CONSTRAINT PK_Fornecedor_Componente
 		PRIMARY KEY CLUSTERED (fornecedor_componente_id ASC),
 	CONSTRAINT FK_Fornecedor_Componente_Fornecedor
