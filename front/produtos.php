@@ -51,7 +51,7 @@ if ($stmtProducao) {
                         <input type="number" id="quantidade" name="quantidade" step="1" min="1" required>
                     </div>
                     <div class="form-group" id="divValorVenda">
-                        <label for="valor_venda">Valor de Venda:</label>
+                        <label for="valor_venda">Valor de Venda (R$):</label>
                         <input type="number" id="valor_venda" name="valor_venda" step="0.01" required>
                     </div>
                 </div>

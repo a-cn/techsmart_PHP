@@ -82,6 +82,20 @@ export async function renderGraficoLinhaAvaliacoesMensal(containerId) {
                 intersect: false
             },
             stacked: false,
+            plugins: {
+                tooltip: {
+                    mode: 'nearest',  //Modo de interação para o tooltip exibir os dados na linha inteira
+                    intersect: true,  //O tooltip vai aparecer em qualquer parte da linha
+                    callbacks: {
+                        title: (context) => {
+                            return context[0].label;  //Mostra o título (mês/ano)
+                        },
+                        label: (context) => {
+                            return `${context.dataset.label}: ${context.parsed.y}`;  //Mostra o valor do tooltip
+                        }
+                    }
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true,

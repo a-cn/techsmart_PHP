@@ -3,7 +3,7 @@ Cria um gráfico de barras para exibir os top 10 componentes com maior risco de 
 Para isso:
 • Calcula a diferença entre quantidade do componente e seu nivel_minimo, e ordenar do menor para o maior;
 • Mostra os componentes mais próximos de gerar um problema no estoque;
-• Mesmo componentes com quantidade “alta” podem aparecer, se estiverem abaixo do seu mínimo.
+• Mesmo componentes com quantidade "alta" podem aparecer, se estiverem abaixo do seu mínimo.
 */
 
 export async function renderTopEstoqueBaixoComponentes(canvasId) {
@@ -51,6 +51,7 @@ export async function renderTopEstoqueBaixoComponentes(canvasId) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 title: {
                     display: true,
@@ -58,6 +59,16 @@ export async function renderTopEstoqueBaixoComponentes(canvasId) {
                 },
                 legend: {
                     display: false
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: (value) => value,
+                    font: {
+                        weight: 'bold'
+                    },
+                    padding: 6,
+                    offset: 4
                 }
             },
             scales: {
@@ -67,7 +78,16 @@ export async function renderTopEstoqueBaixoComponentes(canvasId) {
                         precision: 0
                     }
                 }
+            },
+            layout: {
+                padding: {
+                    top: 30,
+                    right: 10,
+                    left: 10,
+                    bottom: 10
+                }
             }
-        }
+        },
+        plugins: [ChartDataLabels]
     });
 }

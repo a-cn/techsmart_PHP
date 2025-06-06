@@ -5,7 +5,21 @@
 header('Content-Type: application/json');
 include '../conexao_sqlserver.php';
 
-$sql = "SELECT Mes, Produto, Total_Saida FROM vw_Previsao_Demanda";
+$sql = "WITH ProdutosComVendas AS (
+    SELECT DISTINCT Produto
+    FROM vw_Previsao_Demanda
+    WHERE Total_Saida > 0
+)
+SELECT 
+    d.Mes,
+    YEAR(CONVERT(date, d.Mes + '-01')) as Ano,
+    MONTH(CONVERT(date, d.Mes + '-01')) as MesNumero,
+    d.Produto, 
+    d.Total_Saida 
+FROM vw_Previsao_Demanda d
+INNER JOIN ProdutosComVendas p ON d.Produto = p.Produto
+ORDER BY d.Mes ASC";
+
 $stmt = sqlsrv_query($conn, $sql);
 
 if ($stmt === false) {
@@ -14,48 +28,53 @@ if ($stmt === false) {
     exit;
 }
 
-// Organiza os dados por produto
+// Organiza os dados por produto e ano
 $dados = [];
+$anos = [];
 
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     $produto = $row['Produto'];
-    $mes = $row['Mes'];
+    $ano = $row['Ano'];
+    $mesNumero = $row['MesNumero'];
     $saida = (int)$row['Total_Saida'];
 
+    // Armazena anos únicos
+    if (!in_array($ano, $anos)) {
+        $anos[] = $ano;
+    }
+
+    // Inicializa array do produto se não existir
     if (!isset($dados[$produto])) {
         $dados[$produto] = ['label' => $produto, 'data' => []];
     }
 
-    $dados[$produto]['data'][$mes] = $saida;
+    // Armazena os dados usando o número do mês como índice
+    $dados[$produto]['data'][] = [
+        'x' => $mesNumero,
+        'y' => $saida,
+        'ano' => $ano
+    ];
 }
 
-// Monta arrays finais
-$labels = []; // meses únicos
-foreach ($dados as $produto => &$info) {
-    foreach ($info['data'] as $mes => $valor) {
-        if (!in_array($mes, $labels)) {
-            $labels[] = $mes;
-        }
-    }
-}
+// Ordena anos
+sort($anos);
 
-// Ordena meses
-sort($labels);
-
+// Prepara datasets
 $datasets = [];
 foreach ($dados as $produto => $info) {
-    $linha = [];
-    foreach ($labels as $mes) {
-        $linha[] = $info['data'][$mes] ?? 0;
-    }
+    // Ordena os dados por mês
+    usort($info['data'], function($a, $b) {
+        return $a['x'] - $b['x'];
+    });
+    
     $datasets[] = [
         'label' => $produto,
-        'data' => $linha
+        'data' => $info['data']
     ];
 }
 
 echo json_encode([
-    'labels' => $labels,
-    'datasets' => $datasets
+    'datasets' => $datasets,
+    'anos' => $anos
 ]);
 ?>

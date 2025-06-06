@@ -1,31 +1,54 @@
 /*
-Cria uma tabela interativa com DataTables para exibir os produtos conforme o status de produção ("Acabado" ou "Semiacabado"), com:
+Cria uma tabela interativa com DataTables para exibir o status de produção dos produtos, com:
 • Filtro dropdown por status;
-• Destaque visual por cor em cada linha:
-Verde = Acabado;
-Amarelo = Semiacabado.
+• Destaque visual por cor em cada linha conforme o status.
 */
 //É necessário utilizar template literals (crase `), ao invés de aspas, para que ${BASE_URL} seja interpretado corretamente.
 
 export async function renderTabelaStatusProducao(containerId) {
     const container = document.getElementById(containerId);
+    
+    // Adiciona estilos CSS para as cores dos status
+    const styles = document.createElement('style');
+    styles.textContent = `
+        #tabelaStatusProducao tbody tr.status-acabado {
+            background-color: rgba(40, 167, 69, 0.15) !important;
+        }
+        #tabelaStatusProducao tbody tr.status-producao-em-atraso {
+            background-color: rgba(220, 53, 69, 0.15) !important;
+        }
+        #tabelaStatusProducao tbody tr.status-acabado-com-atraso {
+            background-color: rgba(255, 193, 7, 0.15) !important;
+        }
+        /* Hover states para melhor contraste */
+        #tabelaStatusProducao tbody tr.status-acabado:hover {
+            background-color: rgba(40, 167, 69, 0.25) !important;
+        }
+        #tabelaStatusProducao tbody tr.status-producao-em-atraso:hover {
+            background-color: rgba(220, 53, 69, 0.25) !important;
+        }
+        #tabelaStatusProducao tbody tr.status-acabado-com-atraso:hover {
+            background-color: rgba(255, 193, 7, 0.25) !important;
+        }
+    `;
+    document.head.appendChild(styles);
+
     container.innerHTML = `
         <h3>Status Atual da Produção de Produtos</h3>
         <label for="filtroStatus">Filtrar por status:</label>
         <select id="filtroStatus">
-            <option value="todos">Todos</option>
-            <option value="Acabado">Acabado</option>
-            <option value="Semiacabado">Semiacabado</option>
+            <option value="">Todos</option>
         </select>
         <table id="tabelaStatusProducao" class="display" style="width:100%">
             <thead>
                 <tr>
-                    <th>Produto</th>
-                    <th>Quantidade em Estoque</th>
+                    <th>Nome do Produto</th>
+                    <th>Data de Início</th>
+                    <th>Data de Previsão</th>
+                    <th>Data de Conclusão</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody></tbody>
         </table>
     `;
 
@@ -43,44 +66,81 @@ export async function renderTabelaStatusProducao(containerId) {
 
     const dados = await response.json();
 
-    const tbody = container.querySelector('tbody');
+    // Preenche o dropdown de filtro com status únicos
+    const statusUnicos = [...new Set(dados.map(item => item.status))].sort();
     const filtro = container.querySelector('#filtroStatus');
+    statusUnicos.forEach(status => {
+        const option = document.createElement('option');
+        option.value = status;
+        option.textContent = status;
+        filtro.appendChild(option);
+    });
 
-    function atualizarTabela() {
-        const statusSelecionado = filtro.value;
-
-        tbody.innerHTML = ''; // Limpa a tabela
-
-        dados.forEach(item => {
-            if (statusSelecionado === 'todos' || item.status === statusSelecionado) {
-                const tr = document.createElement('tr');
-                tr.classList.add(item.status.toLowerCase()); // usado para o estilo (acabado ou semiacabado)
-
-                tr.innerHTML = `
-                    <td>${item.produto}</td>
-                    <td>${item.quantidade}</td>
-                    <td>${item.status}</td>
-                `;
-                tbody.appendChild(tr);
-            }
-        });
-
-        if ($.fn.DataTable.isDataTable('#tabelaStatusProducao')) {
-            $('#tabelaStatusProducao').DataTable().destroy();
-        }
-
-        new DataTable('#tabelaStatusProducao', {
-            language: { url: `${BASE_URL}/front/data/datatables-pt_br.json` },
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            info: false,
-            select: true,
-            buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
-            layout: { bottomStart: 'buttons' },
-            responsive: true
-        });
+    function formatarData(data) {
+        if (!data) return '-';
+        return new Date(data).toLocaleDateString('pt-BR');
     }
 
-    filtro.addEventListener('change', atualizarTabela);
-    atualizarTabela();
+    function normalizarClasseCSS(status) {
+        // Remove acentos e caracteres especiais e converte para minúsculas
+        return 'status-' + status.toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]/g, '-');
+    }
+
+    // Inicializa o DataTable
+    const tabela = new DataTable('#tabelaStatusProducao', {
+        language: { url: `${BASE_URL}/front/data/datatables-pt_br.json` },
+        data: dados,
+        columns: [
+            { data: 'produto_nome' },
+            { 
+                data: 'data_inicio',
+                render: function(data) {
+                    return formatarData(data);
+                }
+            },
+            { 
+                data: 'data_previsao',
+                render: function(data) {
+                    return formatarData(data);
+                }
+            },
+            { 
+                data: 'data_conclusao',
+                render: function(data) {
+                    return formatarData(data);
+                }
+            },
+            { data: 'status' }
+        ],
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        info: false,
+        select: true,
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+        layout: {
+            topStart: 'pageLength',
+            bottomStart: 'buttons',
+            bottomEnd: 'pagination'
+        },
+        responsive: true,
+        order: [[1, 'desc']], // Ordena por data de início por padrão
+        dom: '<"top"l>rt<"bottom d-flex justify-content-between"B<"ms-2"p>>', // Organiza os elementos na ordem correta
+        createdRow: function(row, data) {
+            $(row).addClass(normalizarClasseCSS(data.status));
+        }
+    });
+
+    // Adiciona o evento de filtro
+    filtro.addEventListener('change', function() {
+        const statusSelecionado = this.value;
+        
+        if (statusSelecionado === "") {
+            tabela.search('').columns().search('').draw();
+        } else {
+            tabela.column(4).search('^' + $.fn.dataTable.util.escapeRegex(statusSelecionado) + '$', true, false).draw();
+        }
+    });
 }

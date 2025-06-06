@@ -44,10 +44,42 @@ export async function renderPizzaEstoqueProdutos(canvasId) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Distribuição de Estoque de Produtos'
+                    text: 'Distribuição de Estoque de Produtos',
+                    padding: {
+                        top: 10,
+                        bottom: 50
+                    },
+                    font: {
+                        size: 16
+                    }
                 },
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    padding: {
+                        top: 30,
+                        bottom: 10
+                    },
+                    labels: {
+                        padding: 20,
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#000',
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+                    formatter: (value, ctx) => {
+                        const total = ctx.dataset.data.reduce((acc, data) => acc + data, 0);
+                        const percentage = ((value * 100) / total).toFixed(1) + '%';
+                        return `${value}\n(${percentage})`;
+                    },
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 10
                 }
             }
         }

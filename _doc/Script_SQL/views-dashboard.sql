@@ -1,6 +1,6 @@
 -- VIEWS (lógicas de consulta reutilizáveis) PARA RELATÓRIOS DO SISTEMA
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 29/05/2025
+-- Última alteração em: 05/06/2025
 
 USE TechSmartDB;
 GO
@@ -81,23 +81,40 @@ GO
 -- ================================================================================
 -- 5) Relatório de produtos semiacabados VS acabados
 -- ================================================================================
-CREATE VIEW vw_Status_Produtos_Producao AS
-SELECT 
-    pf.produtofinal_id,
-    pf.nome AS Produto,
-    pf.quantidade,
-    CASE 
-        WHEN EXISTS (
-            SELECT 1 
-            FROM Movimentacao m 
-            WHERE m.fk_produtofinal = pf.produtofinal_id 
-              AND m.tipo_movimentacao = 'Entrada'
-        )
-        THEN 'Acabado'
-        ELSE 'Semiacabado'
-    END AS StatusProducao
-FROM ProdutoFinal pf
-WHERE pf.ativo = 1;
+CREATE VIEW dbo.vw_Status_Producao_Produto AS
+SELECT
+    hp.data_inicio,
+    hp.data_previsao,
+    hp.data_conclusao,
+    CASE
+        -- 1. Se a produção já foi concluída na data prevista
+        WHEN hp.data_conclusao IS NOT NULL
+             AND hp.data_conclusao = hp.data_previsao
+            THEN 'Acabado'
+
+        -- 2. Se já concluiu, mas passou da data prevista
+        WHEN hp.data_conclusao IS NOT NULL
+             AND hp.data_conclusao > hp.data_previsao
+            THEN 'Acabado com atraso'
+
+        -- 3. Se não concluiu (data_conclusao IS NULL) e já passou da data prevista
+        WHEN hp.data_conclusao IS NULL
+             AND hp.data_previsao < GETDATE()
+            THEN 'Produção em atraso'
+
+        -- 4. Se não concluiu e ainda não chegou na data prevista
+        WHEN hp.data_conclusao IS NULL
+             AND hp.data_previsao >= GETDATE()
+            THEN 'Em produção'
+
+        -- 5. Caso contrário
+        ELSE 'Situação não definida'
+    END AS Status,
+    pf.nome AS produto_nome
+FROM
+    dbo.Historico_Producao AS hp
+    INNER JOIN dbo.ProdutoFinal AS pf
+        ON hp.fk_producao = pf.fk_producao;
 GO
 
 -- ================================================================================

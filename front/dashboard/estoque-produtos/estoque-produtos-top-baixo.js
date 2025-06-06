@@ -3,7 +3,7 @@ Cria um gráfico de barras para exibir os top 10 produtos com maior risco de ati
 Para isso:
 • Calcula a diferença entre quantidade do produto e seu nivel_minimo, e ordenar do menor para o maior;
 • Mostra os produtos mais próximos de gerar um problema no estoque;
-• Mesmo produtos com quantidade “alta” podem aparecer, se estiverem abaixo do seu mínimo.
+• Mesmo produtos com quantidade "alta" podem aparecer, se estiverem abaixo do seu mínimo.
 */
 
 export async function renderTopEstoqueBaixoProdutos(canvasId) {
@@ -37,6 +37,16 @@ export async function renderTopEstoqueBaixoProdutos(canvasId) {
         return 'rgba(75, 192, 192, 0.6)';
     });
 
+    // Estiliza o container da legenda
+    const legendaContainer = document.getElementById('legendaEstoqueProdutos');
+    if (legendaContainer) {
+        legendaContainer.style.display = 'flex';
+        legendaContainer.style.justifyContent = 'center';
+        legendaContainer.style.alignItems = 'center';
+        legendaContainer.style.gap = '20px';
+        legendaContainer.style.marginTop = '20px';
+    }
+
     const ctx = document.getElementById(canvasId).getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -58,6 +68,16 @@ export async function renderTopEstoqueBaixoProdutos(canvasId) {
                 },
                 legend: {
                     display: false
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    offset: 4,
+                    formatter: (value) => value,
+                    font: {
+                        weight: 'bold'
+                    },
+                    color: 'black'
                 }
             },
             scales: {

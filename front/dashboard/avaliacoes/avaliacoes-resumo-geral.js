@@ -39,7 +39,12 @@ export async function renderDoughnutResumoAvaliacoes() {
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'bottom' },
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            padding: 25 // Adiciona padding entre os itens da legenda
+                        }
+                    },
                     title: {
                         display: true,
                         text: 'Proporção Geral de Avaliações'
@@ -52,9 +57,25 @@ export async function renderDoughnutResumoAvaliacoes() {
                                 return `${context.label}: ${val} (${percent}%)`;
                             }
                         }
+                    },
+                    datalabels: {
+                        color: '#000',
+                        font: {
+                            weight: 'bold',
+                            size: 12
+                        },
+                        formatter: function(value, context) {
+                            const percent = ((value / total) * 100).toFixed(1);
+                            return `${value} (${percent}%)`;
+                        },
+                        anchor: 'end',
+                        align: 'end',
+                        offset: 8,
+                        textAlign: 'left'
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
 
         // Exibe a média geral
