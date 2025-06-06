@@ -30,8 +30,10 @@ if (isset($_GET['pedido_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="../css/janelas.css">
-    <link rel="stylesheet" type="text/css" href="../css/formulario-feedback.css">
+    <link rel="stylesheet" type="text/css" href="css/janelas.css">
+    <link rel="stylesheet" type="text/css" href="css/formulario-feedback.css">
+    <script src="scr/script.js"></script>
+
     <title>Alterar Feedback</title>
 </head>
 <body>
@@ -65,7 +67,7 @@ if (isset($_GET['pedido_id'])) {
 <?php
     } else {
         // Redireciona com um alerta
-        echo "<script>alert('Registro não encontrado.'); window.location.href = 'historico_pedidos.php';</script>";
+        echo "<script>alert('Registro não encontrado.'); window.location.href = 'front/index.php?pg=feedbacks';</script>";
     }
 
     if (isset($stmt) && is_resource($stmt)) {
@@ -75,6 +77,6 @@ if (isset($_GET['pedido_id'])) {
         sqlsrv_close($conn);
     }
 } else {
-    echo "Erro1: pedido nao incontrado";
+    echo "Erro: Pedido não encontrado";
 }
 ?>

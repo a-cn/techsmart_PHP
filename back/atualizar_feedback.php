@@ -18,9 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['feedback_id'], $_POST
     if ($stmt) {
         //Libera e fecha a conexão
         sqlsrv_free_stmt($stmt);
+        
         sqlsrv_close($conn);
         //Redireciona com um alerta de sucesso
-        echo "<script>alert('Sua alteração foi registrada!'); window.location.href = '../Front/Pages/consulta-feedback.php';</script>";
+        echo "<script>alert('Sua alteração foi registrada!'); window.location.href = '../front/index.php?pg=feedbacks';</script>";
+
         exit;
     } else {
         echo "Erro ao atualizar o feedback: " . print_r(sqlsrv_errors(), true);

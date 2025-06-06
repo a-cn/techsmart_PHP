@@ -136,7 +136,25 @@ if ($stmt === false) {
             {
                 text: 'Feedback',
                 action: function () {
-                    window.location.href = 'formulario-feedback.php';
+                    var selectedRow = oTable.row({ selected: true }).data();
+                    if (!selectedRow) {
+                        mostrarMensagem("Aviso", "Por favor, selecione um pedido.", "alerta");
+                        return;
+                    }
+                    var pedidoId = selectedRow[0]; // primeira coluna da linha
+                    // Verifica no backend se existe feedback para o pedido
+                    fetch(`../back/verifica_feedback_pedido.php?pedido_id=${pedidoId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.temFeedback) {
+                                window.location.href = `index.php?pg=feedbacks&pedido_id=${pedidoId}`;
+                            } else {
+                                window.location.href = `formulario-feedback.php`;
+                            }
+                        })
+                        .catch(() => {
+                            mostrarMensagem("Erro", "Erro ao verificar feedback. Tente novamente.", "erro");
+                        });
                 }
             },
             <?php endif; ?>
