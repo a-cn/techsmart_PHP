@@ -54,7 +54,7 @@ export function renderTabelaMovimentacoes(containerId) {
             const container = $(`#${containerId}`);
             
             // Criar título
-            const titulo = $('<h2>').addClass('titulo-tabela').text('Tabela de Movimentação de Produtos Finais');
+            const titulo = $('<h2>').addClass('titulo-tabela').text('Movimentação de Produtos Finais');
             
             // Criar container de filtros
             const filtrosContainer = $('<div>').addClass('filtros-container');

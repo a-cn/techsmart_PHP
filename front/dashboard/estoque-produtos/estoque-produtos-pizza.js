@@ -44,7 +44,7 @@ export async function renderPizzaEstoqueProdutos(canvasId) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Distribuição de Estoque de Produtos',
+                    text: 'Distribuição Total do Estoque de Produtos',
                     padding: {
                         top: 10,
                         bottom: 50

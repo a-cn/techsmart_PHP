@@ -84,7 +84,15 @@ export async function renderPizzaEstoqueComponentes(canvasId) {
                 },
                 plugins: {
                     title: {
-                        display: false  // título agora está no HTML
+                        display: true,
+                        text: 'Distribuição Total do Estoque de Componentes',
+                        padding: {
+                            top: 10,
+                            bottom: 50
+                        },
+                        font: {
+                            size: 16
+                        }
                     },
                     legend: {
                         display: false  // legenda será renderizada separadamente

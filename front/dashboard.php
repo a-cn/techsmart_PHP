@@ -114,7 +114,6 @@ Chart.register(ChartDataLabels);
             <!-- Gráfico de Pizza (Componentes) -->
             <div class="grafico-container" style="width: 50%; margin: 1rem auto;">
                 <div style="position: relative; height: 450px; display: flex; flex-direction: column;">
-                    <h3 style="text-align: center; margin-bottom: 2rem;">Distribuição de Estoque de Componentes</h3>
                     <div style="flex: 1; position: relative;">
                         <canvas id="graficoPizzaEstoqueComponentes"></canvas>
                     </div>

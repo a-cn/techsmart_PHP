@@ -55,7 +55,14 @@ export async function renderTopEstoqueBaixoComponentes(canvasId) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Top 10 Componentes com Menor Estoque'
+                    text: 'Top 10 Componentes com Menor Estoque Relativo ao Nível Mínimo',
+                    padding: {
+                        top: 10,
+                        bottom: 50
+                    },
+                    font: {
+                        size: 16
+                    }
                 },
                 legend: {
                     display: false
