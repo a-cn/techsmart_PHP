@@ -95,6 +95,7 @@ $body_class = 'body-background-fit background-' . substr($tipo_usuario, 0, 3);
                 "componentes",
                 "producao",
                 "produtos",
+                "iniciar-producao",
                 "pedidos",
                 "feedbacks"
             ];

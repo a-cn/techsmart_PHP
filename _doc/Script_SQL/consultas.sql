@@ -36,7 +36,12 @@ select * from ProdutoFinal
 select * from ProdutoFinal
 select * from Producao
 
--- CONSULTAR TELA DE MOVIMENTAÇÕES
+-- CONSULTAR TELA DE ACOMPANHAMENTO DA PRODUÇÃO
+select * from Producao
+select * from Etapa_Producao
+select * from Historico_Producao
+
+-- CONSULTAR MOVIMENTAÇÕES
 select * from Movimentacao
 select * from Pedido
 select * from ProdutoFinal
