@@ -1,17 +1,21 @@
 <?php
 require_once 'conexao_sqlserver.php'; // Conecte ao banco
+require_once '../back/verifica_sessao.php';   //Garante que somente usuários logados possam acessar a página
+$loginTimestamp = time(); //Redefine o momento de início da sessão
 
 // Consulta SQL
-$sql = "SELECT   [fornecedor_id]
-                ,[nome]
-                ,[cpf_cnpj]
-                ,[num_principal]
-                ,[num_secundario]
-                ,[email]
-                ,[fk_endereco]
-                ,[situacao]
-                ,[ativo]
-          FROM [dbo].[Fornecedor]";
+$sql = "    SELECT [fornecedor_id]
+                   ,[nome]
+                   ,[cpf_cnpj]
+                   ,[num_principal]
+                   ,[num_secundario]
+                   ,[email]
+                   ,[fk_endereco]
+                   ,[situacao]
+                   ,[ativo]
+                   ,e.*
+              FROM [dbo].[Fornecedor] AS f
+        INNER JOIN [Endereco] AS e ON f.fk_endereco = e.endereco_id;";
 
 $stmt = sqlsrv_query($conn, $sql);
 if ($stmt === false) {
@@ -19,7 +23,6 @@ if ($stmt === false) {
 }
 $fornecedores = [];
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    //$row['data_nascimento'] = $row['data_nascimento'] ? $row['data_nascimento']->format('d/m/Y') : ''; // Formatar data
     $fornecedores[] = $row;
 }
 
