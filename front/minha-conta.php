@@ -10,9 +10,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Conta</title>
-    <link rel="stylesheet" type="text/css"href="css/perfil-usuario.css"> 
-    <!-- <link rel="stylesheet" href="perfil-susario.css"> -->
-
+    <link rel="stylesheet" type="text/css"href="css/perfil-usuario.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="css/janelas.css">  
 </head>
@@ -107,7 +105,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             </div>
         </div>
 
-<a href="alterar-conta.php" class="btn-editar">Editar</a>
+<a href="alterar-conta.php" class="btn-editar">Alterar Dados</a>
 <button id="btnDesativar" class="btn btn-danger">
     <i class="fas fa-user-slash"></i> Desativar Conta
 </button>
@@ -119,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("Iniciando carregamento de dados...");
         
         // 1. Configuração da requisição
-        const response = await fetch('/tech-smart/back/dados_usuario.php', {
+        const response = await fetch('../back/dados_usuario.php', {
             method: 'GET',
             credentials: 'include',
             headers: {
