@@ -54,6 +54,7 @@ function parseDateBR(dataBR) {
   return data;
 }
 
+/*/ Função para preencher o formulário automaticamente /*/
 function preencherFormulario(formulario, dados) {
     const form = document.getElementById(formulario);
     if (!form) {
@@ -104,67 +105,6 @@ function preencherFormulario(formulario, dados) {
     });
 }
 
-
-/*/ Função para preencher o formulário automaticamente
-function preencherFormulario(formulario, dados) {
-    let form = document.getElementById(formulario);
-    if (!form) {
-        console.warn("Formulário não encontrado:", formulario);
-        return;
-    }
-
-    Object.keys(dados).forEach((campo) => {
-        let elemento = form.querySelector(`[name="${campo}"]`);
-        if (elemento) {
-            let valor = dados[campo] ?? ""; // Define um valor padrão caso seja null ou undefined
-            
-            if (elemento.type === "checkbox") {
-                // Para checkboxes, verifica se o valor é verdadeiro ou compatível
-                elemento.checked = Boolean(valor) && valor !== "0";
-            } else if (elemento.tagName === "SELECT") {
-                // Para selects, verifica se a opção existe antes de definir
-                let optionExists = Array.from(elemento.options).some(opt => opt.value === valor);
-                if (optionExists) {
-                    elemento.value = valor;
-                }
-            } else if (elemento.type === "date") {
-                if (valor) {
-                    let data = parseDateBR(valor);
-            
-                    // Certifica-se de que a data é válida
-                    if (!isNaN(data.getTime())) {
-                        let ano = data.getFullYear();
-                        let mes = String(data.getMonth() + 1).padStart(2, '0');
-                        let dia = String(data.getDate()).padStart(2, '0');
-            
-                        let dataFormatada = `${ano}-${mes}-${dia}`; // Formato YYYY-MM-DD
-                        console.log(`Definindo valor do input date: ${dataFormatada}`); // Depuração
-                        elemento.value = dataFormatada;
-                    } else {
-                        console.warn("Data inválida recebida:", valor);
-                        elemento.value = "";
-                    }
-                } else {
-                    elemento.value = "";
-                }
-            } else if (elemento.type === "date") {
-                // Para inputs tipo date, verifica se o valor é válido antes de formatar
-                if (valor) {
-                    let dataFormatada = new Date(valor).toISOString().split("T")[0]; // Obtém somente a parte da data
-                    elemento.value = dataFormatada;
-                } else {
-                    elemento.value = ""; // Se vazio, mantém o campo limpo
-                }
-            } else {
-                // Para inputs e textareas, trata valores vazios
-                elemento.value = valor;
-            }
-        } else {
-            console.warn("Campo não encontrado:", campo);
-        }
-    });
-}/*/
-
 function limpaCadastro(event){
     if (event) event.preventDefault(); // Evita que o formulário seja submetido
     document.getElementById("form-cadastro").reset();
@@ -206,5 +146,44 @@ function getSelectedRowData(oDataTable) {
     });
     console.log("Dados armazenados:", rowData);
     return rowData;
+}
+
+function validarCNPJ(cnpj) {
+    cnpj = cnpj.replace(/\D/g, ''); // Remove caracteres não numéricos
+
+    if (cnpj.length !== 14) return false;
+
+    // Verifica se todos os dígitos são iguais, o que torna o CNPJ inválido
+    if (/^(\d)\1+$/.test(cnpj)) return false;
+
+    // Cálculo dos dígitos verificadores
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros[tamanho - i] * pos--;
+        if (pos < 2) pos = 9;
+    }
+
+    let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado != digitos[0]) return false;
+
+    tamanho++;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += numeros[tamanho - i] * pos--;
+        if (pos < 2) pos = 9;
+    }
+
+    resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado != digitos[1]) return false;
+
+    return true;
 }
 

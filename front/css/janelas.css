@@ -170,6 +170,7 @@ tr:nth-child(even) {
 }
 
 .form-content {
+    padding-top: 15px;
     display: flex;
     flex-direction: column;
 }

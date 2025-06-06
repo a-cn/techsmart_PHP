@@ -111,16 +111,18 @@ $body_class = 'body-background-fit background-' . substr($tipo_usuario, 0, 3);
                 include_once "dashboard.php";
             }
             ?>
-            <!-- "mostrarMensagem('Título', 'Mensagem','Tipo')"-->
+            <!-- "mostrarMensagem('Título', 'Mensagem','Tipo')"
             <button onclick="mostrarMensagem('Aviso', 'Este é um teste de mensagem.')">Testar Mensagem</button>
             <button onclick="mostrarMensagem('Aviso-Erro', 'Este é um teste de mensagem.', 'erro')">Mensagem Erro</button>
             <button onclick="mostrarMensagem('Aviso-Alerta', 'Este é um teste de mensagem.', 'alerta')">Mensagem Alerta</button>
             <button onclick="mostrarMensagem('Aviso-Sucesso', 'Este é um teste de mensagem.', 'sucesso')">Mensagem Sucesso</button>
-            <!--            "mostrarDialogo('Título', 'Mensagem', () => função para ('Sim!'), () => função para ('Não!'),'Tipo')" -->
+            -->
+            <!-- "mostrarDialogo('Título', 'Mensagem', () => função para ('Sim!'), () => função para ('Não!'),'Tipo')" 
             <button onclick="mostrarDialogo('Confirmação', 'Deseja continuar?', () => alert('Sim!'), () => alert('Não!'))">Testar Diálogo</button>
             <button onclick="mostrarDialogo('Teste Erro', 'Deseja continuar?', () => alert('Sim!'), () => alert('Não!'),'erro')">Diálogo Erro</button>
             <button onclick="mostrarDialogo('Teste Alerta', 'Deseja continuar?', () => alert('Sim!'), () => alert('Não!'),'alerta')">Diálogo Alerta</button>
             <button onclick="mostrarDialogo('Teste Sucesso', 'Deseja continuar?', () => alert('Sim!'), () => alert('Não!'),'sucesso')">Diálogo Sucesso</button>
+            -->
         </main>
     </div>
     <script>
