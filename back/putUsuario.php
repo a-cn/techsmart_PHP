@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cep         = campoObrigatorio('cep', 'CEP');
     $logradouro  = campoObrigatorio('logradouro', 'Logradouro');
     $numero      = campoObrigatorio('numero', 'Número');
-    $complemento = $_POST['complemento'] ?? ''; // Pode ser vazio ou nulo
+    $complemento = isset($_POST['complemento']) && $_POST['complemento'] !== '' ? $_POST['complemento'] : null; //Pode ser nulo
     $bairro      = campoObrigatorio('bairro', 'Bairro');
     $cidade      = campoObrigatorio('cidade', 'Cidade');
     $estado      = campoObrigatorio('estado', 'Estado');
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email           = campoObrigatorio('email', 'Email');
     //$confirmEmail  = campoObrigatorio('confirmEmail', 'Confirmação de Email');
     $num_celular     = campoObrigatorio('num_principal', 'Número de Celular');
-    $num_recado      = $_POST['num_recado'] ?? ''; //Pode ser nulo/vazio
+    $num_recado = isset($_POST['num_recado']) && $_POST['num_recado'] !== '' ? $_POST['num_recado'] : null; //Pode ser nulo
     //$senha         = campoObrigatorio('senha', 'Senha');
     //$confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
     //$fk_pergunta   = campoObrigatorio('securityQuestion', 'Pergunta de Segurança');

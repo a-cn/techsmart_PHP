@@ -25,8 +25,7 @@ $fk_tipo_usuario = ($tipo_usuario_logado === 'administrador') ? TIPO_COLABORADOR
 $cep         = campoObrigatorio('cep', 'CEP');
 $logradouro  = campoObrigatorio('logradouro', 'Logradouro');
 $numero      = campoObrigatorio('numero', 'Número');
-// $complemento = $_POST['complemento'] ?? null; //Pode ser nulo
-$complemento = $_POST['complemento'] ?  $_POST['complemento'] : null; //Pode ser nulo
+$complemento = isset($_POST['complemento']) && $_POST['complemento'] !== '' ? $_POST['complemento'] : null; //Pode ser nulo
 $bairro      = campoObrigatorio('bairro', 'Bairro');
 $cidade      = campoObrigatorio('cidade', 'Cidade');
 $estado      = campoObrigatorio('estado', 'Estado');
@@ -65,7 +64,7 @@ if ($tipo_pessoa === 'cpf') { //CPF
 $email         = campoObrigatorio('email', 'Email');
 $confirmEmail  = campoObrigatorio('confirmEmail', 'Confirmação de Email');
 $num_celular   = campoObrigatorio('num_celular', 'Número de Celular');
-$num_recado    = $_POST['num_recado'] || null; //Pode ser nulo
+$num_recado = isset($_POST['num_recado']) && $_POST['num_recado'] !== '' ? $_POST['num_recado'] : null; //Pode ser nulo
 $senha         = campoObrigatorio('senha', 'Senha');
 $confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
 $fk_pergunta   = campoObrigatorio('securityQuestion', 'Pergunta de Segurança');

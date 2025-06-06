@@ -1,6 +1,6 @@
 -- PADRÕES DE CONSULTA
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 25/04/2025
+-- Última alteração em: 06/06/2025
 
 USE TechSmartDB;
 
@@ -8,6 +8,7 @@ USE TechSmartDB;
 select * from Tipo_Usuario
 select * from Usuario
 select * from Endereco
+select * from Pergunta_Seguranca
 
 -- CONSULTAR TELA DE PEDIDOS E FEEDBACK
 select * from Usuario
