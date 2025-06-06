@@ -106,7 +106,7 @@ if ($stmtProducao) {
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Qtd Disponível</th>
-                    <th>Valor de Venda</th>
+                    <th>Valor de Venda (R$)</th>
                     <th>Nível Min.</th>
                     <th>Nível Máx.</th>
                     <th>Dias p/ Produção</th>
@@ -124,7 +124,7 @@ if ($stmtProducao) {
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Qtd Disponível</th>
-                    <th>Valor de Venda</th>
+                    <th>Valor de Venda (R$)</th>
                     <th>Nível Min.</th>
                     <th>Nível Máx.</th>
                     <th>Dias p/ Produção</th>
