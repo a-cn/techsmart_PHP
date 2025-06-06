@@ -1,73 +1,109 @@
 <?php
-include 'conexao_sqlserver.php';
+header('Content-Type: application/json');
+require_once 'conexao_sqlserver.php';
 
-header('Content-Type: application/json'); // Define cabeçalho para resposta JSON
-
-$acao = $_GET['acao'] ?? ''; // Obtém ação a ser executada
+$acao = $_GET['acao'] ?? '';
+$id = $_GET['id'] ?? 0;
 
 try {
+    // Para ações que recebem dados via POST
+    if (in_array($acao, ['incluir', 'editar'])) {
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Erro ao decodificar JSON: " . json_last_error_msg());
+        }
+    }
+
     switch ($acao) {
         case 'listar':
             // Consulta SQL para listar produções com suas etapas
             $sql = "SELECT 
-                    p.producao_id as id, 
-                    p.nome as tipo,
-                    (
-                        SELECT STRING_AGG(
-                            e.nome + ' (Componente: ' + c.nome + ')', 
-                            ', '
-                        ) WITHIN GROUP (ORDER BY e.ordem)
-                        FROM Etapa_Producao e
-                        JOIN Componente c ON e.fk_componente = c.componente_id
-                        WHERE e.fk_producao = p.producao_id AND e.ativo = 1
-                    ) as etapas,
-                    (
-                        SELECT STRING_AGG(
-                            '{\"nome\":\"' + e.nome + '\",\"componenteId\":\"' + CAST(e.fk_componente AS VARCHAR) + '\"}', 
-                            ','
-                        ) WITHIN GROUP (ORDER BY e.ordem)
-                        FROM Etapa_Producao e
-                        WHERE e.fk_producao = p.producao_id AND e.ativo = 1
-                    ) as etapas_json
-                FROM Producao p
-                WHERE p.ativo = 1
-                ORDER BY p.producao_id";
-        
-        $stmt = sqlsrv_query($conn, $sql);
-        if ($stmt === false) {
-            throw new Exception("Erro ao listar produções: " . print_r(sqlsrv_errors(), true));
-        }
-        
-        $producoes = [];
-        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            // Formata para exibição
-            $row['etapas'] = $row['etapas'] ?: 'Sem etapas cadastradas';
+                        p.producao_id as id, 
+                        p.nome as tipo,
+                        (
+                            SELECT STRING_AGG(
+                                e.nome + ' (Componente: ' + c.nome + ')', 
+                                ', '
+                            ) WITHIN GROUP (ORDER BY e.ordem)
+                            FROM Etapa_Producao e
+                            JOIN Componente c ON e.fk_componente = c.componente_id
+                            WHERE e.fk_producao = p.producao_id AND e.ativo = 1
+                        ) as etapas,
+                        (
+                            SELECT STRING_AGG(
+                                '{\"nome\":\"' + e.nome + '\",\"componenteId\":\"' + CAST(e.fk_componente AS VARCHAR) + '\"}', 
+                                ','
+                            ) WITHIN GROUP (ORDER BY e.ordem)
+                            FROM Etapa_Producao e
+                            WHERE e.fk_producao = p.producao_id AND e.ativo = 1
+                        ) as etapas_json
+                    FROM Producao p
+                    WHERE p.ativo = 1
+                    ORDER BY p.producao_id";
             
-            // Mantem o JSON para edição
-            $row['etapas_json'] = $row['etapas_json'] ? '[' . $row['etapas_json'] . ']' : '[]';
-            $producoes[] = $row;
-        }
-        
-        echo json_encode($producoes);
-        break;
+            $stmt = sqlsrv_query($conn, $sql);
+            if ($stmt === false) {
+                throw new Exception("Erro ao listar produções: " . print_r(sqlsrv_errors(), true));
+            }
+            
+            $producoes = [];
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                // Formata para exibição
+                $row['etapas'] = $row['etapas'] ?: 'Sem etapas cadastradas';
+                
+                // Mantem o JSON para edição
+                $row['etapas_json'] = $row['etapas_json'] ? '[' . $row['etapas_json'] . ']' : '[]';
+                $producoes[] = $row;
+            }
+            
+            echo json_encode($producoes);
+            break;
+
+        case 'obter':
+    if (empty($_GET['id'])) {
+        throw new Exception("ID da produção não informado");
+    }
+    $id = $_GET['id'];
+
+    $sql = "SELECT 
+                p.producao_id as id, 
+                p.nome as tipo,
+                (
+                    SELECT STRING_AGG(
+                        '{\"nome\":\"' + e.nome + '\",\"componenteId\":\"' + CAST(e.fk_componente AS VARCHAR) + '\"}', 
+                        ','
+                    ) WITHIN GROUP (ORDER BY e.ordem)
+                    FROM Etapa_Producao e
+                    WHERE e.fk_producao = p.producao_id AND e.ativo = 1
+                ) as etapas_json
+            FROM Producao p
+            WHERE p.producao_id = ? AND p.ativo = 1";
+    
+    $stmt = sqlsrv_query($conn, $sql, array($id));
+    if ($stmt === false) {
+        throw new Exception("Erro ao obter produção: " . print_r(sqlsrv_errors(), true));
+    }
+
+    $producao = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    if (!$producao) {
+        throw new Exception("Produção não encontrada");
+    }
+
+    $producao['etapas'] = $producao['etapas_json'] ? json_decode('[' . $producao['etapas_json'] . ']', true) : [];
+    unset($producao['etapas_json']);
+
+    echo json_encode($producao);
+    break;
 
         case 'incluir':
             // Processa inclusão de nova produção
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
-            
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception("Erro ao decodificar JSON: " . json_last_error_msg());
-            }
-            
-            $tipo = $data["tipo"] ?? '';
-            $etapas = $data["etapas"] ?? [];
-            
-            if (empty($tipo)) {
+            if (empty($data['tipo'])) {
                 throw new Exception("Tipo de produção não informado");
             }
             
-            if (empty($etapas)) {
+            if (empty($data['etapas'])) {
                 throw new Exception("Nenhuma etapa informada");
             }
 
@@ -79,7 +115,7 @@ try {
             try {
                 // Insere produção
                 $sqlProducao = "INSERT INTO Producao (nome) OUTPUT INSERTED.producao_id VALUES (?)";
-                $params = array($tipo);
+                $params = array($data['tipo']);
                 $stmtProducao = sqlsrv_query($conn, $sqlProducao, $params);
                 
                 if ($stmtProducao === false) {
@@ -93,7 +129,7 @@ try {
                 $producao_id = sqlsrv_get_field($stmtProducao, 0);
                 
                 // Insere etapas com componentes
-                foreach ($etapas as $index => $etapa) {
+                foreach ($data['etapas'] as $index => $etapa) {
                     $ordem = $index + 1;
                     $sqlEtapa = "INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente) 
                                 VALUES (?, ?, ?, ?)";
@@ -123,22 +159,11 @@ try {
 
         case 'editar':
             // Processa edição de produção existente
-            $json = file_get_contents('php://input');
-            $data = json_decode($json, true);
-            
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new Exception("Erro ao decodificar JSON: " . json_last_error_msg());
-            }
-            
-            $id = $data["id"] ?? 0;
-            $tipo = $data["tipo"] ?? '';
-            $etapas = $data["etapas"] ?? [];
-            
-            if (empty($id)) {
+            if (empty($data['id'])) {
                 throw new Exception("ID da produção não informado");
             }
             
-            if (empty($tipo)) {
+            if (empty($data['tipo'])) {
                 throw new Exception("Tipo de produção não informado");
             }
         
@@ -150,7 +175,7 @@ try {
             try {
                 // 1. Atualiza o nome da produção
                 $sqlProducao = "UPDATE Producao SET nome = ? WHERE producao_id = ?";
-                $params = array($tipo, $id);
+                $params = array($data['tipo'], $data['id']);
                 $stmtProducao = sqlsrv_query($conn, $sqlProducao, $params);
                 
                 if ($stmtProducao === false) {
@@ -161,7 +186,7 @@ try {
                 $sqlEtapasExistentes = "SELECT etapa_producao_id, ordem FROM Etapa_Producao 
                                         WHERE fk_producao = ? AND ativo = 1
                                         ORDER BY ordem";
-                $stmtEtapasExistentes = sqlsrv_query($conn, $sqlEtapasExistentes, array($id));
+                $stmtEtapasExistentes = sqlsrv_query($conn, $sqlEtapasExistentes, array($data['id']));
                 
                 if ($stmtEtapasExistentes === false) {
                     throw new Exception("Erro ao consultar etapas existentes: " . print_r(sqlsrv_errors(), true));
@@ -173,7 +198,7 @@ try {
                 }
         
                 // 3. Processa cada etapa enviada
-                foreach ($etapas as $index => $etapa) {
+                foreach ($data['etapas'] as $index => $etapa) {
                     $ordem = $index + 1;
                     
                     if (isset($etapasExistentes[$ordem])) {
@@ -200,7 +225,7 @@ try {
                         $sqlInserir = "INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente) 
                                         VALUES (?, ?, ?, ?)";
                         $paramsInserir = array(
-                            $id,
+                            $data['id'],
                             $ordem,
                             $etapa['nome'],
                             $etapa['componenteId']
@@ -217,7 +242,7 @@ try {
                 // 4. Remover etapas que não foram enviadas (se necessário)
                 if (!empty($etapasExistentes)) {
                     $idsParaRemover = implode(',', array_values($etapasExistentes));
-                    $sqlRemover = "DELETE FROM Etapa_Producao 
+                    $sqlRemover = "UPDATE Etapa_Producao SET ativo = 0 
                                     WHERE etapa_producao_id IN ($idsParaRemover)";
                     
                     $stmtRemover = sqlsrv_query($conn, $sqlRemover);
@@ -236,12 +261,10 @@ try {
                 sqlsrv_rollback($conn);
                 throw $e;
             }
-        break;
+            break;
 
         case 'excluir':
             // Processa exclusão (soft delete) de produção
-            $id = $_GET['id'] ?? 0;
-            
             if (empty($id)) {
                 throw new Exception("ID da produção não informado");
             }
@@ -286,4 +309,4 @@ try {
     http_response_code(500);
     echo json_encode(["error" => $e->getMessage()]);
 }
-?> 
+?>
