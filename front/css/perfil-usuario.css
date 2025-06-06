@@ -1,0 +1,355 @@
+/* Estilos Gerais */
+body{
+
+    background-color: rgb(236, 234, 234);
+}
+
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --text-color: #333;
+    --light-gray: #f5f5f5;
+    --medium-gray: #e0e0e0;
+    --dark-gray: #7f8c8d;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container Principal */
+.profile-container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+/* Cabeçalho */
+.profile-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.profile-header h1 {
+    color: var(--primary-color);
+    font-size: 28px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.profile-header i {
+    font-size: 32px;
+}
+
+/* Seções de Informações */
+.info-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+.info-section:hover {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+/* Linhas de Informação */
+.info-row {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--medium-gray);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.info-label {
+    width: 200px;
+    font-weight: 600;
+    color: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.info-label i {
+    width: 20px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.info-value {
+    flex: 1;
+    color: var(--text-color);
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-primary {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+}
+
+/* Ações */
+.profile-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--medium-gray);
+}
+
+.btn-editar, .btn-desativar {
+    background: #f8f9fa;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin: 0 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        font-size: 14px;
+        color: #333;
+}
+
+.btn-editar {
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-editar:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-desativar {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-desativar:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Estados de Carregamento */
+[class*="info-value"]:empty::before {
+    content: "Carregando...";
+    color: var(--dark-gray);
+    font-style: italic;
+}
+
+
+/* Container principal - estilo toolbar */
+.toolbar-container {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 5px;
+    margin: 10px 0;
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0; /* Remove gap para usar margens */
+}
+
+/* Botões no estilo toolbar */
+.toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 2px;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    margin: 2px;
+    transition: all 0.2s;
+}
+
+/* Botão principal destacado */
+.btn-primary {
+    background-color: #4e73df;
+    color: white !important;
+}
+
+/* Separador vertical */
+.toolbar-separator {
+    height: 24px;
+    width: 1px;
+    background: #ccc;
+    margin: 0 5px;
+}
+
+/* Efeitos hover */
+.toolbar-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-primary:hover {
+    background-color: #3a5bc7;
+}
+
+/* Ícones */
+.toolbar-btn i {
+    font-size: 13px;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.close-modal {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Formulário */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-actions {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.btn-salvar, .btn-cancelar {
+    padding: 8px 16px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.btn-salvar {
+    background: #4CAF50;
+    color: white;
+    border: none;
+}
+
+.btn-cancelar {
+    background: #f44336;
+    color: white;
+    border: none;
+}
+
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 15px;
+        padding: 15px;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .info-label {
+        width: 100%;
+    }
+    
+    .profile-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .btn-editar, .btn-desativar {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header h1 {
+        font-size: 24px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+    }
+    
+    .info-section {
+        padding: 15px;
+    }
+}
+
+
+
