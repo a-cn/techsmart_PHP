@@ -97,7 +97,8 @@ $body_class = 'body-background-fit background-' . substr($tipo_usuario, 0, 3);
                 "produtos",
                 "iniciar-producao",
                 "pedidos",
-                "feedbacks"
+                "feedbacks",
+                "alterar-conta"
             ];
 
             // Obtém o parâmetro e filtra

@@ -105,7 +105,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             </div>
         </div>
 
-<a href="alterar-conta.php" class="btn-editar">Alterar Dados</a>
+<a href="index.php?pg=alterar-conta" class="btn-editar">Alterar Dados</a>
 <button id="btnDesativar" class="btn btn-danger">
     <i class="fas fa-user-slash"></i> Desativar Conta
 </button>
