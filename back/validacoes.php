@@ -83,5 +83,10 @@ function buscarEndereco($cep) {
     return (isset($dados['erro'])) ? false : $dados;
 }
 
+function prettyDie($titulo, $texto) {
+    $pag_origem = $_SERVER['HTTP_REFERER'];
+    header("Location: $pag_origem&erro=$titulo,$texto");
+    exit();
+}
 
 ?>
