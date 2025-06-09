@@ -4,7 +4,7 @@
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 05/06/2025
+-- Última alteração em: 09/06/2025
 
 
 USE master; -- Acessa o banco de dados "master"
@@ -76,7 +76,7 @@ CREATE TABLE Endereco (
 	cep			VARCHAR(8)		NOT NULL,
 	logradouro	VARCHAR(150)	NOT NULL,
 	numero		INT				NOT NULL,
-	complemento	VARCHAR(100),
+	complemento	VARCHAR(100)	NULL,
 	bairro		VARCHAR(50)		NOT NULL,
 	cidade		VARCHAR(50)		NOT NULL,
 	estado		VARCHAR(50)		NOT NULL,
@@ -114,10 +114,10 @@ CREATE TABLE Usuario (
 	fk_tipo_usuario			INT				NOT NULL,
 	nome					VARCHAR(100)	NOT NULL,
 	cpf_cnpj				VARCHAR(14)		NOT NULL,
-	data_nascimento			DATE,
+	data_nascimento			DATE			NULL,
 	email					VARCHAR(50)		NOT NULL,
 	num_principal			VARCHAR(15)		NOT NULL,
-	num_recado				VARCHAR(15),
+	num_recado				VARCHAR(15)		NULL,
 	fk_endereco				INT				NOT NULL,
 	senha					VARCHAR(100)	NOT NULL,
 	fk_pergunta_seguranca	INT				NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE Fornecedor (
 	nome			VARCHAR(100)	NOT NULL,
 	cpf_cnpj		VARCHAR(14)		NOT NULL,
 	num_principal	VARCHAR(15)		NOT NULL,
-	num_secundario	VARCHAR(15),
+	num_secundario	VARCHAR(15)		NULL,
 	email			VARCHAR(50)		NOT NULL,
 	fk_endereco		INT				NOT NULL,
 	situacao		VARCHAR(15)		NOT NULL,
@@ -250,7 +250,7 @@ CREATE TABLE Pedido (
 	data_hora	DATETIME	NOT NULL,
 	fk_usuario	INT			NOT NULL,
 	valor_total	FLOAT		NOT NULL,
-	situacao	VARCHAR(50),
+	situacao	VARCHAR(50)	NULL,
 	ativo		BIT			NOT NULL	DEFAULT 1,
 	CONSTRAINT PK_Pedido
 		PRIMARY KEY CLUSTERED (pedido_id ASC),
@@ -292,7 +292,7 @@ CREATE TABLE Feedback (
 	data_hora	DATETIME		NOT NULL,
 	fk_pedido	INT				NOT NULL,
 	avaliacao	INT				NOT NULL,
-	observacao	VARCHAR(100),
+	observacao	VARCHAR(100)	NULL,
 	ativo		BIT				NOT NULL	DEFAULT 1,
 	CONSTRAINT PK_Feedback
 		PRIMARY KEY CLUSTERED (feedback_id ASC),
@@ -311,7 +311,7 @@ CREATE TABLE Movimentacao (
 	movimentacao_id		INT			NOT NULL	IDENTITY(1,1),
 	data_hora			DATETIME	NOT NULL,
 	tipo_movimentacao	VARCHAR(50)	NOT NULL,
-	fk_pedido			INT,
+	fk_pedido			INT			NULL,
 	fk_produtofinal		INT			NOT NULL,
 	quantidade			INT			NOT NULL,
 	CONSTRAINT PK_Movimentacao
@@ -356,6 +356,7 @@ GO
 CREATE TABLE Historico_Producao (
     historico_producao_id	INT			NOT NULL	IDENTITY(1,1),
     fk_producao				INT			NOT NULL,
+	quantidade_produto		INT			NOT NULL,
     data_inicio				DATETIME	NOT NULL,
     data_previsao			DATETIME	NOT NULL,
     data_conclusao			DATETIME	NULL,	-- Será nula, até que seja registrada a conclusão da última etapa da linha de produção.
