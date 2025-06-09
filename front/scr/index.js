@@ -7,7 +7,7 @@ const Erros = {
 };
 
 // Verificamos se o erro possui ',' e dividimos em Titulo e Mensagem, senão "Erro" será o Titulo e erro a Mensagem  
-let msgs = erro.split(',');
+let msgs = (erro && typeof erro === 'string') ? erro.split(',') : [];
 let Tit  = msgs[1] ? msgs[0] : "Erro";
 let Msg  = msgs[1] ? msgs[1] : msgs[0];
 

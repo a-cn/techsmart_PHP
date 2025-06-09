@@ -14,12 +14,12 @@ document.querySelectorAll('.grid-item').forEach(item => {
 
 // Lista de URLs dos vídeos
 const videoUrls = [
-    "../../imgs/Login1.mp4",
-    "../../imgs/Techno1.mp4",
-    "../../imgs/Techno2.mp4",
-    "../../imgs/Techno3.mp4",
-    "../../imgs/Techno4.mp4",
-    "../../imgs/Techno5.mp4",
+    "imgs/Login1.mp4",
+    "imgs/Techno1.mp4",
+    "imgs/Techno2.mp4",
+    "imgs/Techno3.mp4",
+    "imgs/Techno4.mp4",
+    "imgs/Techno5.mp4",
 ];
 
 // Função para obter um vídeo aleatório
