@@ -4,98 +4,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'conexao_sqlserver.php'; //Chama o arquivo de conexão com o banco de dados
     require_once 'valida_campo_obrigatorio_back.php'; //Chama a função para validar campos obrigatórios
     require_once 'validacoes.php'; //Chama a função para validar campos obrigatórios
-    
+
     /*/ IMPORTANTE: Lembrar de gravar o registro das FKs antes da PK correspondente /*/
 
+    $fornecedor_id = $_POST['fornecedor_id'] ?? null;
+
     /*/ Gravação de Endereço /*/
-    $end  = buscarEndereco($_POST['cep']);
-    $id_endereco = $_POST['endereco_id']; // campo oculto do form contendo o id do endereço
-    $logradouro  = ($end['logradouro'] !== '') ? $end['logradouro'] : die("endereço Invalido");
-    $cep         = $logradouro ? $_POST['cep'] : die("CEP invalido.");
-    $numero      = campoObrigatorio('numero', 'Número');
-    $complemento = $_POST['complemento'] ?? ''; // Pode ser vazio ou nulo
-    $bairro      = ($end['bairro'] !== '') ? $end['bairro'] : die("bairro Invalido");
-    $cidade      = ($end['localidade'] !== '') ? $end['localidade'] : die("cidade Invalido");
-   // var_dump($end); exit;
-    $estado      = ($end['estado'] !== '') ? $end['estado'] : die("estado Invalido");
+    $cep = campoObrigatorio('cep', 'CEP');
+    $logradouro = campoObrigatorio('logradouro', 'Logradouro');
+    $numero = campoObrigatorio('numero', 'Número');
+    $complemento = $_POST['complemento'] ?? null; //Pode ser nulo
+    $bairro = campoObrigatorio('bairro', 'Bairro');
+    $cidade = campoObrigatorio('cidade', 'Cidade');
+    $estado = campoObrigatorio('estado', 'Estado');
 
-// Processamento do formulário
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $cep = $_POST['cep'] ?? '';
-    
-    if (!validarCEP($cep)) {
-        $erro = "CEP inválido! Deve conter 8 dígitos.";
-    } else {
-        $endereco = buscarEndereco($cep);
-        
-        if (!$endereco) {
-            $erro = "CEP não encontrado!";
+    //Se for alteração de dados, buscar fk_endereco
+    if (!empty($fornecedor_id)) {
+        $sql_busca_endereco = "SELECT fk_endereco FROM Fornecedor WHERE fornecedor_id = ?";
+        $stmt_busca_endereco = sqlsrv_query($conn, $sql_busca_endereco, [$fornecedor_id]);
+        $row_endereco = sqlsrv_fetch_array($stmt_busca_endereco, SQLSRV_FETCH_ASSOC);
+        $fk_endereco = $row_endereco['fk_endereco'] ?? null;
+
+        if ($fk_endereco) {
+            $sql_update_endereco = "UPDATE Endereco SET
+                cep = ?, logradouro = ?, numero = ?, complemento = ?, bairro = ?, cidade = ?, estado = ?
+                WHERE endereco_id = ?";
+            $params_update = [$cep, $logradouro, $numero, $complemento, $bairro, $cidade, $estado, $fk_endereco];
+            $stmt_update_endereco = sqlsrv_query($conn, $sql_update_endereco, $params_update);
+            if (!$stmt_update_endereco) die("Erro ao atualizar endereço: " . print_r(sqlsrv_errors(), true));
+        } else {
+            die("Endereço associado ao fornecedor não encontrado.");
         }
-    }
-}
-
-    // Se $id_endereco for vazio inclui o registro, senão vai atualizar os dados do $id_endereco informado
-    if (empty($id_endereco)){
-        $sql_endereco = "INSERT INTO Endereco (cep, logradouro, numero, complemento, bairro, cidade, estado)
-                              OUTPUT INSERTED.endereco_id
-                              VALUES (?, ?, ?, ?, ?, ?, ?)";
+    } else {
+        $sql_insert_endereco = "INSERT INTO Endereco (cep, logradouro, numero, complemento, bairro, cidade, estado)
+            OUTPUT INSERTED.endereco_id VALUES (?, ?, ?, ?, ?, ?, ?)";
         $params_endereco = [$cep, $logradouro, $numero, $complemento, $bairro, $cidade, $estado];
-        $stmt_endereco = sqlsrv_query($conn, $sql_endereco, $params_endereco);
-
-        // Por causa do OUTPUT deste insert retornando o ID do endereço criado, devemos usar o sqlsrv_fetch_array
+        $stmt_endereco = sqlsrv_query($conn, $sql_insert_endereco, $params_endereco);
         if (!$stmt_endereco || !($row = sqlsrv_fetch_array($stmt_endereco, SQLSRV_FETCH_ASSOC))) {
             die("Erro ao cadastrar endereço: " . print_r(sqlsrv_errors(), true));
         }
-        // Atribui à variável $id_endereco o valor inserido
-        $id_endereco = $row['endereco_id'];
-    }    
-    else {
-        $sql_endereco = "UPDATE Endereco
-                            SET cep = ?, logradouro = ?, numero = ?, complemento = ?, bairro = ?, cidade = ?, estado = ?
-                          WHERE endereco_id = ?";
-        $params_endereco = [$cep, $logradouro, $numero, $complemento, $bairro, $cidade, $estado, $id_endereco];
-        //var_dump($_POST, $sql_endereco, $params_endereco); exit;
-        $stmt_endereco = sqlsrv_prepare($conn, $sql_endereco, $params_endereco);
-        if (!$stmt_endereco || !sqlsrv_execute($stmt_endereco)) {
-            die("Erro ao gravar endereço: " . print_r(sqlsrv_errors(), true));
-        }
+        $fk_endereco = $row['endereco_id'];
     }
-    sqlsrv_free_stmt($stmt_endereco);    
 
     /*/ Gravação de Fornecedor /*/
-    $ativo=$_POST["ativo"] == 'on' ? '1' :  '0';
-    $id=$_POST['fornecedor_id'];
-    $nome=campoObrigatorio('nome', 'Nome do Fornecedor');
-    $cpf_cnpj=validarCNPJ($_POST['cpf_cnpj'])?$_POST['cpf_cnpj']: die("CNPJ invalido.");
-    $num_principal=campoObrigatorio('num_principal', 'Telefone Principal');
-    $num_secundario=$_POST['num_secundario'];
-    $email=validarEmail($_POST['email'])?$_POST['email']:die("Email invalido.");
-    //$id_endereco=campoObrigatorio('id_endereco', 'Endereço'); 
-    $situacao=0;//$_POST["situacao"]; //campoObrigatorio('situacao', 'Situacao');
-    
-    // Se $id for vazio inclui o registro, senão vai atualizar os dados do $id informado
-    if (empty($id)) {
-        $sql="INSERT INTO Fornecedor (nome, cpf_cnpj, num_principal, num_secundario, email, fk_endereco, situacao, ativo)
-                   VALUES (?,?,?,?,?,?,?,?)";
-        $params = [$nome,$cpf_cnpj,$num_principal,$num_secundario,$email,$id_endereco,$situacao,$ativo];
-    } else {
-        $sql= "UPDATE Fornecedor
-                  SET nome = ?, cpf_cnpj = ?, num_principal = ?, num_secundario = ?, email = ?, fk_endereco = ?, situacao = ?, ativo = ?
-                WHERE fornecedor_id = ?";
-        $params = [$nome,$cpf_cnpj,$num_principal,$num_secundario,$email,$id_endereco,$situacao,$ativo,$id];
-    }
-    //var_dump($_POST,$id, $sql); exit(); // Apenas para verificar o que será gravado (Bom manter)
-    
-    $stmt = sqlsrv_prepare($conn, $sql,$params);
-    if (sqlsrv_execute($stmt)) {
-        sqlsrv_free_stmt($stmt);
-        sqlsrv_close($conn);
+    $nome = campoObrigatorio('nome', 'Razão Social ou Nome');
+    $cpf_cnpj = campoObrigatorio('cpf_cnpj', 'CNPJ ou CPF');
+    $num_principal = campoObrigatorio('num_principal', 'Número Principal para Contato');
+    $num_secundario = $_POST['num_secundario'] ?? null; //Pode ser nulo
+    $email = campoObrigatorio('email', 'E-mail');
+    $ativo = 1;
 
-        // Após gravados devemos carregar a página inicial com o parâmetro da página que chamou a gravação
-        header("Location: ../front/index.php?pg=fornecedores");
-        exit(); // Para evitar execução de código após o redirecionamento
+    /*/ INSERT se for novo registro ou UPDATE se for alteração /*/
+    if (empty($fornecedor_id)) {
+        $sql_insert = "INSERT INTO Fornecedor (
+            nome, cpf_cnpj, num_principal, num_secundario, email, fk_endereco, ativo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $params_insert = [$nome, $cpf_cnpj, $num_principal, $num_secundario, $email, $fk_endereco, $ativo];
+
+        $stmt_insert = sqlsrv_prepare($conn, $sql_insert, $params_insert);
+        if (!sqlsrv_execute($stmt_insert)) {
+            die("Erro ao inserir fornecedor: " . print_r(sqlsrv_errors(), true));
+        }
     } else {
-        die("Erro ao gravar fornecedor: " . print_r(sqlsrv_errors(), true));
-        //die(var_dump(sqlsrv_errors()));  // Bom para debug
+        $sql_update = "UPDATE Fornecedor SET
+            nome = ?, cpf_cnpj = ?, num_principal = ?, num_secundario = ?, email = ?, fk_endereco = ?, ativo = ?
+            WHERE fornecedor_id = ?";
+        $params_update = [$nome, $cpf_cnpj, $num_principal, $num_secundario, $email, $fk_endereco, $ativo, $fornecedor_id];
+
+        $stmt_update = sqlsrv_prepare($conn, $sql_update, $params_update);
+        if (!sqlsrv_execute($stmt_update)) {
+            die("Erro ao atualizar fornecedor: " . print_r(sqlsrv_errors(), true));
+        }
     }
+
+    sqlsrv_close($conn);
+    header("Location: ../front/index.php?pg=fornecedores");
+    exit();
 }
+?>

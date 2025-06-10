@@ -2,15 +2,14 @@
 require_once '../back/conexao_sqlserver.php'; //Chama o arquivo de conexão com o banco de dados
 require_once '../back/verifica_sessao.php';   //Garante que somente usuários logados possam acessar a página
 $loginTimestamp = time(); //Redefine o momento de início da sessão
-
 ?>
+
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
-<link rel="stylesheet" type="text/css" href="css/checkbox.css">
 <script src="scr/script.js"></script>
 <div>
     <div class="janela-cadastro oculta" id="divCadastroFornecedor">
-        <span class="titulo-janela">Cadastro de Fornecedores</span>
-        <form id="form-cadastro" class="form-content" action="../back/putFornecedor.php" method="POST" onsubmit="return validaFornecedor()" novalidate>
+        <span class="titulo-janela" id="form-fornecedor-titulo">Cadastro de Fornecedor</span>
+        <form id="form-cadastro" class="form-content" action="../back/putFornecedor.php" method="POST" onsubmit="return validateForm()" novalidate>
 
             <div class="form-group" style="display: none;">
                 <label>Id
@@ -20,34 +19,14 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
 
             <div class="form-row">
                 <div class="form-group">
-                    <div class="checkbox-wrapper-35">
-                        <input class="switch" type="checkbox" id="switch" name="ativo">
-                        <label for="switch">
-                            <span class="switch-x-text">Registro</span>
-                                <span class="switch-x-toggletext">
-                                <span class="switch-x-unchecked"><span class="switch-x-hiddenlabel">Unchecked: </span>Inativo</span>
-                                <span class="switch-x-checked"><span class="switch-x-hiddenlabel">Checked: </span>Ativo</span>
-                            </span>
-                        </label>
-                    </div>            
-                </div>            
-            </div>            
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label id="lbl-nome-razao_social" for="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" maxlength="100" placeholder="Digite seu nome completo" required>
+                    <label id="lbl-nome-razao_social" for="nome">Razão Social ou Nome:</label>
+                    <input type="text" id="nome" name="nome" maxlength="100" placeholder="Digite a razão social ou nome completo" required>
                 </div>
-            </div>
-            <div class="form-row">
                 <div class="form-group">
-                    <label id="lbl-cpf-cnpj" for="cpf">CNPJ:</label>
-                    <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" placeholder="Digite seu CNPJ" pattern="\d{14}" required>
+                    <label id="lbl-cpf-cnpj" for="cpf_cnpj">CNPJ ou CPF:</label>
+                    <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" placeholder="Digite o CNPJ ou CPF" pattern="\d{14}" required>
                 </div>
-            </div>
-
-            <!-- Campos de Endereço -->
-            <div class="form-row">
+                <!-- Campos de Endereço -->
                 <div class="form-group" style="display: none"><!-- Campo ocultado contendo id para localização do endereço que será enviado para gravação ao $_POST-->
                     <label for="idEnd">Id endereço:</label>
                     <input type="text" id="endereco_id" name="endereco_id" class="form-control"> <!-- Repetindo: name deverá ser o nome do campo da tabela onde é armazenado o dado -->
@@ -56,15 +35,18 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                     <label for="cep">CEP:</label>
                     <input type="text" id="cep" name="cep" placeholder="Ex.: 80000000" class="form-control"
                         maxlength="8" required>
+                    <div class="form-group" style="margin-top: -10px;">
+                        <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
+                    </div>
                 </div>
+            </div>
+            
+            <div class="form-row">
                 <div class="form-group">
                     <label for="estado">Estado:</label>
                     <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná"
                         class="form-control" required>
                 </div>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
                     <label for="cidade">Cidade:</label>
                     <input type="text" id="cidade" name="cidade" maxlength="50" placeholder="Ex.: Curitiba"
@@ -76,16 +58,12 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                         class="form-control" required>
                 </div>
             </div>
-
             <div class="form-row">
                 <div class="form-group">
                     <label for="logradouro">Logradouro:</label>
                     <input type="text" id="logradouro" name="logradouro" maxlength="150" placeholder="Ex.: Rua Itajubá"
                         class="form-control" required>
                 </div>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
                     <label for="numero">Número:</label>
                     <input type="number" id="numero" name="numero" placeholder="Digite o número do imóvel"
@@ -104,16 +82,13 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" maxlength="50" placeholder="Ex.: email@dominio.com" required>
                 </div>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label for="num_principal">Telefone Fixo:</label>
+                    <label for="num_principal">Número Principal para Contato:</label>
                     <input type="text" id="num_principal" name="num_principal" maxlength="15"
                         placeholder="Ex.: (41) 3333-3333" required>
                 </div>
                 <div class="form-group">
-                    <label for="num_secundario">Telefone Celular:</label>
+                    <label for="num_secundario">Número de Recado:</label>
                     <input type="text" id="num_secundario" name="num_secundario" maxlength="15"
                         placeholder="Ex.: (41) 99876-5432">
                 </div>
@@ -125,19 +100,19 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             </div>
         </form>
     </div>
+
     <div class="janela-consulta" id="ConsultaFornecedor">
         <span class="titulo-janela">Fornecedores Cadastrados</span>
         <table id="tabelaFornecedores">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Ativo</th>
                     <th>Nome</th>
-                    <th>CNPJ</th>
-                    <th>Fone Fixo</th>
-                    <th>Fone Celular</th>
+                    <th>CNPJ/CPF</th>
+                    <th>Fone</th>
+                    <th>Fone Recado</th>
                     <th>Email</th>
-                    <!--th>Endereço</th -->
+                    <th>Endereço</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,162 +120,155 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             </tbody>
         </table>
     </div>
+
+    <div class="janela-consulta oculta" id="ConsultaFornecedorInativos">
+        <span class="titulo-janela">Fornecedores Inativos</span>
+        <table id="tabelaFornecedoresInativos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>CNPJ/CPF</th>
+                    <th>Fone</th>
+                    <th>Fone Recado</th>
+                    <th>Email</th>
+                    <th>Endereço</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
 <script src="./scr/cadastro-fornecedor.js"></script>
+
 <!-- Este script obrigatoriamente deve ser carregado após toda a renderização da página -->
 <script>
+    const botoesAtivos = [
+        {
+            text: 'Adicionar Fornecedor',
+            action: function () {
+                limpaCadastro();
+                document.getElementById("form-fornecedor-titulo").innerText = "Cadastro de Fornecedor";
+                alternaCadastroConsulta("divCadastroFornecedor", "ConsultaFornecedor");
+            }
+        },
+        {
+            text: 'Alterar Fornecedor',
+            action: function () {
+                const data = oTable.row({ selected: true }).data();
+                if (!data) return mostrarMensagem("Aviso", "Por favor, selecione uma linha.", "alerta");
 
-    document.getElementById("cpf_cnpj").addEventListener("input", function() {
-        // Remove todos os caracteres não numéricos
-        this.value = this.value.replace(/\D/g, '');
-        
-        // Limita a 14 caracteres
-        if (this.value.length > 14) {
-            this.value = this.value.substring(0, 14);
-        }
-        
-        // Validação durante a digitação (opcional)
-        if (this.value.length === 14 && !validarCNPJ(this.value)) {
-            mostrarMensagem("Aviso","CNPJ inválido! Por favor, insira um CNPJ válido.","alerta");
+                preencherFormulario("form-cadastro", data);
+                document.getElementById("form-fornecedor-titulo").innerText = "Alterar Dados de Fornecedor";
+                alternaCadastroConsulta("divCadastroFornecedor", "ConsultaFornecedor");
+            }
+        },
+        {
+            text: 'Inativar Fornecedor',
+            action: function () {
+                const data = oTable.row({ selected: true }).data();
+                if (!data) return mostrarMensagem("Aviso", "Por favor, selecione uma linha.", "alerta");
 
-            //this.setCustomValidity("CNPJ inválido!");
-        } else {
-            //this.setCustomValidity("");
-            this.focus();
-        }
-    });
+                mostrarDialogo("Confirmar Inativação", "Deseja realmente inativar este fornecedor?", () => {
+                    fetch("../back/desativar_fornecedor.php", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fornecedor_id: data.fornecedor_id })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            mostrarMensagem("Sucesso", "Fornecedor inativado com sucesso.", "sucesso");
+                            oTable.ajax.reload();
+                        } else {
+                            mostrarMensagem("Erro", "Erro ao inativar fornecedor.", "erro");
+                        }
+                    });
+                }, null, "alerta");
+            }
+        },
+        {
+            text: 'Ver Inativos',
+            action: function () {
+                oTable.destroy();
+                document.getElementById("ConsultaFornecedor").classList.add("oculta");
+                carregarTabelaFornecedores(0);
+            }
+        },
+        'copy', 'csv', 'excel', 'pdf', 'print'
+    ];
 
-    document.getElementById("cpf_cnpj").addEventListener("blur", function() {
-        // Só valida se o campo estiver completo
-        if (this.value.length === 14 && !validarCNPJ(this.value)) {
-            // Usamos reportValidity() em vez de alert() para evitar loops
-            mostrarMensagem("Aviso","CNPJ inválido! Por favor, insira um CNPJ válido.","erro");
-            //this.setCustomValidity("CNPJ inválido! Por favor, insira um CNPJ válido.");
-            this.reportValidity();
-            this.focus(); // Mantém o foco no campo
-        } else {
-            this.setCustomValidity("");
-        }
-    });
+    const botoesInativos = [
+        {
+            text: 'Reativar Fornecedor',
+            action: function () {
+                const data = oTable.row({ selected: true }).data();
+                if (!data) return mostrarMensagem("Aviso", "Por favor, selecione uma linha.", "alerta");
 
-    document.getElementById("email").addEventListener("blur", function() {
-        let email = this.value;
-        let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                mostrarDialogo("Confirmar Reativação", "Deseja reativar este fornecedor?", () => {
+                    fetch("../back/reativar_fornecedor.php", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ fornecedor_id: data.fornecedor_id })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            mostrarMensagem("Sucesso", "Fornecedor reativado com sucesso.", "sucesso");
+                            oTable.ajax.reload();
+                        } else {
+                            mostrarMensagem("Erro", "Erro ao reativar fornecedor.", "erro");
+                        }
+                    });
+                }, null, "alerta");
+            }
+        },
+        {
+            text: 'Ver Ativos',
+            action: function () {
+                oTable.destroy();
+                document.getElementById("ConsultaFornecedorInativos").classList.add("oculta");
+                carregarTabelaFornecedores(1);
+            }
+        },
+        'copy', 'csv', 'excel', 'pdf', 'print'
+    ];
 
-        if (!regex.test(email)) {
+    let oTable;
+    function carregarTabelaFornecedores(ativo = 1) {
+        const tabelaId = ativo ? "#tabelaFornecedores" : "#tabelaFornecedoresInativos";
+        const divId = ativo ? "ConsultaFornecedor" : "ConsultaFornecedorInativos";
 
-           mostrarMensagem("Aviso","E-mail inválido! Por favor, insira um e-mail válido.","alerta");
-            this.focus(); // Retorna o foco ao campo caso esteja inválido
-        }
-    });    
+        document.getElementById(divId).classList.remove("oculta");
 
-    document.getElementById("num_principal").addEventListener("blur", function() {
-        let fone = this.value;
-        let regex = /^\(?[1-9]{2}\)?[ ]?[2-5]{1}[0-9]{3}-?[0-9]{4}$/;
-
-        if (!regex.test(fone)) {
-            mostrarMensagem("Aviso", "Telefone inválido! Por favor, insira um número válido.", "alerta");
-            this.focus(); // Retorna o foco ao campo caso esteja inválido
-        }
-    });
-
-    document.getElementById("num_secundario").addEventListener("blur", function() {
-        let fone = this.value;
-        let regex = /^\(?[1-9]{2}\)?[ ]?[8-9]{1}[0-9]{4}-?[0-9]{4}$/;
-
-        if (!regex.test(fone)) {
-            mostrarMensagem("Aviso", "Telefone inválido! Por favor, insira um número válido.", "alerta");
-            this.focus(); // Retorna o foco ao campo caso esteja inválido
-        }
-    });    
-
-    document.getElementById("cep").addEventListener("blur", function() {
-        let cep = this.value;
-        let regex = /^\d{8}$/;
-
-        if (!regex.test(cep)) {
-            mostrarMensagem("Aviso", "CEP inválido! Deve conter 8 dígitos.", "alerta");
-            //this.focus();
-            return;
-        }
-        
-        // consulata a API ViaCEP
-        fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.erro) {
-                    mostrarMensagem("Aviso", "CEP não encontrado!", "alerta");
-                    this.value('');
-                } else {
-                    document.getElementById("logradouro").value = data.logradouro;
-                    document.getElementById("bairro").value = data.bairro;
-                    document.getElementById("cidade").value = data.localidade;
-                    document.getElementById("estado").value = data.uf;
-                }
-            })
-            .catch(error => {
-                mostrarMensagem("Erro", "CEP inválido!", "erro");
-                console.error("Erro:", error);
-            });
-    });    
-
-    document.addEventListener("DOMContentLoaded", function () {
-        var oTable = new DataTable('#tabelaFornecedores', {
+        oTable = new DataTable(tabelaId, {
             ajax: {
-                url: '../back/getFornecedores.php',
+                url: `../back/getFornecedores.php?ativo=${ativo}`,
                 dataSrc: ''
             },
             columns: [
-                { data: 'fornecedor_id' },
-                { data: 'ativo', 
-                    render: function(data, type, row) {
-                        // Ícone baseado no status (ativo/inativo)
-                        const icone = row.ativo == 1 ? 
-                            '<span class="status-ativo">✔️</span>' : 
-                            '<span class="status-inativo">❌</span>';                        
-                        return `${icone}`;
-                    }                    
-                },
-                { data: 'nome' },
-                { data: 'cpf_cnpj' },
-                { data: 'num_principal' },
-                { data: 'num_secundario' },
-                { data: 'email' }
-                //{ data: 'fk_endereco' }
-            ],
-            rowCallback: function(row, data, index) {
-                if (data.ativo == 0) {
-                    $(row).addClass('inativo'); // Adiciona classe CSS
+                { data: 'fornecedor_id', name: 'fornecedor_id' },
+                { data: 'nome', name: 'nome' },
+                { data: 'cpf_cnpj', name: 'cpf_cnpj' },
+                { data: 'num_principal', name: 'num_principal' },
+                { data: 'num_secundario', name: 'num_secundario' },
+                { data: 'email', name: 'email' },
+                {
+                    data: null,
+                    render: function (data) {
+                        let complemento = data.complemento ? ` - ${data.complemento}` : '';
+                        return `${data.logradouro}, ${data.numero}${complemento} - ${data.bairro}, ${data.cidade} - ${data.estado}, ${data.cep}`;
+                    }
                 }
-            },            
+            ],
             select: true,
             language: { url: "data/datatables-pt_br.json" },
-            buttons: [
-                {
-                    text: 'Novo Fornecedor',
-                    action: function () {
-                        limpaCadastro();
-                        alternaCadastroConsulta("divCadastroFornecedor", "ConsultaFornecedor");
-                    }
-                },
-                {
-                    text: 'Alterar Fornecedor',
-                    action: function () {
-                        var selectedRow = oTable.row({ selected: true }).data(); // Pega os dados diretamente do DataTables
-                        if (selectedRow) {
-                            console.log("Dados para edição:", selectedRow);
-                            preencherFormulario('form-cadastro', selectedRow);
-                            alternaCadastroConsulta("divCadastroFornecedor", "ConsultaFornecedor");
-                        } else {
-                            mostrarMensagem("Aviso","Por favor, selecione uma linha.","alerta");
-                        }
-                    }
-                },
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ],
+            buttons: ativo ? botoesAtivos : botoesInativos,
             layout: {
                 bottomStart: 'buttons'
             }
         });
-    });
+    }
+
+    carregarTabelaFornecedores(1);
 </script>
