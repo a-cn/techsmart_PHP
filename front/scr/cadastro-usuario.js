@@ -19,7 +19,7 @@ function toggleCPFCNPJ() {
     }
 }
 
-//Restringe entrada a apenas números para CPF/CNPF
+//Restringe entrada a apenas números para CPF/CNPJ
 document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
     e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
 });

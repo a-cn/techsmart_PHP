@@ -1,5 +1,6 @@
 <?php
-require_once 'conexao_sqlserver.php'; // Conecte ao banco
+require_once 'verifica_sessao.php'; //Colocado em todos os arquivos de processamento e recebimento de dados, exceto arquivos públicos ou em que a sessão não é necessária
+require_once 'conexao_sqlserver.php'; //Chama o arquivo de conexão com o banco de dados
 
 $ativo = isset($_GET['ativo']) ? intval($_GET['ativo']) : 1;
 
@@ -40,7 +41,7 @@ sqlsrv_free_stmt($stmt);
 sqlsrv_close($conn);
 
 //var_dump($usuarios); exit;  
-// Retorna JSON
+//Retorna JSON
 header('Content-Type: application/json');
 echo json_encode($usuarios);
 ?>

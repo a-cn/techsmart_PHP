@@ -1,5 +1,6 @@
 <?php
 require_once 'conexao_sqlserver.php';
+require_once 'verifica_sessao.php';
 
 //Lê o corpo JSON da requisição
 $input = json_decode(file_get_contents("php://input"), true);

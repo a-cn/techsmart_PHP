@@ -405,7 +405,7 @@ if ($result) {
                 }
             },
             {
-                text: 'Ver Ativos', //Ao clicar em "Ver Inativos", a tabela será reconstruída para comportar os botoesAtivos
+                text: 'Ver Ativos', //Ao clicar em "Ver Ativos", a tabela será reconstruída para comportar os botoesAtivos
                 action: function () {
                     oTable.destroy();
                     oTable = new DataTable('#tabelaUsuarios', {

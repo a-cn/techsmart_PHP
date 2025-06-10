@@ -4,7 +4,7 @@
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 09/06/2025
+-- Última alteração em: 10/06/2025
 
 
 USE master; -- Acessa o banco de dados "master"
@@ -153,7 +153,6 @@ CREATE TABLE Fornecedor (
 	num_secundario	VARCHAR(15)		NULL,
 	email			VARCHAR(50)		NOT NULL,
 	fk_endereco		INT				NOT NULL,
-	situacao		VARCHAR(15)		NOT NULL,
 	ativo			BIT				NOT NULL	DEFAULT 1,
 	CONSTRAINT PK_Fornecedor
 		PRIMARY KEY CLUSTERED (fornecedor_id ASC),
