@@ -149,8 +149,8 @@ if ($result) {
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="num_celular">Número de Celular:</label>
-                    <input type="text" id="num_celular" name="num_celular" maxlength="15" placeholder="Ex.: (41) 99876-5432" required>
+                    <label for="num_principal">Número Principal para Contato:</label>
+                    <input type="text" id="num_principal" name="num_principal" maxlength="15" placeholder="Ex.: (41) 99876-5432" required>
                 </div>
                 <div class="form-group">
                     <label for="num_recado">Número de Recado:</label>

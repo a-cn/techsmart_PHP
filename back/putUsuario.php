@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    $num_celular = campoObrigatorio('num_principal', 'Número de Celular');
+    $num_principal = campoObrigatorio('num_principal', 'Número Principal para Contato');
     $num_recado = !empty($_POST['num_recado']) ? $_POST['num_recado'] : null;
     $senha = $_POST['senha'] ?? null;
     $confirmSenha = $_POST['confirmSenha'] ?? null;
@@ -143,7 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $params_usuario = [
             $fk_tipo_usuario, $nome, $cpf_cnpj, $data_nasc, $email,
-            $num_celular, $num_recado, $fk_endereco,
+            $num_principal, $num_recado, $fk_endereco,
             $senha_hash, $ativo
         ];
     } else {
@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $params_usuario = [
             $fk_tipo_usuario, $nome, $cpf_cnpj, $data_nasc, $email,
-            $num_celular, $num_recado, $fk_endereco, $ativo
+            $num_principal, $num_recado, $fk_endereco, $ativo
         ];
 
         if (!empty($senha_hash)) {

@@ -102,7 +102,7 @@ function validateForm() {
         { id: "numero", nome: "Número do Imóvel" },
         { id: "email", nome: "Email" },
         { id: "confirmEmail", nome: "Confirmação de Email" },
-        { id: "num_celular", nome: "Número de Celular" }
+        { id: "num_principal", nome: "Número Principal para Contato" }
     ];
     
     for (let campo of camposComuns) {

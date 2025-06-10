@@ -48,7 +48,7 @@ if ($row_email && $row_email['total'] > 0) {
     exit;
 }
 //Coleta os demais dados do usuário
-$num_celular   = campoObrigatorio('num_celular', 'Número de Celular');
+$num_principal = campoObrigatorio('num_principal', 'Número Principal para Contato');
 $num_recado    = isset($_POST['num_recado']) && $_POST['num_recado'] !== '' ? $_POST['num_recado'] : null; //Pode ser nulo
 $senha         = campoObrigatorio('senha', 'Senha');
 $confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
@@ -107,7 +107,7 @@ $sql_usuario = "INSERT INTO Usuario (
 
 $params_usuario = [
     $fk_tipo_usuario, $nome, $cpf_cnpj, $data_nasc, $email,
-    $num_celular, $num_recado, $fk_endereco,
+    $num_principal, $num_recado, $fk_endereco,
     $senha_hash, $fk_pergunta, $resposta_hash, $ativo
 ];
 

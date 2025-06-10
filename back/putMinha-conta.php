@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cpf_cnpj        = campoObrigatorio('cpf_cnpj', 'CPF / CNPJ');
     $email           = campoObrigatorio('email', 'Email');
     //$confirmEmail  = campoObrigatorio('confirmEmail', 'Confirmação de Email');
-    $num_celular     = campoObrigatorio('num_principal', 'Número de Celular');
+    $num_principal   = campoObrigatorio('num_principal', 'Número Principal para Contato');
     $num_recado      = $_POST['num_recado'] ?? ''; //Pode ser nulo/vazio
     //$senha         = campoObrigatorio('senha', 'Senha');
     //$confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
@@ -78,11 +78,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ,[num_recado] = ?
                     ,[fk_endereco] = ?
                     ,[ativo] = ?
-              WHERE usuario_id = ?";
+                WHERE usuario_id = ?";
 
     $params_usuario = [
         $fk_tipo_usuario, $nome, $cpf_cnpj, $data_nasc, $email,
-        $num_celular, $num_recado, $id_endereco,
+        $num_principal, $num_recado, $id_endereco,
         $ativo, $usuario_id 
     ]; 
     //var_dump($_POST, $sql, $params_usuario); exit; // Apenas para verificar o que será gravado (Bom manter)
