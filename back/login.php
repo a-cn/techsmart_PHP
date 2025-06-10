@@ -40,10 +40,11 @@ if (!empty($_POST)){
 			/*/ Redireciona para a página principal /*/
 			header("location: ../front/index.php"); 			
 			exit;
+		} else {
+			//Retorna para a página de Login com uma flag de erro
+			header("Location: ../index.html?erro=login");
+			exit;
 		}
 	}
 }
-//Retorna para a página de Login com uma flag de erro
-header("Location: ../index.html?erro=login");
-exit;
 ?>

@@ -119,9 +119,9 @@ CREATE TABLE Usuario (
 	num_principal			VARCHAR(15)		NOT NULL,
 	num_recado				VARCHAR(15)		NULL,
 	fk_endereco				INT				NOT NULL,
-	senha					VARCHAR(100)	NOT NULL,
-	fk_pergunta_seguranca	INT				NOT NULL,
-	resposta_seguranca		VARCHAR(100)	NOT NULL,
+	senha					VARCHAR(255)	NOT NULL,
+	fk_pergunta_seguranca	INT				NULL,
+	resposta_seguranca		VARCHAR(100)	NULL,
 	ativo					BIT				NOT NULL	DEFAULT 1,	-- Novos registros estarão com "ativo = 1" (ativo por padrão). Para desativar o registro, deverá ser "ativo = 0"
 	CONSTRAINT PK_Usuario
 		PRIMARY KEY CLUSTERED (usuario_id ASC),
@@ -136,7 +136,8 @@ CREATE TABLE Usuario (
 	CONSTRAINT FK_Usuario_Pergunta_Seguranca
 		FOREIGN KEY (fk_pergunta_seguranca) REFERENCES Pergunta_Seguranca (pergunta_seguranca_id)
 		ON DELETE NO ACTION
-		ON UPDATE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT UQ_Usuario_Email UNIQUE (email)
 );
 GO
 

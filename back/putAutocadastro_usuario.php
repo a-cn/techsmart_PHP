@@ -9,17 +9,70 @@ define('TIPO_CLIENTE', 3); //O número é referente ao id do Cliente na tabela T
 define('TIPO_COLABORADOR', 2); //O número é referente ao id do Colaborador na tabela Tipo_Usuario
 
 //Verifica o tipo de pessoa que está sendo cadastrada (CPF ou CNPJ)
-// $tipo_pessoa = $_POST['tipo_pessoa'] ?? null;
 $tipo_pessoa = ($_POST['tipo_pessoa']==null) ? null : $_POST['tipo_pessoa'];
 if (!in_array($tipo_pessoa, ['cpf', 'cnpj'])) {
     die("Tipo de pessoa inválido.");
 }
-// var_dump($_POST); exit;
 
 //Determina o tipo de usuário que está logado (se houver)
-// $tipo_usuario_logado = ($_SESSION['tipo_usuario']) ?? null;
 $tipo_usuario_logado = ($_SESSION['tipo_usuario']) ? $_SESSION['tipo_usuario'] : null;
 $fk_tipo_usuario = ($tipo_usuario_logado === 'administrador') ? TIPO_COLABORADOR : TIPO_CLIENTE;
+
+//Coleta dados do USUÁRIO
+if ($tipo_pessoa === 'cpf') { //CPF
+    $nome = campoObrigatorio('nome', 'Nome');
+    $cpf_cnpj = campoObrigatorio('cpf', 'CPF');
+    $data_nasc = campoObrigatorio('data_nascimento', 'Data de Nascimento');
+
+    if ($data_nasc > date('Y-m-d')) {
+        die("Data de nascimento inválida: não pode ser futura.");
+    }
+
+} else { //CNPJ
+    $nome = campoObrigatorio('razao_social', 'Razão Social');
+    $cpf_cnpj = campoObrigatorio('cnpj', 'CNPJ');
+    $data_nasc = null;
+}
+
+$email         = campoObrigatorio('email', 'Email');
+$confirmEmail  = campoObrigatorio('confirmEmail', 'Confirmação de Email');
+//Verifica se o e-mail já existe na tabela Usuario
+$sql_verifica_email = "SELECT COUNT(*) AS total FROM Usuario WHERE email = ?";
+$stmt_verifica_email = sqlsrv_query($conn, $sql_verifica_email, array($email));
+if (!$stmt_verifica_email) {
+    die("Erro ao verificar e-mail existente: " . print_r(sqlsrv_errors(), true));
+}
+$row_email = sqlsrv_fetch_array($stmt_verifica_email, SQLSRV_FETCH_ASSOC);
+if ($row_email && $row_email['total'] > 0) {
+    echo "<script>alert('Já existe um cadastro com este e-mail. Por favor, utilize outro.'); history.back();</script>";
+    exit;
+}
+//Coleta os demais dados do usuário
+$num_celular   = campoObrigatorio('num_celular', 'Número de Celular');
+$num_recado    = isset($_POST['num_recado']) && $_POST['num_recado'] !== '' ? $_POST['num_recado'] : null; //Pode ser nulo
+$senha         = campoObrigatorio('senha', 'Senha');
+$confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
+$fk_pergunta   = campoObrigatorio('securityQuestion', 'Pergunta de Segurança');
+$resposta      = campoObrigatorio('securityAnswer', 'Resposta de Segurança');
+$ativo = 1;
+
+//Verificação extra para e-mail e senha
+if ($email !== $confirmEmail) {
+    die("Os emails não coincidem.");
+}
+if ($senha !== $confirmSenha) {
+    die("As senhas não coincidem.");
+}
+
+//Regras de senha (igual ao JS)
+$regexSenha = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{9,}$/';
+if (!preg_match($regexSenha, $senha)) {
+    die("A senha deve ter no mínimo 9 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial.");
+}
+
+//Criptografa a senha e a resposta de segurança do usuário
+$senha_hash = password_hash($senha, PASSWORD_DEFAULT); //Gera um hash seguro e recomendado para senhas. Usa o algoritmo bcrypt (ou argon2 em versões mais recentes do PHP).
+$resposta_hash = hash('sha256', $resposta); //Gera um hash fixo usando o algoritmo SHA-256.
 
 //Coleta os dados de ENDEREÇO
 $cep         = campoObrigatorio('cep', 'CEP');
@@ -44,50 +97,6 @@ if (!$stmt_endereco || !($row = sqlsrv_fetch_array($stmt_endereco, SQLSRV_FETCH_
 }
 //Atribui à variável $fk_endereco o valor da coluna endereco_id da linha encontrada
 $fk_endereco = $row['endereco_id'];
-
-//Coleta dados do USUÁRIO
-if ($tipo_pessoa === 'cpf') { //CPF
-    $nome = campoObrigatorio('nome', 'Nome');
-    $cpf_cnpj = campoObrigatorio('cpf', 'CPF');
-    $data_nasc = campoObrigatorio('data_nascimento', 'Data de Nascimento');
-
-    if ($data_nasc > date('Y-m-d')) {
-        die("Data de nascimento inválida: não pode ser futura.");
-    }
-
-} else { //CNPJ
-    $nome = campoObrigatorio('razao_social', 'Razão Social');
-    $cpf_cnpj = campoObrigatorio('cnpj', 'CNPJ');
-    $data_nasc = null;
-}
-
-$email         = campoObrigatorio('email', 'Email');
-$confirmEmail  = campoObrigatorio('confirmEmail', 'Confirmação de Email');
-$num_celular   = campoObrigatorio('num_celular', 'Número de Celular');
-$num_recado = isset($_POST['num_recado']) && $_POST['num_recado'] !== '' ? $_POST['num_recado'] : null; //Pode ser nulo
-$senha         = campoObrigatorio('senha', 'Senha');
-$confirmSenha  = campoObrigatorio('confirmSenha', 'Confirmação de Senha');
-$fk_pergunta   = campoObrigatorio('securityQuestion', 'Pergunta de Segurança');
-$resposta      = campoObrigatorio('securityAnswer', 'Resposta de Segurança');
-$ativo = 1;
-
-//Verificação extra para e-mail e senha
-if ($email !== $confirmEmail) {
-    die("Os emails não coincidem.");
-}
-if ($senha !== $confirmSenha) {
-    die("As senhas não coincidem.");
-}
-
-//Regras de senha (igual ao JS)
-$regexSenha = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{9,}$/';
-if (!preg_match($regexSenha, $senha)) {
-    die("A senha deve ter no mínimo 9 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial.");
-}
-
-//Criptografa a senha e a resposta de segurança do usuário
-$senha_hash = password_hash($senha, PASSWORD_DEFAULT); //Gera um hash seguro e recomendado para senhas. Usa o algoritmo bcrypt (ou argon2 em versões mais recentes do PHP).
-$resposta_hash = hash('sha256', $resposta); //Gera um hash fixo usando o algoritmo SHA-256.
 
 //Query para inserir o usuário no banco de dados
 $sql_usuario = "INSERT INTO Usuario (

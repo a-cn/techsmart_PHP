@@ -26,6 +26,7 @@ if ($result) {
 ?>
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
 <script src="scr/script.js"></script>
+<script src="scr/cadastro-usuario.js"></script>
 <div>
     <div class="janela-cadastro oculta" id="divCadastroUsuario">
         <span class="titulo-janela" id="form-usr-titulo">Cadastro de Usuário</span>
@@ -146,7 +147,7 @@ if ($result) {
                 </div>
                 <div class="form-group">
                     <label for="confirmEmail">Confirmar Email:</label>
-                    <input type="email" id="confirmEmail" name="email" maxlength="50" placeholder="Confirme o email"
+                    <input type="email" id="confirmEmail" name="confirmEmail" maxlength="50" placeholder="Confirme o email"
                         required>
                 </div>
             </div>
@@ -172,7 +173,7 @@ if ($result) {
                 </div>
                 <div class="form-group">
                     <label for="confirmSenha">Confirmar Senha:</label>
-                    <input type="password" id="confirmSenha" name="senha" maxlength="15"
+                    <input type="password" id="confirmSenha" name="confirmSenha" maxlength="15"
                         placeholder="Confirme sua senha" required>
                 </div>
             </div>
