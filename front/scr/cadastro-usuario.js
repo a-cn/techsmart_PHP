@@ -89,7 +89,7 @@ function validateForm() {
 
     const nascimento = document.getElementById("data_nascimento").value;
     if (!nascimento && tipoPessoa.value === "cpf") {
-        mostrarMensagem('Aviso', 'O Campo Data de Nascimento é obrigatório.', 'alerta');
+        mostrarMensagem('Aviso', 'O campo Data de Nascimento é obrigatório.', 'alerta');
         return false;
     }
 

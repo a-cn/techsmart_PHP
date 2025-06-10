@@ -22,11 +22,10 @@ if ($result) {
         $tipoUsuarios[] = $row;
     }
 }
-
 ?>
+
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
 <script src="scr/script.js"></script>
-<script src="scr/cadastro-usuario.js"></script>
 <div>
     <div class="janela-cadastro oculta" id="divCadastroUsuario">
         <span class="titulo-janela" id="form-usr-titulo">Cadastro de Usuário</span>
@@ -247,6 +246,7 @@ if ($result) {
     </div>
 </div>
 <script src="./scr/cadastro-usuario.js"></script>
+
 <!-- Este script obrigatoriamente deve ser carregado após toda a renderização da página -->
 <script>
     function marcarCheckboxCPFCNPJ(cpf_cnpj) {

@@ -15,7 +15,6 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
     <link rel="stylesheet" type="text/css" href="css/janelas.css">  
 </head>
 <body>
-
     <div class="profile-container">
         <div class="profile-header">
             <h1><i class="fas fa-user-circle"></i> Minha Conta</h1>
@@ -221,69 +220,46 @@ function showError(message) {
     document.body.appendChild(errorDiv);
 }
 
-document.getElementById('btnDesativar').addEventListener('click', async function() {
-    const btn = this;
-    const feedbackEl = document.getElementById('feedback-message');
-    
-    if (!confirm('Tem certeza que deseja desativar sua conta?')) return;
-    
-    try {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
-        
-        // Obtenha o ID do usuário corretamente (adaptar conforme sua aplicação)
-        const usuarioId = obterIdUsuarioLogado(); 
-        
-        const response = await fetch('../back/arquivar_usuario.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ usuario_id: usuarioId })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (!data.sucesso) {
-            throw new Error(data.message);
-        }
-        
-        feedbackEl.textContent = data.message;
-        feedbackEl.className = 'alert alert-success';
-        feedbackEl.style.display = 'block';
-        
-        // Redirecionar após 2 segundos
-        setTimeout(() => {
-            window.location.href = 'logout.php';
-        }, 2000);
-        
-    } catch (error) {
-        console.error('Erro:', error);
-        feedbackEl.textContent = error.message || 'Erro ao desativar conta';
-        feedbackEl.className = 'alert alert-danger';
-        feedbackEl.style.display = 'block';
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-user-slash"></i> Desativar Conta';
-    }
+document.getElementById('btnDesativar').addEventListener('click', function () {
+    mostrarDialogo(
+        "Desativação da Conta",
+        "Tem certeza de que deseja desativar a sua conta?",
+        async () => {
+            const btn = document.getElementById('btnDesativar');
+            const feedbackEl = document.getElementById('feedback-message');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+
+            try {
+                const response = await fetch('../back/arquivar_proprio_usuario.php', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    mostrarMensagem("Sucesso", "Sua conta foi desativada com sucesso.", "sucesso");
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 2000);
+                } else {
+                    mostrarMensagem("Erro", data.message || "Erro ao desativar a conta.", "erro");
+                }
+            } catch (error) {
+                mostrarMensagem("Erro", error.message || "Erro ao desativar a conta.", "erro");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-slash"></i> Desativar Conta';
+            }
+        },
+        () => {
+            console.log("Usuário cancelou a desativação da conta.");
+        },
+        "alerta"
+    );
 });
-
-// Função de exemplo - implemente conforme sua aplicação
-function obterIdUsuarioLogado() {
-    // Pode ser obtido de:
-    // 1. Variável global
-    // 2. Atributo data-* no HTML
-    // 3. Cookie/sessão
-    // Exemplo básico:
-    return document.body.getAttribute('data-user-id') || 0;
-}
 </script>
-
-</style>
-
 </body>
 </html>

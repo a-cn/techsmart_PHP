@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //$fk_tipo_usuario = ($tipo_usuario_logado === 'administrador') ? TIPO_COLABORADOR : TIPO_CLIENTE;
 
     $usuario_id    = $_POST['usuario_id']; //Identificador (caso seja edição)
+
     $tipo_pessoa   = campoObrigatorio('tipo_pessoa', 'Tipo de pessoa');
     if (!in_array($tipo_pessoa, ['cpf', 'cnpj'])){
         echo "<script>
@@ -56,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $row_email = sqlsrv_fetch_array($stmt_verifica_email, SQLSRV_FETCH_ASSOC);
     if ($row_email && $row_email['total'] > 0) {
         echo "<script>
-                alert('Já existe um cadastro com este e-mail. Por favor, utilize outro.');
+                alert('E-mail já cadastrado. Por favor, utilize outro endereço.');
                 history.back();
             </script>";
         exit;
@@ -72,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     //Verifica campos sensíveis só se foram preenchidos
     $senha_hash = null;
-    $resposta_hash = null;
+    //$resposta_hash = null;
 
     if (!empty($senha)) {
         if ($senha !== $confirmSenha){

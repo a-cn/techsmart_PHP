@@ -23,49 +23,40 @@ if ($result) {
         $tipoUsuarios[] = $row;
     }
 }
-function varPHPtoJS($nomeVar, $valorVar){
-    $json = json_encode($valorVar, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    echo "<script>let $nomeVar = $json;</script>";
-}
-
-$usuario = [];
-$email = $_SESSION['email'];
-//$sql = "SELECT * FROM [dbo].[Usuario]";
-// Consulta SQL
-$sql = "    SELECT u.[usuario_id],
-		           u.[fk_tipo_usuario],
-		           u.[nome],
-		           u.[cpf_cnpj],
-		           u.[data_nascimento],
-		           u.[email],
-                   u.[num_principal],
-                   u.[num_recado],
-                   u.[senha],
-                   u.[fk_pergunta_seguranca],
-                   u.[resposta_seguranca],
-                   u.[ativo],
-                   e.*
-     	      FROM [Usuario] AS u
-        INNER JOIN [Endereco] AS e ON u.fk_endereco = e.endereco_id
-        WHERE [email] = '$email'";
-$result = sqlsrv_query($conn, $sql);
-if ($result === false) {
-    die(print_r(sqlsrv_errors(), true));
-}
-if ($result) {
-    while ($row = sqlsrv_fetch_array($result, SQLSRV_FETCH_ASSOC)) {
-        $usuario[] = $row;
-    }
-    varPHPtoJS('usuario',$usuario);
-}
-
 ?>
+
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
 <script src="scr/script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const response = await fetch('../back/dados_usuario.php', { credentials: 'include' });
+        const data = await response.json();
+        if (data.status === 'success') {
+            const user = data.data;
+
+            //Preenche os campos com os dados do usuário logado
+            document.getElementById('nome').value = user.nome || '';
+            document.getElementById('cpf_cnpj').value = user['cpf-cnpj'] || '';
+            document.getElementById('data_nascimento').value = user.data_nascimento || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('confirmEmail').value = user.email || '';
+            document.getElementById('num_principal').value = user['num-principal'] || '';
+            document.getElementById('num_recado').value = user['num-recado'] || '';
+            document.getElementById('cep').value = user.cep || '';
+            document.getElementById('logradouro').value = user.logradouro || '';
+            document.getElementById('numero').value = user.numero || '';
+            document.getElementById('complemento').value = user.complemento || '';
+            document.getElementById('bairro').value = user.bairro || '';
+            document.getElementById('cidade').value = user['cidade-estado']?.split('/')[0] || '';
+            document.getElementById('estado').value = user['cidade-estado']?.split('/')[1] || '';
+        }
+    });
+</script>
+
 <div>
-    <div class="janela-cadastro" id="divCadastroUsuario">
-        <span class="titulo-janela">Minha Conta</span>
-        <form id="form-cadastro" class="form-content" action="../back/putMinha-conta.php" method="POST" onsubmit="return validateForm()" novalidate>
+    <div class="janela-cadastro" id="divAlterarConta">
+        <span class="titulo-janela" id="form-usr-titulo">Alterar Dados da Conta</span>
+        <form id="form-cadastro" class="form-content" action="../back/putMinha_conta.php" method="POST" onsubmit="return validateForm()" novalidate>
 
             <!-- Seleção entre CPF e CNPJ -->
             <div class="form-row">
@@ -88,17 +79,6 @@ if ($result) {
 
             <!-- Campos para CPF -->
             <div id="cpf-fields" style="display: block;">
-                <div id="dvTipoUsuario" class="form-group">
-                    <label for="fk_tipo_usuario">Tipo de Usuário</label>
-                    <select id="fk_tipo_usuario" name="fk_tipo_usuario" class="form-control" required>
-                        <option value="">Selecione um tipo de usuário</option>
-                        <?php foreach ($tipoUsuarios as $tp):
-                            print '<option value="' . $tp['tipo_usuario_id'] . '">';
-                            print htmlspecialchars($tp['descricao']);
-                            print '</option>';
-                        endforeach; ?>
-                    </select>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label id="lbl-nome-razao_social" for="nome">Nome:</label>
@@ -134,6 +114,9 @@ if ($result) {
                     <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná"
                         class="form-control" required>
                 </div>
+            </div>
+            <div class="form-group" style="margin-top: -20px;">
+                <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
             </div>
 
             <div class="form-row">
@@ -179,7 +162,7 @@ if ($result) {
                 </div>
                 <div class="form-group">
                     <label for="confirmEmail">Confirmar Email:</label>
-                    <input type="email" id="confirmEmail" name="email" maxlength="50" placeholder="Confirme o email"
+                    <input type="email" id="confirmEmail" name="confirmEmail" maxlength="50" placeholder="Confirme o email"
                         required>
                 </div>
             </div>
@@ -197,56 +180,59 @@ if ($result) {
                 </div>
             </div>
 
-            <!--div class="form-row">
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="senha">Senha:</label>
+                    <label for="senha">Senha (opcional):</label>
                     <input type="password" id="senha" name="senha" maxlength="15" placeholder="Digite sua senha"
                         required>
                 </div>
                 <div class="form-group">
                     <label for="confirmSenha">Confirmar Senha:</label>
-                    <input type="password" id="confirmSenha" name="senha" maxlength="15"
+                    <input type="password" id="confirmSenha" name="confirmSenha" maxlength="15"
                         placeholder="Confirme sua senha" required>
                 </div>
-            </div-->
+            </div>
+            <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
+                <small style="color: #1976d2; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
+            </div>
 
             <!-- Campo para selecionar perguntas de segurança, puxando-as do banco de dados -->
-            <!--div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="securityQuestion">Escolha uma pergunta de segurança:</label>
-                        <select id="securityQuestion" name="fk_pergunta_seguranca" class="form-control" required>
-                            <option value="">Selecione uma pergunta</option>
-                            < ?php 
-                            foreach ($perguntas as $p):
-                                print '<option value="' . $p['pergunta_seguranca_id'] . '">';
-                                print htmlspecialchars($p['pergunta']);
-                                print '</option>';
-                            endforeach;
-                            ?>                        
-                        </select>
-                    </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="securityQuestion">Escolha uma pergunta de segurança (opcional):</label>
+                    <select id="securityQuestion" name="fk_pergunta_seguranca" class="form-control" required>
+                        <option value="">Selecione uma pergunta</option>
+                        <?php 
+                        foreach ($perguntas as $p):
+                            print '<option value="' . $p['pergunta_seguranca_id'] . '">';
+                            print htmlspecialchars($p['pergunta']);
+                            print '</option>';
+                        endforeach;
+                        ?>                        
+                    </select>
                 </div>
+            </div>
 
-                < !-- Resposta da pergunta -- >
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="securityAnswer">Resposta para a pergunta escolhida:</label>
-                        <input type="text" id="securityAnswer" name="resposta_seguranca" maxlength="100"
-                        placeholder="Digite sua resposta" required>
-                    </div>
+            <!-- Resposta da pergunta -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="securityAnswer">Resposta para a pergunta escolhida (opcional):</label>
+                    <input type="text" id="securityAnswer" name="resposta_seguranca" maxlength="100"
+                    placeholder="Digite sua resposta" required>
                 </div>
-                </div-->
-                <div class="form-row">
-                    <input type="submit" class="btn-cadastrar" value="Salvar">
-                    <button type="button" class="btn-pesquisar" onclick="limpaCadastroAlternaEdicao('divCadastroUsuario','divConsultaUsuarios');">Cancelar</button>
-                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="form-row">
+                <input type="submit" class="btn-cadastrar" value="Salvar">
+                <button type="button" class="btn-pesquisar" onclick="limpaCadastro(); window.location.href='index.php?pg=minha-conta';">Cancelar</button>
+            </div>
         </form>
         <!-- Mensagem de erro -->
         <div id="error-message" class="error"></div>
     </div>
-</div>
 <script src="./scr/cadastro-usuario.js"></script>
+
 <!-- Este script obrigatoriamente deve ser carregado após toda a renderização da página -->
 <script>
     function marcarCheckboxCPFCNPJ(cpf_cnpj) {
@@ -271,40 +257,4 @@ if ($result) {
         marcarCheckboxCPFCNPJ(e.target.value);
         toggleCPFCNPJ();
     });
-    document.addEventListener('DOMContentLoaded', function () {
-        if (usuario && usuario.length > 0) {
-            console.debug(usuario[0]);
-            preencherFormulario('form-cadastro', usuario[0]); // Primeiro elemento do array
-        }
-    });   
-        document.getElementById("cep").addEventListener("blur", function() {
-        let cep = this.value;
-        let regex = /^\d{8}$/;
-
-        if (!regex.test(cep)) {
-            mostrarMensagem("Aviso", "CEP inválido! Deve conter 8 dígitos.", "alerta");
-            //this.focus();
-            return;
-        }
-        
-        // consulata a API ViaCEP
-        fetch(`https://viacep.com.br/ws/${cep}/json/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.erro) {
-                    mostrarMensagem("Aviso", "CEP não encontrado!", "alerta");
-                    this.value('');
-                } else {
-                    document.getElementById("logradouro").value = data.logradouro;
-                    document.getElementById("bairro").value = data.bairro;
-                    document.getElementById("cidade").value = data.localidade;
-                    document.getElementById("estado").value = data.uf;
-                }
-            })
-            .catch(error => {
-                mostrarMensagem("Erro", "CEP inválido!", "erro");
-                console.error("Erro:", error);
-            });
-    });    
-
-</script>
+<script>
