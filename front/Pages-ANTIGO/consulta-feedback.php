@@ -9,11 +9,11 @@ require_once '../../Back/funcoes_sessao.php'; //Chama as funções salvas nesse 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../CSS/consulta-feedback.css">
-    <title>Feedbacks Registrados</title>
+    <title>Histórico de Feedbacks</title>
 </head>
 <body>
     <?php include 'sidebar-header.php'; ?> <!-- Inclui o cabeçalho e a barra de navegação -->
-    <h1>Feedbacks Registrados</h1>
+    <h1>Histórico de Feedbacks</h1>
     <table>
         <thead>
             <tr>

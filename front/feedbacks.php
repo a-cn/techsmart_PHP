@@ -9,7 +9,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
 
 <div class="janela-consulta" id="divFeedbacks">
-    <span class="titulo-janela">Feedbacks Registrados</span>
+    <span class="titulo-janela">Histórico de Feedbacks</span>
     <table id="tabelaFeedbacks">
         <thead>
             <tr>
