@@ -4,7 +4,7 @@
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 10/06/2025
+-- Última alteração em: 11/06/2025
 
 
 USE master; -- Acessa o banco de dados "master"
@@ -187,6 +187,7 @@ GO
 CREATE TABLE Producao (
 	producao_id	INT			NOT NULL	IDENTITY(1,1),
 	nome		VARCHAR(50)	NOT NULL,
+	custo		FLOAT		NOT NULL,
 	ativo		BIT			NOT NULL	DEFAULT 1,
 	CONSTRAINT PK_Producao
 		PRIMARY KEY CLUSTERED (producao_id ASC)

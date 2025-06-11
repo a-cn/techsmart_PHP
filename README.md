@@ -92,7 +92,7 @@ techsmart_PHP/
 
 ## 🗺️ Diagrama do Banco de Dados
 
-> ![Diagrama do Banco de Dados](./_doc/Diagramas/diagrama-er-2025_06_09.png)
+> ![Diagrama do Banco de Dados](./_doc/Diagramas/diagrama-er-2025_06_11.png)
 
 ---
 
