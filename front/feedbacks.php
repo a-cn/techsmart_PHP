@@ -35,7 +35,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                         const data = oTable.row({ selected: true }).data();
                         if (!data) return mostrarMensagem("Aviso", "Selecione um feedback.", "alerta");
 
-                        window.location.href = `alterar-feedback.php?pedido_id=${data.fk_pedido}`;
+                        window.location.href = `index.php?pg=alterar-feedback&pedido_id=${data.fk_pedido}`;
                     }
                 },
                 {

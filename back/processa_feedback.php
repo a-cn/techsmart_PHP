@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     //Fecha a conexão
     sqlsrv_close($conn);
 
-    echo "<script>alert('Feedback registrado com sucesso!'); window.location.href = '../Front/Pages/historico_pedidos.php';</script>";
+    echo "<script>alert('Feedback registrado com sucesso!'); window.location.href = `../front/index.php?pg=pedidos`;</script>";
     exit;
 }
 ?>

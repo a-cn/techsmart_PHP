@@ -23,23 +23,24 @@ if (!$pedido_id || !is_numeric($pedido_id)) {
     <title>Enviar Feedback</title>
 </head>
 <body>
-    <?php include 'sidebar-header.php'; ?> <!-- Inclui o cabeçalho e a barra de navegação -->
-    <header>Enviar Feedback</header>
-    <form action="../back/processa_feedback.php" method="POST">
-        <input type="hidden" name="fk_pedido" value="<?php echo htmlspecialchars($pedido_id); ?>">    <!-- Campo oculto para capturar o id do pedido e associá-lo ao fk_pedido da tabela Feedback -->
-        <label for="avaliacao">Avaliação (1 a 5):</label><br>
-        <div class="rating">
-            <input type="radio" name="avaliacao" id="star5" value="5"><label for="star5">&#9733;</label>
-            <input type="radio" name="avaliacao" id="star4" value="4"><label for="star4">&#9733;</label>
-            <input type="radio" name="avaliacao" id="star3" value="3"><label for="star3">&#9733;</label>
-            <input type="radio" name="avaliacao" id="star2" value="2"><label for="star2">&#9733;</label>
-            <input type="radio" name="avaliacao" id="star1" value="1"><label for="star1">&#9733;</label>
-        </div>
+    <div class="janela-consulta" id="divEnviarFeedback">
+        <span class="titulo-janela">Enviar Feedback</span>
+        <form action="../back/processa_feedback.php" method="POST">
+            <input type="hidden" name="fk_pedido" value="<?php echo htmlspecialchars($pedido_id); ?>">    <!-- Campo oculto para capturar o id do pedido e associá-lo ao fk_pedido da tabela Feedback -->
+            <label for="avaliacao">Avaliação (1 a 5):</label><br>
+            <div class="rating">
+                <input type="radio" name="avaliacao" id="star5" value="5"><label for="star5">&#9733;</label>
+                <input type="radio" name="avaliacao" id="star4" value="4"><label for="star4">&#9733;</label>
+                <input type="radio" name="avaliacao" id="star3" value="3"><label for="star3">&#9733;</label>
+                <input type="radio" name="avaliacao" id="star2" value="2"><label for="star2">&#9733;</label>
+                <input type="radio" name="avaliacao" id="star1" value="1"><label for="star1">&#9733;</label>
+            </div>
 
-        <label for="observacao">Observação:</label><br>
-        <textarea name="observacao" id="observacao" rows="4" cols="30"></textarea><br><br>
+            <label for="observacao">Observação:</label><br>
+            <textarea name="observacao" id="observacao" rows="4" cols="30"></textarea><br><br>
 
-        <button type="submit">Enviar</button>
-    </form>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
 </body>
 </html>

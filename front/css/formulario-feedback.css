@@ -4,7 +4,16 @@ body {
     margin: 0;
     padding: 0;
 }
-
+/*
+header {
+    color: #1e90ff;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+*/
 .container {
     text-align: center;
     background-color: #faf7f7;
@@ -13,16 +22,6 @@ body {
     height: 90%;
     width: 100%;
     border-radius: 5px;
-}
-
-header {
-    color: #1e90ff;
-    /* Cor dos títulos */
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 26px;
-    font-weight: bold;
-    margin-top: 30px;
 }
 
 form {

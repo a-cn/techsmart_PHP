@@ -149,7 +149,7 @@ if ($stmt === false) {
                             if (data.temFeedback) {
                                 window.location.href = `index.php?pg=feedbacks&pedido_id=${pedidoId}`;
                             } else {
-                                window.location.href = `formulario-feedback.php`;
+                                window.location.href = `index.php?pg=formulario-feedback&pedido_id=${pedidoId}`;
                             }
                         })
                         .catch(() => {
