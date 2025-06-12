@@ -9,7 +9,8 @@ $sql = "SELECT
             PedidoID,
             Produto,
             Componente,
-            TotalConsumido
+            TotalConsumido,
+            Custo
         FROM vw_Consumo_Componentes_Por_Pedido
         ORDER BY PedidoID, Produto, Componente";
 
@@ -28,7 +29,8 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         'pedido' => $row['PedidoID'],
         'produto' => $row['Produto'],
         'componente' => $row['Componente'],
-        'quantidade' => (int)$row['TotalConsumido']
+        'quantidade' => (int)$row['TotalConsumido'],
+        'custo' => (float)$row['Custo']
     ];
 }
 

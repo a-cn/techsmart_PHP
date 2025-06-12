@@ -90,7 +90,19 @@ if ($stmtProducao) {
         </div>
 
         <?php
-        $sql = "SELECT [produtofinal_id],[descricao],[nome],[quantidade],[valor_venda],[nivel_minimo],[nivel_maximo],[tempo_producao_dias],[ativo] FROM [dbo].[ProdutoFinal]";
+        $sql = "SELECT 
+                    pf.[produtofinal_id],
+                    pf.[descricao],
+                    pf.[nome],
+                    pf.[quantidade],
+                    p.[custo],
+                    pf.[nivel_minimo],
+                    pf.[nivel_maximo],
+                    pf.[tempo_producao_dias],
+                    pf.[ativo] 
+                FROM 
+                    [dbo].[ProdutoFinal] pf
+                    JOIN [dbo].[Producao] p ON p.producao_id = pf.fk_producao";
         $stmt = sqlsrv_query($conn, $sql, [], ["Scrollable" => 'static']);
         if ($stmt == false) {
             die(print_r(sqlsrv_errors(), false));
@@ -106,7 +118,7 @@ if ($stmtProducao) {
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Qtd Disponível</th>
-                    <th>Valor de Venda (R$)</th>
+                    <th>Custo de Produção</th>
                     <th>Nível Min.</th>
                     <th>Nível Máx.</th>
                     <th>Dias p/ Produção</th>
@@ -124,7 +136,7 @@ if ($stmtProducao) {
                     <th>Nome</th>
                     <th>Descrição</th>
                     <th>Qtd Disponível</th>
-                    <th>Valor de Venda (R$)</th>
+                    <th>Custo de Produção</th>
                     <th>Nível Min.</th>
                     <th>Nível Máx.</th>
                     <th>Dias p/ Produção</th>
@@ -257,7 +269,16 @@ if ($stmtProducao) {
                 { data: 'nome', name: 'nome' },
                 { data: 'descricao', name: 'descricao' },
                 { data: 'quantidade', name: 'quantidade' },
-                { data: 'valor_venda', name: 'valor_venda' },
+                { 
+                    data: 'custo', 
+                    name: 'custo',
+                    render: function(data, type, row) {
+                        if (type === 'display') {
+                            return 'R$ ' + parseFloat(data).toFixed(2);
+                        }
+                        return data;
+                    }
+                },
                 { data: 'nivel_minimo', name: 'nivel_minimo' },
                 { data: 'nivel_maximo', name: 'nivel_maximo' },
                 { data: 'tempo_producao_dias', name: 'tempo_producao_dias' }
@@ -280,5 +301,16 @@ if ($stmtProducao) {
             allowClear: true, // permite limpar a seleção
             width: '100%', // usa 100% da largura do container
         });
+    });
+
+    // Adiciona validação do formulário
+    document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+        const nivelMinimo = parseFloat(document.getElementById('nivel_minimo').value);
+        const nivelMaximo = parseFloat(document.getElementById('nivel_maximo').value);
+
+        if (nivelMaximo < nivelMinimo) {
+            e.preventDefault();
+            mostrarMensagem("Aviso", "O nível máximo não pode ser menor que o nível mínimo.", "alerta");
+        }
     });
 </script>

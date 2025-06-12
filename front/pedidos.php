@@ -6,37 +6,33 @@ $loginTimestamp = time(); // Mantendo controle de sessão
 
 // Processa atualizações de situação via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pedido_id'], $_POST['situacao'])) {
-    $pedido_id = $_POST['pedido_id'];
-    $situacao = $_POST['situacao'];
-    
-    try {
-        $sql = "UPDATE Pedido SET situacao = ? WHERE pedido_id = ?";
-        $params = array($situacao, $pedido_id);
-        $stmt = sqlsrv_query($conn, $sql, $params);
-        
-        if ($stmt === false) {
-            throw new Exception("Erro na atualização: " . print_r(sqlsrv_errors(), true));
-        }
-        
-        header("Content-Type: application/json");
-        echo json_encode(['success' => true]);
-        exit;
-        
-    } catch (Exception $e) {
-        error_log($e->getMessage());
-        header("HTTP/1.1 500 Internal Server Error");
-        echo json_encode(['error' => $e->getMessage()]);
-        exit;
-    }
+    // Redireciona requisições POST para um arquivo separado
+    header("Location: ../back/atualizar_pedido.php");
+    exit();
 }
 
 // Consulta para buscar pedidos ativos e filtrar somente pedidos do cliente logado, se for o caso
 $usuarioId = $_SESSION['usuario_id'];
 $tipoUsuario = $_SESSION['tipo_usuario']; //Administrador, Colaborador ou Cliente
-$sql = "SELECT p.pedido_id, p.data_hora, p.situacao, p.valor_total, u.cpf_cnpj 
-        FROM Pedido p 
-        JOIN Usuario u ON p.fk_usuario = u.usuario_id 
-        WHERE p.ativo = 1";
+$sql = "SELECT 
+            p.pedido_id, 
+            p.data_hora, 
+            p.situacao, 
+            SUM(prod.custo * ppf.quantidade_item) as custo, 
+            u.cpf_cnpj 
+        FROM 
+            Pedido p 
+            JOIN Usuario u on u.usuario_id = p.fk_usuario 
+            JOIN Pedido_ProdutoFinal ppf on ppf.fk_pedido = p.pedido_id 
+            JOIN ProdutoFinal pf on pf.produtofinal_id = ppf.fk_produtofinal
+            JOIN Producao prod on prod.producao_id = pf.fk_producao 
+        WHERE 
+            p.ativo = 1
+        GROUP BY
+            p.pedido_id, 
+            p.data_hora, 
+            p.situacao,  
+            u.cpf_cnpj ";
 $params = [];
 if ($tipoUsuario === 'cliente') {
     $sql .= " AND p.fk_usuario = ?";
@@ -61,12 +57,6 @@ if ($stmt === false) {
 <body>
     <div class="janela-consulta" id="divConsultaPedidos">
         <span class="titulo-janela">Histórico de Pedidos</span>
-        
-        <?php if (isset($_GET['success'])): ?>
-            <div class="msg-sucesso">
-                <?= $_GET['success'] === 'updated' ? "Pedido atualizado com sucesso!" : "" ?>
-            </div>
-        <?php endif; ?>
 
         <table id="tabelaPedidos">
             <thead>
@@ -75,7 +65,7 @@ if ($stmt === false) {
                     <th>CPF/CNPJ</th>
                     <th>Data/Hora</th>
                     <th>Situação</th>
-                    <th>Valor Total</th>
+                    <th>Custo Total</th>
                     <?php if (esconderSeCliente()): ?><th>Ações</th><?php endif; ?>
                 </tr>
             </thead>
@@ -86,7 +76,7 @@ if ($stmt === false) {
                     <td name="cpf_cnpj"><?= htmlspecialchars($row['cpf_cnpj']) ?></td>
                     <td name="data_hora"><?= $row['data_hora']->format('d/m/Y H:i') ?></td>
                     <td name="situacao" class="situacao-cell"><?= htmlspecialchars($row['situacao']) ?></td>
-                    <td name="valor_total">R$ <?= number_format($row['valor_total'], 2, ',', '.') ?></td>
+                    <td name="custo">R$ <?= number_format($row['custo'], 2, ',', '.') ?></td>
                     <?php if (esconderSeCliente()): ?>
                     <td class="actions">
                         <button type="button" class="btn-pesquisar" onclick="enableEdit(<?= $row['pedido_id'] ?>)">Editar</button>
@@ -100,6 +90,14 @@ if ($stmt === false) {
     </div>
 
     <script>
+    // Verifica se há mensagem de sucesso na URL e mostra alert
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('success') && urlParams.get('success') === 'updated') {
+            mostrarMensagem("Sucesso", "Pedido atualizado com sucesso!", "sucesso");
+        }
+    }
+
     // Configuração do DataTable
     var oTable = new DataTable('#tabelaPedidos', {
         select: true,
@@ -198,17 +196,22 @@ if ($stmt === false) {
         saveBtn.disabled = true;
         saveBtn.textContent = 'Salvando...';
         
-        fetch(window.location.href, {
+        fetch('../back/atualizar_pedido.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: `pedido_id=${pedidoId}&situacao=${encodeURIComponent(situacao)}`
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
-                window.location.href = window.location.pathname + '?success=updated';
+                window.location.href = '../front/index.php?pg=pedidos&success=updated';
             } else {
                 throw new Error(data.error || 'Erro ao atualizar');
             }

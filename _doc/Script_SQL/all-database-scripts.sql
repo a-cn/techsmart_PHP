@@ -122,6 +122,7 @@ CREATE TABLE Usuario (
 	senha					VARCHAR(255)	NOT NULL,
 	fk_pergunta_seguranca	INT				NULL,
 	resposta_seguranca		VARCHAR(100)	NULL,
+	data_ultimo_estado		DATETIME		NULL,
 	ativo					BIT				NOT NULL	DEFAULT 1,	-- Novos registros estarão com "ativo = 1" (ativo por padrão). Para desativar o registro, deverá ser "ativo = 0"
 	CONSTRAINT PK_Usuario
 		PRIMARY KEY CLUSTERED (usuario_id ASC),

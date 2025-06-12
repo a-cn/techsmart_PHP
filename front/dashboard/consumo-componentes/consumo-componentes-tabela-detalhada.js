@@ -15,6 +15,7 @@ export async function renderTabelaConsumoComponentes(containerId) {
                     <th>Produto</th>
                     <th>Componente</th>
                     <th>Qtde Consumida</th>
+                    <th>Custo</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -45,6 +46,7 @@ export async function renderTabelaConsumoComponentes(containerId) {
                 <td>${item.produto}</td>
                 <td>${item.componente}</td>
                 <td>${item.quantidade}</td>
+                <td>R$ ${item.custo.toFixed(2)}</td>
             `;
             tbody.appendChild(tr);
         });

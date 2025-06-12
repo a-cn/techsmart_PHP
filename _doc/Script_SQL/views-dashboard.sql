@@ -1,6 +1,6 @@
--- VIEWS (lógicas de consulta reutilizáveis) PARA RELATÓRIOS DO SISTEMA
+-- VIEWS (lï¿½gicas de consulta reutilizï¿½veis) PARA RELATï¿½RIOS DO SISTEMA
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 05/06/2025
+-- ï¿½ltima alteraï¿½ï¿½o em: 05/06/2025
 
 USE TechSmartDB;
 GO
@@ -8,11 +8,12 @@ GO
 -- ================================================================================
 -- 1) Registrar o consumo de componentes por item do pedido
 -- ================================================================================
-CREATE VIEW vw_Consumo_Componentes_Por_Pedido AS
+CREATE VIEW [dbo].[vw_Consumo_Componentes_Por_Pedido] AS
 SELECT 
     pp.fk_pedido AS PedidoID,
     pf.nome AS Produto,
     c.nome AS Componente,
+	fc.custo_componente * pp.quantidade_item AS Custo,
     SUM(pp.quantidade_item) AS QtdeProdutosPedido,
     COUNT(*) AS QtdeEtapasComponente, -- quantas vezes esse componente aparece na estrutura
     SUM(pp.quantidade_item * 1) AS TotalConsumido -- total consumido = qtd * vezes na estrutura
@@ -21,15 +22,16 @@ JOIN ProdutoFinal pf ON pf.produtofinal_id = pp.fk_produtofinal
 JOIN Producao p ON p.producao_id = pf.fk_producao
 JOIN Etapa_Producao ep ON ep.fk_producao = p.producao_id
 JOIN Componente c ON c.componente_id = ep.fk_componente
+JOIN Fornecedor_Componente fc on fc.fk_componente = c.componente_id
 WHERE pf.ativo = 1
   AND ep.ativo = 1
   AND c.ativo = 1
   AND pp.quantidade_item > 0
-GROUP BY pp.fk_pedido, pf.nome, c.nome;
+GROUP BY pp.fk_pedido, pf.nome, c.nome, fc.custo_componente, pp.quantidade_item;
 GO
 
 -- ================================================================================
--- 2) Movimentação de entrada e saída de produtos com indicador de estoque mínimo e máximo
+-- 2) Movimentaï¿½ï¿½o de entrada e saï¿½da de produtos com indicador de estoque mï¿½nimo e mï¿½ximo
 -- ================================================================================
 CREATE VIEW vw_Estoque_Produtos_Alerta AS
 SELECT 
@@ -47,7 +49,7 @@ WHERE pf.ativo = 1;
 GO
 
 -- ================================================================================
--- 3) Estoque mínimo e máximo de componentes com indicador
+-- 3) Estoque mï¿½nimo e mï¿½ximo de componentes com indicador
 -- ================================================================================
 CREATE VIEW vw_Estoque_Componentes_Alerta AS
 SELECT 
@@ -65,21 +67,21 @@ WHERE c.ativo = 1;
 GO
 
 -- ================================================================================
--- 4) Previsões de demandas futuras com base no histórico de movimentações
+-- 4) Previsï¿½es de demandas futuras com base no histï¿½rico de movimentaï¿½ï¿½es
 -- ================================================================================
 CREATE VIEW vw_Previsao_Demanda AS
 SELECT 
     FORMAT(data_hora, 'yyyy-MM') AS Mes,
     pf.nome AS Produto,
-    SUM(CASE WHEN m.tipo_movimentacao = 'Saída' THEN m.quantidade ELSE 0 END) AS Total_Saida
+    SUM(CASE WHEN m.tipo_movimentacao = 'Saï¿½da' THEN m.quantidade ELSE 0 END) AS Total_Saida
 FROM Movimentacao m
 JOIN ProdutoFinal pf ON pf.produtofinal_id = m.fk_produtofinal
-WHERE pf.ativo = 1	-- Evita considerar movimentações relacionadas a produtos descontinuados
+WHERE pf.ativo = 1	-- Evita considerar movimentaï¿½ï¿½es relacionadas a produtos descontinuados
 GROUP BY FORMAT(data_hora, 'yyyy-MM'), pf.nome;
 GO
 
 -- ================================================================================
--- 5) Relatório de produtos semiacabados VS acabados
+-- 5) Relatï¿½rio de produtos semiacabados VS acabados
 -- ================================================================================
 CREATE VIEW dbo.vw_Status_Producao_Produto AS
 SELECT
@@ -87,28 +89,28 @@ SELECT
     hp.data_previsao,
     hp.data_conclusao,
     CASE
-        -- 1. Se a produção já foi concluída na data prevista
+        -- 1. Se a produï¿½ï¿½o jï¿½ foi concluï¿½da na data prevista
         WHEN hp.data_conclusao IS NOT NULL
              AND hp.data_conclusao = hp.data_previsao
             THEN 'Acabado'
 
-        -- 2. Se já concluiu, mas passou da data prevista
+        -- 2. Se jï¿½ concluiu, mas passou da data prevista
         WHEN hp.data_conclusao IS NOT NULL
              AND hp.data_conclusao > hp.data_previsao
             THEN 'Acabado com atraso'
 
-        -- 3. Se não concluiu (data_conclusao IS NULL) e já passou da data prevista
+        -- 3. Se nï¿½o concluiu (data_conclusao IS NULL) e jï¿½ passou da data prevista
         WHEN hp.data_conclusao IS NULL
              AND hp.data_previsao < GETDATE()
-            THEN 'Produção em atraso'
+            THEN 'Produï¿½ï¿½o em atraso'
 
-        -- 4. Se não concluiu e ainda não chegou na data prevista
+        -- 4. Se nï¿½o concluiu e ainda nï¿½o chegou na data prevista
         WHEN hp.data_conclusao IS NULL
              AND hp.data_previsao >= GETDATE()
-            THEN 'Em produção'
+            THEN 'Em produï¿½ï¿½o'
 
-        -- 5. Caso contrário
-        ELSE 'Situação não definida'
+        -- 5. Caso contrï¿½rio
+        ELSE 'Situaï¿½ï¿½o nï¿½o definida'
     END AS Status,
     pf.nome AS produto_nome
 FROM
@@ -118,7 +120,7 @@ FROM
 GO
 
 -- ================================================================================
--- 6) Relatório de feedback do cliente por pedido
+-- 6) Relatï¿½rio de feedback do cliente por pedido
 -- ================================================================================
 CREATE VIEW vw_Feedback_Por_Pedido AS
 SELECT 
@@ -135,7 +137,7 @@ WHERE f.ativo = 1;
 GO
 
 -- ================================================================================
--- 7) Proporção total entre avaliações positivas, negativas e neutras
+-- 7) Proporï¿½ï¿½o total entre avaliaï¿½ï¿½es positivas, negativas e neutras
 -- ================================================================================
 CREATE VIEW vw_Resumo_Avaliacoes_Geral AS
 SELECT
@@ -149,7 +151,7 @@ WHERE f.ativo = 1;
 GO
 
 -- ================================================================================
--- 8) Proporção mensal entre avaliações positivas, negativas e neutras
+-- 8) Proporï¿½ï¿½o mensal entre avaliaï¿½ï¿½es positivas, negativas e neutras
 -- ================================================================================
 CREATE VIEW vw_Resumo_Avaliacoes_Mensal AS
 SELECT

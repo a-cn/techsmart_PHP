@@ -106,7 +106,7 @@ if ($stmtFornecedores) {
                         <th>Nome</th>
                         <th>Especificação</th>
                         <th>Fornecedor</th>
-                        <th>Custo (R$)</th>
+                        <th>Custo</th>
                         <th>Quantidade Disponível</th>
                         <th>Nível Mínimo</th>
                         <th>Nível Máximo</th>
@@ -124,7 +124,7 @@ if ($stmtFornecedores) {
                         <th>Nome</th>
                         <th>Especificação</th>
                         <th>Fornecedor</th>
-                        <th>Custo (R$)</th>
+                        <th>Custo</th>
                         <th>Quantidade Disponível</th>
                         <th>Nível Mínimo</th>
                         <th>Nível Máximo</th>
@@ -257,7 +257,16 @@ if ($stmtFornecedores) {
                 { data: 'nome', name: 'nome' },
                 { data: 'especificacao', name: 'especificacao' },
                 { data: 'fornecedor', name: 'fornecedor' },
-                { data: 'custo_componente', name: 'custo_componente' },
+                { 
+                    data: 'custo_componente', 
+                    name: 'custo_componente',
+                    render: function(data, type, row) {
+                        if (type === 'display') {
+                            return 'R$ ' + parseFloat(data).toFixed(2);
+                        }
+                        return data;
+                    }
+                },
                 { data: 'quantidade', name: 'quantidade' },
                 { data: 'nivel_minimo', name: 'nivel_minimo' },
                 { data: 'nivel_maximo', name: 'nivel_maximo' }
@@ -279,6 +288,17 @@ if ($stmtFornecedores) {
         placeholder: "Selecione o fornecedor associado",
         allowClear: true, // permite limpar a seleção
         width: '100%', // usa 100% da largura do container
+    });
+
+    // Adiciona validação do formulário
+    document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+        const nivelMinimo = parseFloat(document.getElementById('nivel_minimo').value);
+        const nivelMaximo = parseFloat(document.getElementById('nivel_maximo').value);
+
+        if (nivelMaximo < nivelMinimo) {
+            e.preventDefault();
+            mostrarMensagem("Aviso", "O nível máximo não pode ser menor que o nível mínimo.", "alerta");
+        }
     });
 });
 </script>
