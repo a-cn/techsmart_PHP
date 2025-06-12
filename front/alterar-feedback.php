@@ -40,7 +40,7 @@ if (isset($_GET['pedido_id'])) {
     <div class="janela-consulta" id="divAlterarFeedback">
         <span class="titulo-janela">Alterar Feedback</span>
 
-        <form action="../back/atualizar_feedback.php" method="POST">
+        <form id="formAlterarFeedback" action="../back/atualizar_feedback.php" method="POST">
             <input type="hidden" name="feedback_id" value="<?php echo htmlspecialchars($row['feedback_id']); ?>">
 
             <label for="avaliacao">Avaliação (1 a 5):</label><br>
@@ -61,13 +61,44 @@ if (isset($_GET['pedido_id'])) {
             <?php endif; ?>
         </form>
     </div>
+
+    <script>
+        document.getElementById('formAlterarFeedback').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('../back/atualizar_feedback.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    mostrarMensagem("Sucesso", data.mensagem, "sucesso", () => {
+                        window.location.href = 'index.php?pg=feedbacks';
+                    });
+                } else {
+                    mostrarMensagem("Erro", data.erro, "erro");
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                mostrarMensagem("Erro", "Erro ao atualizar feedback. Tente novamente.", "erro");
+            });
+        });
+    </script>
 </body>
 </html>
 
 <?php
     } else {
-        // Redireciona com um alerta
-        echo "<script>alert('Registro não encontrado.'); window.location.href = 'front/index.php?pg=feedbacks';</script>";
+        // Feedback não encontrado
+        echo "<script>
+            mostrarMensagem('Aviso', 'Registro não encontrado.', 'alerta', () => {
+                window.location.href = 'index.php?pg=feedbacks';
+            });
+        </script>";
     }
 
     if (isset($stmt) && is_resource($stmt)) {
@@ -77,6 +108,10 @@ if (isset($_GET['pedido_id'])) {
         sqlsrv_close($conn);
     }
 } else {
-    echo "Erro: Pedido não encontrado";
+    echo "<script>
+        mostrarMensagem('Erro', 'Pedido não encontrado', 'erro', () => {
+            window.location.href = 'index.php?pg=feedbacks';
+        });
+    </script>";
 }
 ?>

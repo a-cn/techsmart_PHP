@@ -1,13 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    function fecharPopup() {
+    function fecharPopup(callback) {
         const janela = document.getElementById("janela-mensagens");
         janela.style.display = "none";
         document.getElementById("overlay").style.display = "none";
+        if (typeof callback === "function") {
+            callback();
+        }
     }
 
     // Exibe mensagens simples com variação de estilo
-    window.mostrarMensagem = function (titulo, texto, tipo = "") {
+    window.mostrarMensagem = function (titulo, texto, tipo = "", callback = null) {
         const janela = document.getElementById("janela-mensagens");
 
         // Limpa classes anteriores e define o estilo base
@@ -23,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById("btn-sim").style.display = "none";
         document.getElementById("btn-nao").style.display = "none";
         document.getElementById("btn-fechar").style.display = "inline-block";
+
+        // Configura o botão fechar com o callback
+        const btnFechar = document.getElementById("btn-fechar");
+        btnFechar.onclick = () => fecharPopup(callback);
 
         // Exibe
         janela.style.display = "block";
@@ -65,7 +72,4 @@ document.addEventListener('DOMContentLoaded', () => {
         janela.style.display = "block";
         document.getElementById("overlay").style.display = "block";
     }
-
-    // Botão fechar
-    document.getElementById("btn-fechar").onclick = fecharPopup;
 });

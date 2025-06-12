@@ -1,21 +1,10 @@
 body {
-    text-align: center;
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
 }
-/*
-header {
-    color: #1e90ff;
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 26px;
-    font-weight: bold;
-    margin-top: 30px;
-}
-*/
+
 .container {
-    text-align: center;
     background-color: #faf7f7;
     margin: 0;
     padding: 15px;
@@ -35,6 +24,7 @@ form {
     font-weight: bold;
     margin-bottom: 5px;
     display: block;
+    text-align: center;
 }
 
 select,
@@ -85,4 +75,11 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* Estilo específico para os títulos dos formulários de feedback */
+#divEnviarFeedback .titulo-janela,
+#divAlterarFeedback .titulo-janela {
+    text-align: center;
+    display: block;
 }

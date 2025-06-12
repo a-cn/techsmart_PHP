@@ -44,13 +44,32 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                         const data = oTable.row({ selected: true }).data();
                         if (!data) return mostrarMensagem("Aviso", "Selecione um feedback.", "alerta");
 
-                        mostrarDialogo("Excluir Feedback", "Deseja excluir permanentemente este feedback?", () => {
+                        mostrarDialogo("Excluir Feedback", "Deseja excluir permanentemente este feedback? Você poderá enviar um novo feedback para este pedido depois.", () => {
                             const formData = new FormData();
                             formData.append("feedback_id", data.feedback_id);
                             fetch("../back/deletar_feedback.php", {
                                 method: "POST",
                                 body: formData
-                            }).then(() => oTable.ajax.reload());
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.sucesso) {
+                                    mostrarMensagem("Sucesso", data.mensagem, "sucesso", () => {
+                                        // Redireciona para o formulário de feedback se houver pedido_id
+                                        if (data.pedido_id) {
+                                            window.location.href = `index.php?pg=formulario-feedback&pedido_id=${data.pedido_id}`;
+                                        } else {
+                                            oTable.ajax.reload();
+                                        }
+                                    });
+                                } else {
+                                    mostrarMensagem("Erro", data.erro, "erro");
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro:', error);
+                                mostrarMensagem("Erro", "Erro ao excluir feedback. Tente novamente.", "erro");
+                            });
                         }, null, "alerta");
                     }
                 },

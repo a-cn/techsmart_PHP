@@ -8,7 +8,12 @@ $loginTimestamp = time(); // Mantendo controle de sessão
 $pedido_id = $_GET['pedido_id'] ?? null;
 
 if (!$pedido_id || !is_numeric($pedido_id)) {
-    die("Erro: pedido_id inválido ou não informado.");
+    echo "<script>
+        mostrarMensagem('Erro', 'ID do pedido inválido ou não informado', 'erro', () => {
+            window.location.href = 'index.php?pg=pedidos';
+        });
+    </script>";
+    exit;
 }
 ?>
 
@@ -25,8 +30,8 @@ if (!$pedido_id || !is_numeric($pedido_id)) {
 <body>
     <div class="janela-consulta" id="divEnviarFeedback">
         <span class="titulo-janela">Enviar Feedback</span>
-        <form action="../back/processa_feedback.php" method="POST">
-            <input type="hidden" name="fk_pedido" value="<?php echo htmlspecialchars($pedido_id); ?>">    <!-- Campo oculto para capturar o id do pedido e associá-lo ao fk_pedido da tabela Feedback -->
+        <form id="formEnviarFeedback" action="../back/processa_feedback.php" method="POST">
+            <input type="hidden" name="fk_pedido" value="<?php echo htmlspecialchars($pedido_id); ?>">
             <label for="avaliacao">Avaliação (1 a 5):</label><br>
             <div class="rating">
                 <input type="radio" name="avaliacao" id="star5" value="5"><label for="star5">&#9733;</label>
@@ -42,5 +47,39 @@ if (!$pedido_id || !is_numeric($pedido_id)) {
             <button type="submit">Enviar</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('formEnviarFeedback').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Verifica se uma avaliação foi selecionada
+            if (!document.querySelector('input[name="avaliacao"]:checked')) {
+                mostrarMensagem("Aviso", "Por favor, selecione uma avaliação de 1 a 5 estrelas.", "alerta");
+                return;
+            }
+            
+            const formData = new FormData(this);
+            
+            fetch('../back/processa_feedback.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.sucesso) {
+                    mostrarMensagem("Sucesso", data.mensagem, "sucesso", () => {
+                        // Redireciona para a tela de pedidos após fechar a mensagem
+                        window.location.href = 'index.php?pg=pedidos';
+                    });
+                } else {
+                    mostrarMensagem("Erro", data.erro, "erro");
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                mostrarMensagem("Erro", "Erro ao enviar feedback. Tente novamente.", "erro");
+            });
+        });
+    </script>
 </body>
 </html>

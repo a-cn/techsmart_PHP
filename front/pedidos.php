@@ -14,6 +14,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pedido_id'], $_POST['
 // Consulta para buscar pedidos ativos e filtrar somente pedidos do cliente logado, se for o caso
 $usuarioId = $_SESSION['usuario_id'];
 $tipoUsuario = $_SESSION['tipo_usuario']; //Administrador, Colaborador ou Cliente
+
+// Monta a cláusula WHERE base
+$where = "WHERE p.ativo = 1";
+$params = [];
+
+// Adiciona filtro de usuário se for cliente
+if ($tipoUsuario === 'cliente') {
+    $where .= " AND p.fk_usuario = ?";
+    $params[] = $usuarioId;
+}
+
 $sql = "SELECT 
             p.pedido_id, 
             p.data_hora, 
@@ -26,19 +37,14 @@ $sql = "SELECT
             JOIN Pedido_ProdutoFinal ppf on ppf.fk_pedido = p.pedido_id 
             JOIN ProdutoFinal pf on pf.produtofinal_id = ppf.fk_produtofinal
             JOIN Producao prod on prod.producao_id = pf.fk_producao 
-        WHERE 
-            p.ativo = 1
+        $where
         GROUP BY
             p.pedido_id, 
             p.data_hora, 
             p.situacao,  
-            u.cpf_cnpj ";
-$params = [];
-if ($tipoUsuario === 'cliente') {
-    $sql .= " AND p.fk_usuario = ?";
-    $params[] = $usuarioId;
-}
-$sql .= " ORDER BY p.data_hora DESC";
+            u.cpf_cnpj 
+        ORDER BY p.data_hora DESC";
+
 $stmt = sqlsrv_query($conn, $sql, $params);
 
 if ($stmt === false) {
@@ -211,16 +217,19 @@ if ($stmt === false) {
         })
         .then(data => {
             if (data.success) {
-                window.location.href = '../front/index.php?pg=pedidos&success=updated';
+                mostrarMensagem("Sucesso", "Pedido atualizado com sucesso!", "sucesso", () => {
+                    window.location.href = '../front/index.php?pg=pedidos';
+                });
             } else {
                 throw new Error(data.error || 'Erro ao atualizar');
             }
         })
         .catch(error => {
             console.error('Erro:', error);
-            alert('Erro ao atualizar: ' + error.message);
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Salvar';
+            mostrarMensagem("Erro", "Erro ao atualizar: " + error.message, "erro", () => {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Salvar';
+            });
         });
     }
     </script>
