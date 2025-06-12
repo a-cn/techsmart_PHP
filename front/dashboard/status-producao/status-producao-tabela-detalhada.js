@@ -34,7 +34,7 @@ export async function renderTabelaStatusProducao(containerId) {
     document.head.appendChild(styles);
 
     container.innerHTML = `
-        <h3>Status Atual da Produção de Produtos</h3>
+        <h3>Status Atual de Produções Iniciadas</h3>
         <label for="filtroStatus">Filtrar por status:</label>
         <select id="filtroStatus">
             <option value="">Todos</option>

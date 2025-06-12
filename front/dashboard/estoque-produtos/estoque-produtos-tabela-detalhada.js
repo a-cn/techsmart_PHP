@@ -87,7 +87,7 @@ export async function renderTabelaEstoqueProdutos(containerId) {
     container.appendChild(styles);
 
     container.innerHTML += `
-        <h3>Estoque Detalhado de Produtos Finais</h3>
+        <h3>Estoque Detalhado de Produtos Acabados</h3>
         <div class="filtros-container" style="margin-bottom: 20px; display: flex; gap: 20px;">
             <div class="filtro-grupo">
                 <label for="filtroProduto">Filtrar por Produto:</label>

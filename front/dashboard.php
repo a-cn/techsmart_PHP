@@ -36,29 +36,29 @@ Chart.register(ChartDataLabels);
     <div class="container mt-4">
         <!-- Abas -->
         <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#aba-avaliacoes" type="button">Avaliações</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-estoque-componentes" type="button">Estoque de Componentes</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-estoque-produtos" type="button">Estoque de Produtos</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-status-producao" type="button">Status de Produção</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-consumo-componentes" type="button">Consumo de Componentes</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-demanda-futura" type="button">Demanda de Produtos</button>
-        </li>
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#aba-status-producao" type="button">Status de Produção</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-consumo-componentes" type="button">Consumo de Componentes</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-demanda-futura" type="button">Demanda de Produtos Acabados</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-estoque-componentes" type="button">Estoque de Componentes</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-estoque-produtos" type="button">Estoque de Produtos Acabados</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#aba-avaliacoes" type="button">Avaliações</button>
+            </li>
         </ul>
 
         <div class="tab-content mt-3">
         <!-- RELATÓRIOS SOBRE FEEDBACK DO CLIENTE (AVALIAÇÕES) -->
-        <div class="tab-pane fade show active" id="aba-avaliacoes">
+        <div class="tab-pane fade" id="aba-avaliacoes">
             <!-- Gráfico de Doughnut (Avaliações) -->
             <div class="grafico-container" style="width: 35%; margin: auto;">
                 <h5 class="text-center">Distribuição Geral das Avaliações</h5>
@@ -128,9 +128,9 @@ Chart.register(ChartDataLabels);
             </div>
         </div>
 
-        <!-- RELATÓRIOS DE ESTOQUE DE PRODUTOS FINAIS -->
+        <!-- RELATÓRIOS DE ESTOQUE DE PRODUTOS ACABADOS -->
         <div class="tab-pane fade" id="aba-estoque-produtos">
-            <!-- Tabela Detalhada (Produtos Finais) -->
+            <!-- Tabela Detalhada (Produtos Acabados) -->
             <div class="grafico-container">
                 <div id="tabelaEstoqueProdutosContainer"></div>
                 <script type="module">
@@ -138,7 +138,7 @@ Chart.register(ChartDataLabels);
                     renderTabelaEstoqueProdutos('tabelaEstoqueProdutosContainer');
                 </script>
             </div>
-            <!-- Gráfico de Barras (Produtos Finais) -->
+            <!-- Gráfico de Barras (Produtos Acabados) -->
             <div class="grafico-container">
                 <canvas id="graficoTopEstoqueBaixoProdutos"></canvas>
                 <script type="module">
@@ -151,7 +151,7 @@ Chart.register(ChartDataLabels);
                     <span style="background-color:rgba(255, 206, 86, 0.6);padding:5px 10px;border-radius:4px;">Estoque Alto</span>
                 </div>
             </div>
-            <!-- Gráfico de Pizza (Produtos Finais) -->
+            <!-- Gráfico de Pizza (Produtos Acabados) -->
             <div class="grafico-container" style="width: 50%; margin: 2rem auto; display: flex; flex-direction: column; align-items: center;">
                 <canvas id="graficoPizzaEstoqueProdutos"></canvas>
                 <script type="module">
@@ -171,7 +171,7 @@ Chart.register(ChartDataLabels);
         </div>
 
         <!-- RELATÓRIOS DE STATUS DA PRODUÇÃO -->
-        <div class="tab-pane fade" id="aba-status-producao">
+        <div class="tab-pane fade show active" id="aba-status-producao">
             <!-- Tabela Detalhada de Status de Produção -->
             <div class="grafico-container">
                 <div id="tabelaStatusProducaoContainer"></div>

@@ -3,7 +3,7 @@
 export async function renderPrevisaoDemanda(containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = `
-        <h3>Demanda por Produto</h3>
+        <h3>Demanda por Produto Acabado</h3>
         <div class="filtros">
             <label for="filtroAno">Filtrar por Ano:</label>
             <select id="filtroAno">
