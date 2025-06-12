@@ -10,7 +10,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minha Conta</title>
-    <link rel="stylesheet" type="text/css"href="css/perfil-usuario.css">
+    <link rel="stylesheet" type="text/css" href="css/perfil-usuario.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="css/janelas.css">  
 </head>
@@ -104,7 +104,9 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             </div>
         </div>
 
-<a href="index.php?pg=alterar-conta" class="btn-editar">Alterar Dados</a>
+<a href="index.php?pg=alterar-conta" class="btn btn-primary">
+    <i class="fas fa-edit"></i> Alterar Dados
+</a>
 <button id="btnDesativar" class="btn btn-danger">
     <i class="fas fa-user-slash"></i> Desativar Conta
 </button>
