@@ -67,6 +67,7 @@ if ($result) {
                     <div class="form-group">
                         <label id="lbl-nome-razao_social" for="nome">Nome:</label>
                         <input type="text" id="nome" name="nome" maxlength="100" placeholder="Digite seu nome completo" required>
+                        <input type="hidden" id="razao_social" name="razao_social">
                     </div>
                 </div>
                 <div class="form-row">

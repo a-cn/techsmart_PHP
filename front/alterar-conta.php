@@ -33,10 +33,12 @@ if ($result) {
         const data = await response.json();
         if (data.status === 'success') {
             const user = data.data;
+            console.log('Dados recebidos do backend:', user);
 
             //Preenche os campos com os dados do usuário logado
             document.getElementById('nome').value = user.nome || '';
             document.getElementById('cpf_cnpj').value = user['cpf-cnpj'] || '';
+            marcarCheckboxCPFCNPJ(user['cpf-cnpj'] || ''); // Marca o tipo de documento
             document.getElementById('data_nascimento').value = user.data_nascimento || '';
             document.getElementById('email').value = user.email || '';
             document.getElementById('confirmEmail').value = user.email || '';
@@ -83,6 +85,7 @@ if ($result) {
                     <div class="form-group">
                         <label id="lbl-nome-razao_social" for="nome">Nome:</label>
                         <input type="text" id="nome" name="nome" maxlength="100" placeholder="Digite seu nome completo" required>
+                        <input type="hidden" id="razao_social" name="razao_social">
                     </div>
                 </div>
                 <div class="form-row">
@@ -257,4 +260,4 @@ if ($result) {
         marcarCheckboxCPFCNPJ(e.target.value);
         toggleCPFCNPJ();
     });
-<script>
+</script>

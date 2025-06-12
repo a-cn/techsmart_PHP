@@ -5,6 +5,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'valida_campo_obrigatorio_back.php'; //Chama a função para validar campos obrigatórios
     require_once 'validacoes.php'; //Chama a função para validar campos obrigatórios
 
+    // Debug dos dados recebidos
+    error_log("Dados POST recebidos: " . print_r($_POST, true));
+
     $usuario_id = $_SESSION['usuario_id']; //Somente o próprio usuário poderá alterar dados da conta
 
     $tipo_pessoa = campoObrigatorio('tipo_pessoa', 'Tipo de pessoa');
@@ -23,7 +26,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
     } else { //CNPJ
-        $nome = campoObrigatorio('razao_social', 'Razão Social');
+        // Debug para verificar o campo razao_social
+        error_log("Tentando acessar razao_social. POST: " . print_r($_POST, true));
+        $nome = isset($_POST['nome']) ? $_POST['nome'] : (isset($_POST['razao_social']) ? $_POST['razao_social'] : null);
+        if (!$nome) {
+            echo "<script>alert('O campo Razão Social é obrigatório.'); window.history.back();</script>";
+            exit;
+        }
         $cpf_cnpj = campoObrigatorio('cpf_cnpj', 'CNPJ');
         $data_nasc = null;
     }

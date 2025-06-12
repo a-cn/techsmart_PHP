@@ -5,19 +5,33 @@ function toggleCPFCNPJ() {
     const cc_Fields = document.getElementById("lbl-cpf-cnpj");
     const tipoUsuario = document.getElementById("dvTipoUsuario");
     const dtNasc = document.getElementById("dvDtNasc");
+    const campoNome = document.getElementById("nome");
+    const campoRazaoSocial = document.getElementById("razao_social");
 
     if (tipoPessoa === "cpf") {
         nrs_Fields.textContent = "Nome:";
         cc_Fields.textContent = "CPF:";
         tipoUsuario.style.display = "flex";
-        dtNasc.style.display = "flex"
+        dtNasc.style.display = "flex";
+        campoNome.style.display = "block";
+        campoRazaoSocial.value = campoNome.value; // Mantém o valor sincronizado
     } else if (tipoPessoa === "cnpj") {
         nrs_Fields.textContent = "Razão Social:";
         cc_Fields.textContent = "CNPJ:";
         tipoUsuario.style.display = "none";
         dtNasc.style.display = "none";
+        campoNome.style.display = "block";
+        campoRazaoSocial.value = campoNome.value; // Mantém o valor sincronizado
     }
 }
+
+//Adiciona evento para sincronizar os campos
+document.getElementById("nome")?.addEventListener("input", function(e) {
+    const razaoSocial = document.getElementById("razao_social");
+    if (razaoSocial) {
+        razaoSocial.value = e.target.value;
+    }
+});
 
 //Restringe entrada a apenas números para CPF/CNPJ
 document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
