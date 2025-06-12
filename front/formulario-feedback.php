@@ -15,6 +15,39 @@ if (!$pedido_id || !is_numeric($pedido_id)) {
     </script>";
     exit;
 }
+
+// Verifica se o pedido existe e está entregue
+$sql_verificacao = "SELECT situacao FROM Pedido WHERE pedido_id = ? AND fk_usuario = ? AND ativo = 1";
+$stmt_verificacao = sqlsrv_query($conn, $sql_verificacao, [$pedido_id, $_SESSION['usuario_id']]);
+
+if (!$stmt_verificacao) {
+    echo "<script>
+        mostrarMensagem('Erro', 'Erro ao verificar o pedido', 'erro', () => {
+            window.location.href = 'index.php?pg=pedidos';
+        });
+    </script>";
+    exit;
+}
+
+$pedido = sqlsrv_fetch_array($stmt_verificacao, SQLSRV_FETCH_ASSOC);
+
+if (!$pedido) {
+    echo "<script>
+        mostrarMensagem('Erro', 'Pedido não encontrado ou sem permissão para enviar feedback', 'erro', () => {
+            window.location.href = 'index.php?pg=pedidos';
+        });
+    </script>";
+    exit;
+}
+
+if ($pedido['situacao'] !== 'Entregue') {
+    echo "<script>
+        mostrarMensagem('Aviso', 'Só é possível enviar feedback para pedidos que já foram entregues.', 'alerta', () => {
+            window.location.href = 'index.php?pg=pedidos';
+        });
+    </script>";
+    exit;
+}
 ?>
 
 <!DOCTYPE html>

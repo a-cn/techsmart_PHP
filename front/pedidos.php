@@ -127,7 +127,19 @@ if ($stmt === false) {
                             if (data.temFeedback) {
                                 window.location.href = `index.php?pg=feedbacks&pedido_id=${pedidoId}`;
                             } else {
-                                mostrarMensagem("Alerta", "Ainda não foi deixado um feedback para este pedido!", "alerta");
+                                // Primeiro verifica se o pedido está entregue
+                                fetch(`../back/verifica_situacao_pedido.php?pedido_id=${pedidoId}`)
+                                    .then(response => response.json())
+                                    .then(situacaoData => {
+                                        if (situacaoData.situacao === 'Entregue') {
+                                            window.location.href = `index.php?pg=formulario-feedback&pedido_id=${pedidoId}`;
+                                        } else {
+                                            mostrarMensagem("Aviso", "Só é possível enviar feedback para pedidos que já foram entregues.", "alerta");
+                                        }
+                                    })
+                                    .catch(() => {
+                                        mostrarMensagem("Erro", "Erro ao verificar situação do pedido. Tente novamente.", "erro");
+                                    });
                             }
                         })
                         .catch(() => {
@@ -145,6 +157,13 @@ if ($stmt === false) {
                         mostrarMensagem("Aviso", "Por favor, selecione um pedido.", "alerta");
                         return;
                     }
+
+                    // Verifica se o pedido está entregue antes de mostrar opções de feedback
+                    if (selectedRow[3] !== 'Entregue') { // índice 3 é a coluna de situação
+                        mostrarMensagem("Aviso", "Só é possível enviar feedback para pedidos que já foram entregues.", "alerta");
+                        return;
+                    }
+
                     var pedidoId = selectedRow[0]; // primeira coluna da linha
                     // Verifica no backend se existe feedback para o pedido
                     fetch(`../back/verifica_feedback_pedido.php?pedido_id=${pedidoId}`)
@@ -182,8 +201,8 @@ if ($stmt === false) {
         
         row.querySelector('.situacao-cell').innerHTML = `
             <select class="situacao-select" id="select-${pedidoId}">
-                <option value="Pendente" ${situacao === 'Pendente' ? 'selected' : ''}>Pendente</option>
-                <option value="Em processamento" ${situacao === 'Em processamento' ? 'selected' : ''}>Processando</option>
+                <option value="Aguardando pagamento" ${situacao === 'Aguardando pagamento' ? 'selected' : ''}>Aguardando pagamento</option>
+                <option value="Em preparação" ${situacao === 'Em preparação' ? 'selected' : ''}>Em preparação</option>
                 <option value="Enviado" ${situacao === 'Enviado' ? 'selected' : ''}>Enviado</option>
                 <option value="Entregue" ${situacao === 'Entregue' ? 'selected' : ''}>Entregue</option>
                 <option value="Cancelado" ${situacao === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
@@ -217,7 +236,7 @@ if ($stmt === false) {
         })
         .then(data => {
             if (data.success) {
-                mostrarMensagem("Sucesso", "Pedido atualizado com sucesso!", "sucesso", () => {
+                mostrarMensagem("Sucesso", "Situação do pedido atualizada com sucesso!", "sucesso", () => {
                     window.location.href = '../front/index.php?pg=pedidos';
                 });
             } else {

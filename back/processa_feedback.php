@@ -33,16 +33,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Sessão inválida");
         }
 
-        //Verifica se o pedido existe e pertence ao usuário
-        $sql_verificacao = "SELECT p.pedido_id 
+        //Verifica se o pedido existe, pertence ao usuário e está com situação "Entregue"
+        $sql_verificacao = "SELECT p.pedido_id, p.situacao 
                            FROM Pedido p 
                            WHERE p.pedido_id = ? 
                            AND p.fk_usuario = ? 
                            AND p.ativo = 1";
         $stmt_verificacao = sqlsrv_query($conn, $sql_verificacao, [$fk_pedido, $_SESSION['usuario_id']]);
         
-        if (!$stmt_verificacao || !sqlsrv_fetch_array($stmt_verificacao, SQLSRV_FETCH_ASSOC)) {
+        if (!$stmt_verificacao) {
+            throw new Exception("Erro ao verificar o pedido");
+        }
+
+        $pedido = sqlsrv_fetch_array($stmt_verificacao, SQLSRV_FETCH_ASSOC);
+        
+        if (!$pedido) {
             throw new Exception("Pedido não encontrado ou sem permissão para enviar feedback");
+        }
+
+        if ($pedido['situacao'] !== 'Entregue') {
+            throw new Exception("Só é possível enviar feedback para pedidos que já foram entregues.");
         }
         
         //Query para inserir o feedback no banco de dados
