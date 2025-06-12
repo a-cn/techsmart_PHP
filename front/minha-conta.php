@@ -115,9 +115,6 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        console.log("Iniciando carregamento de dados...");
-        
-        // 1. Configuração da requisição
         const response = await fetch('../back/dados_usuario.php', {
             method: 'GET',
             credentials: 'include',
@@ -126,35 +123,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        console.log("Status da resposta:", response.status);
-
-        // 2. Verificação do conteúdo
         const text = await response.text();
-        let data;
-        
-        try {
-            data = JSON.parse(text);
-        } catch {
-            console.error("Resposta não é JSON:", text);
-            throw new Error("Resposta inválida do servidor");
-        }
+        let data = JSON.parse(text);
 
-        // 3. Tratamento da resposta
         if (!response.ok || data.status !== 'success') {
             throw new Error(data.message || "Erro ao carregar dados");
         }
 
-        // 4. Atualização da interface
         updateProfile(data.data);
 
     } catch (error) {
-        console.error("Erro completo:", error);
         showError(`Falha: ${error.message}`);
     }
 });
 
-    function updateProfile(userData) {
-    // Mapeia todos os campos
+//Mapeia todos os campos
+function updateProfile(userData) {
     const fields = [
         'nome', 'email', 'tipo', 'cpf-cnpj', 'nascimento',
         'num-principal', 'num-recado', 'cep', 'cidade-estado',
@@ -164,7 +148,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     fields.forEach(field => {
         const element = document.getElementById(field);
         if (element) {
-            let value = userData[field] || 'Não informado';
+            // Ajuste para o campo de nascimento
+            let value;
+            if (field === 'nascimento') {
+                value = userData['data_nascimento'] || 'Não informado';
+            } else {
+                value = userData[field] || 'Não informado';
+            }
             
             // Formatação especial para o tipo de usuário
             if (field === 'tipo') {
@@ -180,6 +170,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Formatação para telefones
             else if (field === 'num-principal' || field === 'num-recado') {
                 element.textContent = value.replace(/(\d{2})(\d{4,5})(\d{4})/, '($1) $2-$3');
+            }
+            // Formatação para data de nascimento
+            else if (field === 'nascimento') {
+                if (value && value !== 'Não informado') {
+                    const [ano, mes, dia] = value.split('-');
+                    element.textContent = `${dia}/${mes}/${ano}`;
+                } else {
+                    element.textContent = 'Não informado';
+                }
             }
             else {
                 element.textContent = value;

@@ -33,7 +33,6 @@ if ($result) {
         const data = await response.json();
         if (data.status === 'success') {
             const user = data.data;
-            console.log('Dados recebidos do backend:', user);
 
             //Preenche os campos com os dados do usuário logado
             document.getElementById('nome').value = user.nome || '';
@@ -41,7 +40,6 @@ if ($result) {
             marcarCheckboxCPFCNPJ(user['cpf-cnpj'] || ''); // Marca o tipo de documento
             document.getElementById('data_nascimento').value = user.data_nascimento || '';
             document.getElementById('email').value = user.email || '';
-            document.getElementById('confirmEmail').value = user.email || '';
             document.getElementById('num_principal').value = user['num-principal'] || '';
             document.getElementById('num_recado').value = user['num-recado'] || '';
             document.getElementById('cep').value = user.cep || '';
@@ -51,7 +49,16 @@ if ($result) {
             document.getElementById('bairro').value = user.bairro || '';
             document.getElementById('cidade').value = user['cidade-estado']?.split('/')[0] || '';
             document.getElementById('estado').value = user['cidade-estado']?.split('/')[1] || '';
+
+            // Ajusta a visibilidade dos campos baseado no tipo de documento
+            toggleCPFCNPJ();
         }
+    });
+
+    // Muda o tipo de pessoa dependendo do dado informado em cpf_cnpj
+    document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
+        marcarCheckboxCPFCNPJ(e.target.value);
+        toggleCPFCNPJ();
     });
 </script>
 
@@ -254,10 +261,4 @@ if ($result) {
         cbCPF.checked  = (tam === 11);
         cbCNPJ.checked = (tam === 14);
     }
-
-    // Muda o tipo de pessoa dependendo do dado informado em cpf_cnpj
-    document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
-        marcarCheckboxCPFCNPJ(e.target.value);
-        toggleCPFCNPJ();
-    });
 </script>
