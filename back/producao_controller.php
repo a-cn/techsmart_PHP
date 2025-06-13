@@ -5,13 +5,30 @@ require_once 'verifica_sessao.php';
 
 // Função auxiliar para formatar datas em ISO 8601
 function formatarDataISO($datetime) {
-    if ($datetime instanceof DateTime) {
-        return $datetime->format(DateTime::ATOM);
+    try {
+        if ($datetime instanceof DateTime) {
+            $datetime->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+            return $datetime->format('Y-m-d\TH:i:s');
+        }
+        
+        if (is_array($datetime) && isset($datetime['date'])) {
+            $date = new DateTime($datetime['date']);
+            $date->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+            return $date->format('Y-m-d\TH:i:s');
+        }
+        
+        // Se for uma string de data do SQL Server
+        if (is_string($datetime)) {
+            $date = new DateTime($datetime);
+            $date->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+            return $date->format('Y-m-d\TH:i:s');
+        }
+        
+        return null;
+    } catch (Exception $e) {
+        error_log('Erro ao formatar data: ' . $e->getMessage());
+        return null;
     }
-    if (is_array($datetime) && isset($datetime['date'])) {
-        return (new DateTime($datetime['date']))->format(DateTime::ATOM);
-    }
-    return null;
 }
 
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -202,18 +219,7 @@ function concluirEtapa($conn) {
     sqlsrv_begin_transaction($conn);
     
     try {
-        // 1. Atualiza o histórico com a última etapa concluída
-        $sqlUpdate = "UPDATE Historico_Producao 
-                     SET ultima_etapa = ?
-                     WHERE historico_producao_id = ?";
-        $stmtUpdate = sqlsrv_query($conn, $sqlUpdate, [$etapaId, $historicoId]);
-        
-        if (!$stmtUpdate) {
-            throw new Exception('Erro ao atualizar histórico: ' . print_r(sqlsrv_errors(), true));
-        }
-        
-        // 2. Verifica se esta é a última etapa
-        // Primeiro obtém a ordem da etapa atual
+        // 1. Primeiro obtém a ordem da etapa atual
         $sqlEtapaAtual = "SELECT ordem, fk_producao FROM Etapa_Producao WHERE etapa_producao_id = ?";
         $stmtEtapaAtual = sqlsrv_query($conn, $sqlEtapaAtual, [$etapaId]);
         
@@ -224,8 +230,18 @@ function concluirEtapa($conn) {
         $etapaAtual = sqlsrv_fetch_array($stmtEtapaAtual, SQLSRV_FETCH_ASSOC);
         $ordemAtual = $etapaAtual['ordem'];
         $producaoId = $etapaAtual['fk_producao'];
+
+        // 2. Atualiza o histórico com a ordem da última etapa concluída
+        $sqlUpdate = "UPDATE Historico_Producao 
+                     SET ultima_etapa = ?
+                     WHERE historico_producao_id = ?";
+        $stmtUpdate = sqlsrv_query($conn, $sqlUpdate, [$ordemAtual, $historicoId]);
         
-        // Verifica se existe uma etapa com ordem maior
+        if (!$stmtUpdate) {
+            throw new Exception('Erro ao atualizar histórico: ' . print_r(sqlsrv_errors(), true));
+        }
+        
+        // 3. Verifica se esta é a última etapa
         $sqlProximaEtapa = "SELECT COUNT(*) AS total 
                            FROM Etapa_Producao 
                            WHERE fk_producao = ? AND ordem > ? AND ativo = 1";
