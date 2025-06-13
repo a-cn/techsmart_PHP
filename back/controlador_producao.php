@@ -104,65 +104,90 @@ try {
     echo json_encode($custos);
     break;
 
-        case 'incluir':
-            // Processa inclusão de nova produção
-            if (empty($data['tipo'])) {
-                throw new Exception("Tipo de produção não informado");
+    case 'incluir':
+        // Validar campos obrigatórios
+        if (empty($data['tipo'])) {
+            throw new Exception("Tipo de produção não informado");
+        }
+    
+        if (empty($data['etapas'])) {
+            throw new Exception("Nenhuma etapa informada");
+        }
+    
+        // Buscar custos dos componentes (como no buscar_custos)
+        $sql = "SELECT fc.fk_componente, fc.custo_componente 
+                FROM Fornecedor_Componente fc
+                INNER JOIN Componente c ON fc.fk_componente = c.componente_id
+                WHERE c.ativo = 1";
+    
+        $stmt = sqlsrv_query($conn, $sql);
+        if ($stmt === false) {
+            throw new Exception("Erro ao buscar custos: " . print_r(sqlsrv_errors(), true));
+        }
+    
+        $custos = [];
+        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $custos[$row['fk_componente']] = $row['custo_componente'];
+        }
+    
+        // Calcular custo total da produção
+        $custoTotal = 0;
+        foreach ($data['etapas'] as $etapa) {
+            $componenteId = $etapa['componenteId'];
+            if (!isset($custos[$componenteId])) {
+                throw new Exception("Custo do componente ID $componenteId não encontrado.");
             }
-            
-            if (empty($data['etapas'])) {
-                throw new Exception("Nenhuma etapa informada");
+            $custoTotal += floatval($custos[$componenteId]);
+        }
+    
+        // Inicia transação
+        if (sqlsrv_begin_transaction($conn) === false) {
+            throw new Exception("Não foi possível iniciar a transação");
+        }
+    
+        try {
+            // Inserir produção com custo
+            $sqlProducao = "INSERT INTO Producao (nome, custo) OUTPUT INSERTED.producao_id VALUES (?, ?)";
+            $params = array($data['tipo'], $custoTotal);
+            $stmtProducao = sqlsrv_query($conn, $sqlProducao, $params);
+    
+            if ($stmtProducao === false) {
+                throw new Exception("Erro ao inserir produção: " . print_r(sqlsrv_errors(), true));
             }
-
-            // Inicia transação
-            if (sqlsrv_begin_transaction($conn) === false) {
-                throw new Exception("Não foi possível iniciar a transação");
+    
+            if (!sqlsrv_fetch($stmtProducao)) {
+                throw new Exception("Erro ao obter ID da produção");
             }
-
-            try {
-                // Insere produção
-                $sqlProducao = "INSERT INTO Producao (nome) OUTPUT INSERTED.producao_id VALUES (?)";
-                $params = array($data['tipo']);
-                $stmtProducao = sqlsrv_query($conn, $sqlProducao, $params);
-                
-                if ($stmtProducao === false) {
-                    throw new Exception("Erro ao inserir produção: " . print_r(sqlsrv_errors(), true));
+    
+            $producao_id = sqlsrv_get_field($stmtProducao, 0);
+    
+            // Inserir etapas
+            foreach ($data['etapas'] as $index => $etapa) {
+                $ordem = $index + 1;
+                $sqlEtapa = "INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente) 
+                            VALUES (?, ?, ?, ?)";
+                $paramsEtapa = array(
+                    $producao_id,
+                    $ordem,
+                    $etapa['nome'],
+                    $etapa['componenteId']
+                );
+    
+                $stmtEtapa = sqlsrv_query($conn, $sqlEtapa, $paramsEtapa);
+                if ($stmtEtapa === false) {
+                    throw new Exception("Erro ao inserir etapa $ordem: " . print_r(sqlsrv_errors(), true));
                 }
-                
-                if (!sqlsrv_fetch($stmtProducao)) {
-                    throw new Exception("Erro ao obter ID da produção");
-                }
-                
-                $producao_id = sqlsrv_get_field($stmtProducao, 0);
-                
-                // Insere etapas com componentes
-                foreach ($data['etapas'] as $index => $etapa) {
-                    $ordem = $index + 1;
-                    $sqlEtapa = "INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente) 
-                                VALUES (?, ?, ?, ?)";
-                    $paramsEtapa = array(
-                        $producao_id,
-                        $ordem,
-                        $etapa['nome'],
-                        $etapa['componenteId']
-                    );
-                    
-                    $stmtEtapa = sqlsrv_query($conn, $sqlEtapa, $paramsEtapa);
-                    if ($stmtEtapa === false) {
-                        throw new Exception("Erro ao inserir etapa $ordem: " . print_r(sqlsrv_errors(), true));
-                    }
-                }
-
-                // Commit da transação
-                sqlsrv_commit($conn);
-                echo json_encode(["message" => "Produção cadastrada com sucesso!"]);
-                
-            } catch (Exception $e) {
-                // Rollback em caso de erro
-                sqlsrv_rollback($conn);
-                throw $e;
             }
-            break;
+    
+            // Commit da transação
+            sqlsrv_commit($conn);
+            echo json_encode(["message" => "Produção cadastrada com sucesso!"]);
+    
+        } catch (Exception $e) {
+            sqlsrv_rollback($conn);
+            throw $e;
+        }
+        break;    
 
         case 'editar':
             // Processa edição de produção existente
