@@ -256,6 +256,18 @@ function concluirEtapa($conn) {
             if (!$stmtConcluir) {
                 throw new Exception('Erro ao concluir produção: ' . print_r(sqlsrv_errors(), true));
             }
+
+            // 4. Atualiza a quantidade do produto final
+            $sqlAtualizarEstoque = "UPDATE pf
+                                  SET pf.quantidade = pf.quantidade + hp.quantidade_produto
+                                  FROM ProdutoFinal pf
+                                  INNER JOIN Historico_Producao hp ON hp.fk_producao = pf.fk_producao
+                                  WHERE hp.historico_producao_id = ?";
+            $stmtAtualizarEstoque = sqlsrv_query($conn, $sqlAtualizarEstoque, [$historicoId]);
+            
+            if (!$stmtAtualizarEstoque) {
+                throw new Exception('Erro ao atualizar estoque: ' . print_r(sqlsrv_errors(), true));
+            }
             
             $producaoConcluida = true;
         }
@@ -280,7 +292,7 @@ function concluirEtapa($conn) {
         
         echo json_encode([
             'status' => 'ok',
-            'mensagem' => $producaoConcluida ? 'Produção concluída com sucesso!' : 'Etapa concluída com sucesso!',
+            'mensagem' => $producaoConcluida ? 'Produção concluída com sucesso e estoque atualizado!' : 'Etapa concluída com sucesso!',
             'producao' => $producao
         ]);
     } catch (Exception $e) {
