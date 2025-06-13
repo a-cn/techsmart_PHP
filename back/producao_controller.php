@@ -90,21 +90,17 @@ function iniciarProducao($conn) {
     $produto = sqlsrv_fetch_array($stmtProduto, SQLSRV_FETCH_ASSOC);
     $diasProducao = $produto['tempo_producao_dias'];
     
-    // Data atual e previsão de término usando o formato do SQL Server
-    $dataInicio = date('Ymd H:i:s');
-    $dataPrevisao = date('Ymd H:i:s', strtotime("+{$diasProducao} days"));
-    
     // Inicia a transação
     sqlsrv_begin_transaction($conn);
     
     try {
-        // Insere no histórico de produção usando o formato específico do SQL Server
+        // Insere no histórico de produção usando GETDATE() para data_inicio e DATEADD para data_previsao
         $sqlInsert = "INSERT INTO Historico_Producao 
                      (fk_producao, quantidade_produto, data_inicio, data_previsao, data_conclusao, ultima_etapa) 
-                     VALUES (?, ?, CAST(? AS DATETIME), CAST(? AS DATETIME), NULL, NULL);
+                     VALUES (?, ?, GETDATE(), DATEADD(day, ?, GETDATE()), NULL, NULL);
                      SELECT SCOPE_IDENTITY() AS historico_producao_id;";
         
-        $stmtInsert = sqlsrv_query($conn, $sqlInsert, [$producaoId, $quantidade, $dataInicio, $dataPrevisao]);
+        $stmtInsert = sqlsrv_query($conn, $sqlInsert, [$producaoId, $quantidade, $diasProducao]);
         
         if (!$stmtInsert) {
             throw new Exception('Erro ao iniciar produção: ' . print_r(sqlsrv_errors(), true));
@@ -155,18 +151,14 @@ function iniciarProducao($conn) {
         // Commit da transação
         sqlsrv_commit($conn);
         
-        // Retorna a resposta
+        // Obtém os dados atualizados da produção
+        $sqlProducao = "SELECT * FROM Historico_Producao WHERE historico_producao_id = ?";
+        $stmtProducao = sqlsrv_query($conn, $sqlProducao, [$historicoId]);
+        $producao = sqlsrv_fetch_array($stmtProducao, SQLSRV_FETCH_ASSOC);
+        
         echo json_encode([
             'status' => 'ok',
-            'producao' => [
-                'historico_producao_id' => $historicoId,
-                'fk_producao' => $producaoId,
-                'quantidade_produto' => $quantidade,
-                'data_inicio' => $dataInicio,
-                'data_previsao' => $dataPrevisao,
-                'data_conclusao' => null,
-                'ultima_etapa' => null
-            ],
+            'producao' => $producao,
             'etapas' => $etapas
         ]);
     } catch (Exception $e) {
