@@ -94,7 +94,7 @@ if ($result) {
             <th>ID</th>
             <th>TIPO DE PRODUÇÃO</th>
             <th>ETAPAS</th>
-            <th>AÇÕES</th>
++            <th>AÇÕES</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -107,39 +107,111 @@ if ($result) {
   let producaoTable = null;
   const componentesDisponiveis = <?php echo json_encode($componentes); ?>;
   let etapas = [];
+  let custosComponentes = {};
 
-  // Função para adicionar nova etapa
-  function adicionarEtapa() {
-      const nome = document.getElementById('novaEtapaNome').value.trim();
-      const componenteId = document.getElementById('novaEtapaComponente').value;
-      
-      if (!nome) {
-          mostrarMensagem("Aviso", "Por favor, informe o nome da etapa", "alerta");
-          return;
-      }
-      
-      if (!componenteId) {
-          mostrarMensagem("Aviso", "Por favor, selecione um componente", "alerta");
-          return;
-      }
-      
-      // Encontra o componente selecionado
-      const componente = componentesDisponiveis.find(c => c.componente_id == componenteId);
-      
-      // Adiciona à lista de etapas
-      etapas.push({
-          nome: nome,
-          componenteId: componenteId,
-          componenteNome: componente.nome
-      });
-      
-      // Atualiza a visualização
-      renderizarEtapas();
-      
-      // Limpa os campos
-      document.getElementById('novaEtapaNome').value = '';
-      document.getElementById('novaEtapaComponente').value = '';
-  }
+  // Adicionar esta função para buscar custos dos componentes
+async function buscarCustosComponentes() {
+    try {
+        const response = await fetch('../back/controlador_producao.php?action=buscar_custos');
+        if (!response.ok) throw new Error('Erro ao buscar custos');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro ao buscar custos:', error);
+        return {};
+    }   
+}
+
+async function adicionarEtapa() {
+    const nome = document.getElementById('novaEtapaNome').value.trim();
+    const componenteId = document.getElementById('novaEtapaComponente').value;
+    
+    if (!nome) {
+        mostrarMensagem("Aviso", "Por favor, informe o nome da etapa", "alerta");
+        return;
+    }
+    
+    if (!componenteId) {
+        mostrarMensagem("Aviso", "Por favor, selecione um componente", "alerta");
+        return;
+    }
+    
+    // Se ainda não temos os custos, buscamos
+    if (Object.keys(custosComponentes).length === 0) {
+        try {
+            const response = await fetch('../back/controlador_producao.php?action=buscar_custos');
+            if (!response.ok) throw new Error('Erro ao buscar custos');
+            custosComponentes = await response.json();
+        } catch (error) {
+            console.error('Erro ao buscar custos:', error);
+            custosComponentes = {};
+        }
+    }
+    
+    // Encontra o componente selecionado
+    const componente = componentesDisponiveis.find(c => c.componente_id == componenteId);
+    const custo = custosComponentes[componenteId] || 0;
+    
+    // Adiciona à lista de etapas
+    etapas.push({
+        nome: nome,
+        componenteId: componenteId,
+        componenteNome: componente.nome,
+        custo: parseFloat(custo)
+    });
+    
+    // Atualiza a visualização
+    renderizarEtapas();
+    
+    // Limpa os campos
+    document.getElementById('novaEtapaNome').value = '';
+    document.getElementById('novaEtapaComponente').value = '';
+}
+
+// Atualizar a função renderizarEtapas para mostrar custos
+function renderizarEtapas() {
+    const listaEtapas = document.getElementById('listaEtapas');
+    listaEtapas.innerHTML = '';
+    
+    if (etapas.length === 0) {
+        listaEtapas.innerHTML = '<p class="nenhuma-etapa">Nenhuma etapa adicionada</p>';
+        return;
+    }
+    
+    let totalCusto = 0;
+    
+    etapas.forEach((etapa, index) => {
+        totalCusto += etapa.custo;
+        
+        const divEtapa = document.createElement('div');
+        divEtapa.className = 'etapa-item';
+        
+        const divInfo = document.createElement('div');
+        divInfo.className = 'etapa-info';
+        divInfo.innerHTML = `
+            <span class="etapa-nome">${etapa.nome}</span>
+            <span class="etapa-componente">Componente: ${etapa.componenteNome}</span>
+            <span class="etapa-custo">Custo: R$ ${etapa.custo.toFixed(2)}</span>
+        `;
+        
+        const divAcoes = document.createElement('div');
+        divAcoes.className = 'etapa-acoes';
+        divAcoes.innerHTML = `
+            <button class="btn-remover" onclick="removerEtapa(${index})">
+                <i class="fas fa-trash"></i> Remover
+            </button>
+        `;
+        
+        divEtapa.appendChild(divInfo);
+        divEtapa.appendChild(divAcoes);
+        listaEtapas.appendChild(divEtapa);
+    });
+    
+    // Adiciona o total
+    const divTotal = document.createElement('div');
+    divTotal.className = 'etapa-total';
+    divTotal.innerHTML = `<strong>Total:</strong> R$ ${totalCusto.toFixed(2)}`;
+    listaEtapas.appendChild(divTotal);
+}
 
   // Função para remover etapa
   function removerEtapa(index) {
@@ -232,37 +304,69 @@ if ($result) {
   document.addEventListener("DOMContentLoaded", function() {
       // Inicializa o DataTable
       producaoTable = $('#tabelaProducoes').DataTable({
-          ajax: {
-              url: '../back/controlador_producao.php?acao=listar',
-              dataSrc: ''
-          },
-          columns: [
-              { data: 'id' },
-              { data: 'tipo' },
-              { 
-                  data: 'etapas',
-                  render: function(data, type, row) {
-                      return data || 'Sem etapas cadastradas';
-                  }
-              },
-              { 
-                  data: null,
-                  render: function(data, type, row) {
-                      return `
-                          <button class="editar" onclick="editarProducao(${row.id})">
-                              <i class="fas fa-edit"></i> Editar
-                          </button>
-                          <button class="excluir" onclick="excluirProducao(${row.id})">
-                              <i class="fas fa-trash"></i> Excluir
-                          </button>
-                      `;
-                  },
-                  orderable: false
-              }
-          ],
-          language: {
-              url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json"
-          },
+    ajax: {
+        url: '../back/controlador_producao.php',
+        data: { acao: 'listar' },  // Envia como parâmetro POST
+        type: 'GET',  // Alternativa mais segura que GET
+        dataSrc: 'data',  // Acessa a propriedade 'data' da resposta
+        error: function(xhr) {
+            let errorMsg = 'Erro ao carregar dados';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg += ': ' + (response.error || xhr.statusText);
+                console.error('Detalhes:', response);
+            } catch (e) {
+                errorMsg += '. Status: ' + xhr.status;
+            }
+            $('#tabelaProducoes').html(`<div class="error-msg">${errorMsg}</div>`);
+        }
+    },
+    columns: [
+        { data: 'id' },
+        { data: 'tipo' },
+        { 
+            data: null,
+            render: function(data, type, row) {
+                try {
+                    let html = '<div class="lista-etapas">';
+                    
+                    if (row.etapas && row.etapas !== 'Sem etapas cadastradas') {
+                        const etapasArray = row.etapas.split(', ');
+                        etapasArray.forEach(etapa => {
+                            html += `<div class="etapa-linha">${etapa.trim()}</div>`;
+                        });
+                    } else {
+                        html += '<div class="etapa-linha">Sem etapas cadastradas</div>';
+                    }
+                    
+                    if (row.custo_total) {
+                        html += `<div class="custo-total">Custo Total: R$ ${parseFloat(row.custo_total).toFixed(2)}</div>`;
+                    }
+                    
+                    return html + '</div>';
+                } catch (e) {
+                    console.error('Erro ao renderizar etapas:', e);
+                    return 'Erro ao carregar etapas';
+                }
+            }
+        },
+        { 
+            data: null,
+            render: function(data, type, row) {
+                return `
+                    <button class="editar" onclick="editarProducao(${row.id})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="excluir" onclick="excluirProducao(${row.id})">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                `;
+            }
+        }
+    ],
+    language: {
+        url: "//cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json"
+    },
           dom: 'Bfrtip',
           buttons: [
               {
@@ -354,74 +458,144 @@ if ($result) {
   </script>
 
   <style>
-  .etapas-container {
-      margin: 20px 0;
-      padding: 15px;
-      background-color: #f9f9f9;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-  }
+ /* Estilos para a lista de etapas na tabela */
+.lista-etapas {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
-  .etapa-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      margin-bottom: 10px;
-      background-color: #fff;
-      border-radius: 5px;
-      border: 1px solid #eee;
-  }
+.etapa-linha {
+    padding: 4px 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+}
 
-  .etapa-info {
-      flex: 1;
-  }
+/* Ajustes para a tabela */
+#tabelaProducoes td {
+    vertical-align: top;
+    padding: 8px 12px;
+}
 
-  .etapa-acoes {
-      margin-left: 15px;
-  }
+#tabelaProducoes .lista-etapas {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
 
-  .btn-remover {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-  }
+/* Barra de rolagem personalizada */
+#tabelaProducoes .lista-etapas::-webkit-scrollbar {
+    width: 5px;
+}
 
-  .btn-remover:hover {
-      opacity: 0.9;
-  }
+#tabelaProducoes .lista-etapas::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
 
-  .editar, .excluir {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      color: white;
-      margin-right: 5px;
-  }
+#tabelaProducoes .lista-etapas::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
 
-  .editar {
-      background-color: #ffc107;
-  }
+#tabelaProducoes .lista-etapas::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+.custo-total {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-weight: bold;
+    color: #28a745;
+}
+/* Botões de ação */
+.editar, .excluir {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    margin-right: 5px;
+    transition: all 0.2s;
+}
 
-  .excluir {
-      background-color: #dc3545;
-  }
+.editar {
+    background-color: #ffc107;
+}
 
-  .error {
-      color: #dc3545;
-      margin-top: 10px;
-      font-weight: bold;
-  }
+.editar:hover {
+    background-color: #e0a800;
+}
 
-  .btn-cadastrar, .btn-pesquisar {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-  }
+.excluir {
+    background-color: #dc3545;
+}
+
+.excluir:hover {
+    background-color: #c82333;
+}
+
+/* Formulário */
+.form-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.15s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.btn-cadastrar {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.btn-cadastrar:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-pesquisar {
+    background-color: #17a2b8;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.btn-pesquisar:hover {
+    background-color: #138496;
+    transform: translateY(-1px);
+}
   </style>
 </body>
 </html>

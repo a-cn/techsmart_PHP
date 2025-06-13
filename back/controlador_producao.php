@@ -2,65 +2,44 @@
 header('Content-Type: application/json');
 require_once 'conexao_sqlserver.php';
 
-$acao = $_GET['acao'] ?? '';
+$acao = $_GET['action'] ?? $_GET['acao'] ?? '';
 $id = $_GET['id'] ?? 0;
 
 try {
-    // Para ações que recebem dados via POST
-    if (in_array($acao, ['incluir', 'editar'])) {
-        $json = file_get_contents('php://input');
-        $data = json_decode($json, true);
-        
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("Erro ao decodificar JSON: " . json_last_error_msg());
-        }
-    }
-
-    switch ($acao) {
+    switch (strtolower($acao)) {
         case 'listar':
-            // Consulta SQL para listar produções com suas etapas
             $sql = "SELECT 
-                        p.producao_id as id, 
-                        p.nome as tipo,
-                        (
-                            SELECT STRING_AGG(
-                                e.nome + ' (Componente: ' + c.nome + ')', 
-                                ', '
-                            ) WITHIN GROUP (ORDER BY e.ordem)
-                            FROM Etapa_Producao e
-                            JOIN Componente c ON e.fk_componente = c.componente_id
-                            WHERE e.fk_producao = p.producao_id AND e.ativo = 1
-                        ) as etapas,
-                        (
-                            SELECT STRING_AGG(
-                                '{\"nome\":\"' + e.nome + '\",\"componenteId\":\"' + CAST(e.fk_componente AS VARCHAR) + '\"}', 
-                                ','
-                            ) WITHIN GROUP (ORDER BY e.ordem)
-                            FROM Etapa_Producao e
-                            WHERE e.fk_producao = p.producao_id AND e.ativo = 1
-                        ) as etapas_json
-                    FROM Producao p
-                    WHERE p.ativo = 1
-                    ORDER BY p.producao_id";
-            
-            $stmt = sqlsrv_query($conn, $sql);
-            if ($stmt === false) {
-                throw new Exception("Erro ao listar produções: " . print_r(sqlsrv_errors(), true));
-            }
-            
-            $producoes = [];
-            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-                // Formata para exibição
-                $row['etapas'] = $row['etapas'] ?: 'Sem etapas cadastradas';
+                    p.producao_id as id, 
+                    p.nome as tipo,
+                    (
+                        SELECT STRING_AGG(e.nome + ' (Componente: ' + c.nome + ')', ', ')
+                        FROM Etapa_Producao e
+                        JOIN Componente c ON e.fk_componente = c.componente_id
+                        WHERE e.fk_producao = p.producao_id AND e.ativo = 1
+                    ) as etapas
+                FROM Producao p
+                WHERE p.ativo = 1";
                 
-                // Mantem o JSON para edição
-                $row['etapas_json'] = $row['etapas_json'] ? '[' . $row['etapas_json'] . ']' : '[]';
-                $producoes[] = $row;
+            $stmt = sqlsrv_query($conn, $sql);
+            
+            if ($stmt === false) {
+                throw new Exception("Erro SQL: " . print_r(sqlsrv_errors(), true));
             }
             
-            echo json_encode($producoes);
+            $resultados = [];
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $resultados[] = $row;
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'data' => $resultados,
+                'total' => count($resultados)
+            ]);
             break;
-
+            
+ 
+        
         case 'obter':
     if (empty($_GET['id'])) {
         throw new Exception("ID da produção não informado");
@@ -95,6 +74,26 @@ try {
     unset($producao['etapas_json']);
 
     echo json_encode($producao);
+    break;
+
+    case 'buscar_custos':
+    // Busca os custos dos componentes
+    $sql = "SELECT fc.fk_componente, fc.custo_componente 
+            FROM Fornecedor_Componente fc
+            INNER JOIN Componente c ON fc.fk_componente = c.componente_id
+            WHERE c.ativo = 1";
+    
+    $stmt = sqlsrv_query($conn, $sql);
+    if ($stmt === false) {
+        throw new Exception("Erro ao buscar custos: " . print_r(sqlsrv_errors(), true));
+    }
+    
+    $custos = [];
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $custos[$row['fk_componente'] = $row['custo_componente']];
+    }
+    
+    echo json_encode($custos);
     break;
 
         case 'incluir':
@@ -304,9 +303,63 @@ try {
 
         default:
             throw new Exception("Ação não reconhecida");
+
+            case 'listar_linhas_status':
+    $sql = "SELECT 
+                p.producao_id as id,
+                p.nome,
+                pf.nome as produto_final,
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM Historico_Producao hp 
+                        WHERE hp.fk_producao = p.producao_id 
+                        AND hp.data_conclusao IS NULL
+                    ) THEN 'Ativa'
+                    ELSE 'Concluída'
+                END as status,
+                COALESCE(
+                    (
+                        SELECT COUNT(e.etapa_producao_id) 
+                        FROM Etapa_Producao e 
+                        WHERE e.fk_producao = p.producao_id
+                    ), 0
+                ) as total_etapas,
+                COALESCE(
+                    (
+                        SELECT COUNT(he.etapa_producao_id) 
+                        FROM Historico_Etapas he
+                        JOIN Historico_Producao hp ON he.fk_historico = hp.historico_producao_id
+                        WHERE hp.fk_producao = p.producao_id
+                        AND he.concluida = 1
+                    ), 0
+                ) as etapas_concluidas
+            FROM Producao p
+            LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
+            WHERE p.ativo = 1
+            ORDER BY status DESC, p.nome";
+    
+    $stmt = sqlsrv_query($conn, $sql);
+    $linhas = [];
+    
+    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $totalEtapas = $row['total_etapas'] ? (int)$row['total_etapas'] : 1;
+        $concluidas = $row['etapas_concluidas'] ? (int)$row['etapas_concluidas'] : 0;
+        $progresso = round(($concluidas / $totalEtapas) * 100);
+        
+        $linhas[] = [
+            'id' => $row['id'],
+            'nome' => $row['nome'],
+            'produto_final' => $row['produto_final'] ?? 'N/A',
+            'status' => $row['status'],
+            'progresso' => $progresso
+        ];
+    }
+    
+    echo json_encode($linhas);
+    break;
     }
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["error" => $e->getMessage()]);
 }
-?>
+?> 
