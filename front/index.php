@@ -39,7 +39,7 @@ $body_class = 'body-background-fit background-' . substr($tipo_usuario, 0, 3);
 
     <link rel="stylesheet" type="text/css" href="css/_styles.css">
     <link rel="stylesheet" type="text/css" href="css/borderglass.css">
-    <title>TechSmart - Controle de Produção e Vendas</title>
+    <title>TechSmart - Gerenciamento de Produção</title>
 </head>
 
 <!--body> Gerado automaticamente pelo php identificando visualmente o tipo do usuário e definido pela classe com o nome do tipo do usuario-->
@@ -95,7 +95,7 @@ $body_class = 'body-background-fit background-' . substr($tipo_usuario, 0, 3);
                 "componentes",
                 "producao",
                 "produtos",
-                "iniciar-producao",
+                "controle-producao",
                 "pedidos",
                 "feedbacks",
                 "alterar-conta",
