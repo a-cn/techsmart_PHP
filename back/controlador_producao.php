@@ -98,7 +98,7 @@ try {
     
     $custos = [];
     while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $custos[$row['fk_componente'] = $row['custo_componente']];
+        $custos[$row['fk_componente']] = $row['custo_componente'];
     }
     
     echo json_encode($custos);
