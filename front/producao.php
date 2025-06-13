@@ -43,7 +43,7 @@ if ($result) {
   
   <div>
     <div class="janela-cadastro oculta" id="divCadastroProducao">
-      <span class="titulo-janela">Cadastro de Produção</span>
+      <span class="titulo-janela" id="tituloCadProd">Cadastro de Linha de Produção</span>
       <form id="form-producao" class="form-content" method="POST" novalidate>
         <input type="hidden" name="acao" id="acao" value="incluir">
         <input type="hidden" name="id" id="producao_id" value="">
@@ -191,14 +191,6 @@ function renderizarEtapas() {
         const divEtapa = document.createElement('div');
         divEtapa.className = 'etapa-item';
         
-        const divInfo = document.createElement('div');
-        divInfo.className = 'etapa-info';
-        divInfo.innerHTML = `
-            <span class="etapa-nome">${etapa.nome}</span>
-            <span class="etapa-componente">Componente: ${etapa.componenteNome}</span>
-            <span class="etapa-custo">Custo: R$ ${etapa.custo.toFixed(2)}</span>
-        `;
-        
         const divAcoes = document.createElement('div');
         divAcoes.className = 'etapa-acoes';
         divAcoes.innerHTML = `
@@ -207,8 +199,16 @@ function renderizarEtapas() {
             </button>
         `;
         
-        divEtapa.appendChild(divInfo);
+        const divInfo = document.createElement('div');
+        divInfo.className = 'etapa-info';
+        divInfo.innerHTML = `
+            <span class="etapa-nome">${etapa.nome}</span>
+            <span class="etapa-componente">Componente: ${etapa.componenteNome}</span>
+            <span class="etapa-custo">Custo: R$ ${etapa.custo.toFixed(2)}</span>
+        `;
+        
         divEtapa.appendChild(divAcoes);
+        divEtapa.appendChild(divInfo);
         listaEtapas.appendChild(divEtapa);
     });
     
@@ -223,33 +223,6 @@ function renderizarEtapas() {
   function removerEtapa(index) {
       etapas.splice(index, 1);
       renderizarEtapas();
-  }
-
-  // Função para renderizar a lista de etapas
-  function renderizarEtapas() {
-      const listaEtapas = document.getElementById('listaEtapas');
-      listaEtapas.innerHTML = '';
-      
-      if (etapas.length === 0) {
-          listaEtapas.innerHTML = '<p>Nenhuma etapa adicionada</p>';
-          return;
-      }
-      
-      etapas.forEach((etapa, index) => {
-          const div = document.createElement('div');
-          div.className = 'etapa-item';
-          div.innerHTML = `
-              <div class="etapa-info">
-                  <strong>${etapa.nome}</strong> - Componente: ${etapa.componenteNome}
-              </div>
-              <div class="etapa-acoes">
-                  <button class="btn-remover" onclick="removerEtapa(${index})">
-                      <i class="fas fa-trash"></i> Remover
-                  </button>
-              </div>
-          `;
-          listaEtapas.appendChild(div);
-      });
   }
 
   // Função para editar uma produção
@@ -272,6 +245,7 @@ async function editarProducao(id) {
         document.getElementById('producao_id').value = producao.id;
         document.getElementById('tipoProducao').value = producao.tipo;
         document.getElementById('acao').value = 'editar';
+        document.getElementById('tituloCadProd').textContent = 'Alterar Linha de Produção';
 
         // 4. Reconstroi as etapas com os dados completos (nome do componente + custo)
         etapas = (producao.etapas || []).map(etapa => {
@@ -395,6 +369,7 @@ async function editarProducao(id) {
                       document.getElementById('form-producao').reset();
                       document.getElementById('acao').value = 'incluir';
                       document.getElementById('producao_id').value = '';
+                      document.getElementById('tituloCadProd').textContent = 'Cadastro de Linha de Produção';
                       etapas = [];
                       renderizarEtapas();
                       alternaCadastroConsulta("divCadastroProducao", "divConsultaProducoes");
@@ -493,7 +468,7 @@ async function editarProducao(id) {
       document.getElementById('form-producao').reset();
       etapas = [];
       renderizarEtapas();
-      alternaCadastroConsulta(idMostrar, idEsconder);
+      alternaCadastroConsulta(idEsconder, idMostrar);
   }
   </script>
 
@@ -653,6 +628,71 @@ async function editarProducao(id) {
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow {
   height: 100%;
+}
+
+.etapa-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.etapa-acoes {
+    flex-shrink: 0;
+}
+
+.etapa-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.btn-remover {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-remover:hover {
+    background-color: #c82333;
+}
+
+.etapa-nome {
+    font-weight: 600;
+    color: #495057;
+}
+
+.etapa-componente {
+    color: #6c757d;
+}
+
+.etapa-custo {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.etapa-total {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #dee2e6;
+    text-align: right;
+    font-size: 1.1em;
+    color: #28a745;
+}
+
+.nenhuma-etapa {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 20px;
 }
   </style>
 </body>
