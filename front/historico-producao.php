@@ -10,6 +10,7 @@
   <link rel="stylesheet" type="text/css" href="css/_styles.css">
   <link rel="stylesheet" type="text/css" href="css/borderglass.css">
   <link rel="stylesheet" type="text/css" href="css/janelas.css">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
   <style>
     .info-bloco {
@@ -29,6 +30,19 @@
     label {
       font-weight: 500;
       margin-top: 10px;
+    }
+
+    .select2-container--default .select2-selection--single {
+      height: 45px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: normal !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 100%;
     }
   </style>
 </head>
@@ -119,6 +133,7 @@
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="scr/janelas.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   
 <script>
     let tabela;
@@ -163,14 +178,40 @@
     // Carrega as linhas de produção
     carregarLinhasProducao();
     
+    // Inicializa o Select2 para a linha de produção
+    $('#linhaProducao').select2({
+        placeholder: "Selecione uma linha de produção",
+        allowClear: true,
+        width: '100%'
+    });
+
+    // Inicializa o Select2 para o produto final
+    $('#produtoFinal').select2({
+        placeholder: "Selecione a linha primeiro",
+        allowClear: true,
+        width: '100%'
+    });
+
     // Quando seleciona uma linha de produção, carrega os produtos finais
     $('#linhaProducao').on('change', function() {
         const linhaId = $(this).val();
         if (linhaId) {
             carregarProdutosFinais(linhaId);
             $('#produtoFinal').prop('disabled', false);
+            $('#produtoFinal').data('select2').dataAdapter.placeholder = "Selecione um produto";
+            $('#produtoFinal').select2('destroy').select2({
+                placeholder: "Selecione um produto",
+                allowClear: true,
+                width: '100%'
+            });
         } else {
-            $('#produtoFinal').prop('disabled', true).html('<option value="">Selecione a linha primeiro</option>');
+            $('#produtoFinal').prop('disabled', true).html('<option value="">Selecione a linha primeiro</option>').trigger('change');
+            $('#produtoFinal').data('select2').dataAdapter.placeholder = "Selecione a linha primeiro";
+            $('#produtoFinal').select2('destroy').select2({
+                placeholder: "Selecione a linha primeiro",
+                allowClear: true,
+                width: '100%'
+            });
         }
     });
     
