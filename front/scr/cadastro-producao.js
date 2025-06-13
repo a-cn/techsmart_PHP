@@ -20,7 +20,7 @@ function getElementOrThrow(id) {
 // Carrega os componentes disponíveis
 async function carregarComponentes() {
     try {
-        const response = await fetch('../../Back/controlador_componente.php?acao=listar');
+        const response = await fetch('../../back/controlador_componente.php?acao=listar');
         if (!response.ok) throw new Error('Erro ao carregar componentes');
         componentesDisponiveis = await response.json();
     } catch (error) {
@@ -32,7 +32,7 @@ async function carregarComponentes() {
 // Lista todas as produções cadastradas
 async function listarProducoes() {
   try {
-      const response = await fetch('../../Back/controlador_producao.php?acao=listar');
+      const response = await fetch('../../back/controlador_producao.php?acao=listar');
       if (!response.ok) throw new Error('Erro ao carregar produções');
       
       const dados = await response.json();
@@ -162,7 +162,7 @@ async function salvarProducao() {
         }
 
         // Enviar para o backend
-        const response = await fetch("../../Back/controlador_producao.php?acao=incluir", {
+        const response = await fetch("../../back/controlador_producao.php?acao=incluir", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ tipo, etapas })
@@ -299,7 +299,7 @@ async function atualizarProducao() {
       });
 
       // Enviar para atualização
-      const response = await fetch("../../Back/controlador_producao.php?acao=editar", {
+      const response = await fetch("../../back/controlador_producao.php?acao=editar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -328,7 +328,7 @@ async function atualizarProducao() {
 // Exclui uma produção (soft delete)
 function excluirProducao(id) {
     if (confirm('Deseja realmente excluir esta produção?')) {
-        fetch(`../../Back/controlador_producao.php?acao=excluir&id=${id}`)
+        fetch(`../../back/controlador_producao.php?acao=excluir&id=${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Erro ao excluir produção');

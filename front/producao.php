@@ -23,6 +23,8 @@ if ($result) {
   <link rel="stylesheet" type="text/css" href="css/janelas.css">
   <!-- DataTables CSS -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <!-- jQuery -->
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- DataTables JS -->
@@ -31,6 +33,8 @@ if ($result) {
   <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <!-- Font Awesome para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -113,8 +117,12 @@ if ($result) {
 async function buscarCustosComponentes() {
     try {
         const response = await fetch('../back/controlador_producao.php?action=buscar_custos');
-        if (!response.ok) throw new Error('Erro ao buscar custos');
-        return await response.json();
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao buscar custos: ${errorText}`);
+        }
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Erro ao buscar custos:', error);
         return {};
@@ -290,7 +298,8 @@ function renderizarEtapas() {
                   mostrarMensagem("Erro", "Não foi possível excluir a produção", "erro");
               }
           }, 
-          () => {}
+          () => {},
+          "alerta"
       );
   }
 
@@ -415,7 +424,10 @@ function renderizarEtapas() {
               const data = {
                   id: formData.get('id'),
                   tipo: formData.get('tipo'),
-                  etapas: etapas
+                  etapas: etapas.map(etapa => ({
+                      nome: etapa.nome,
+                      componenteId: etapa.componenteId
+                  }))
               };
 
               const response = await fetch(url, {
@@ -442,6 +454,14 @@ function renderizarEtapas() {
               console.error('Erro:', error);
               mostrarMensagem("Erro", error.message || "Erro ao processar a requisição", "erro");
           }
+      });
+
+      // Inicializa o Select2 no campo de seleção de componente
+      $('#novaEtapaComponente').select2({
+          placeholder: "Selecione um componente",
+          allowClear: true,
+          width: '100%',
+          dropdownParent: $('#novaEtapaComponente').parent()
       });
   });
   function alternaCadastroConsulta(idMostrar, idEsconder) {
@@ -595,6 +615,24 @@ function renderizarEtapas() {
 .btn-pesquisar:hover {
     background-color: #138496;
     transform: translateY(-1px);
+}
+
+/* Estilos para o Select2 */
+.select2-container {
+  width: 100% !important;
+  flex: 1;
+}
+.select2-container--default .select2-selection--single {
+  height: 45px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  line-height: normal !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
 }
   </style>
 </body>
