@@ -11,19 +11,7 @@
   <link rel="stylesheet" type="text/css" href="css/borderglass.css">
   <link rel="stylesheet" type="text/css" href="css/janelas.css">
 
-  <!--style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
-      background-color: #f7f7f7;
-    }
-
-    h2 {
-      color: #007bff;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
+  <style>
     .info-bloco {
       margin-bottom: 20px;
       padding: 15px;
@@ -42,25 +30,11 @@
       font-weight: 500;
       margin-top: 10px;
     }
-
-    .btn {
-      margin-top: 10px;
-      margin-right: 5px;
-    }
-
-    table.dataTable thead th {
-      background-color: #f1f1f1;
-    }
-    
-    .etapa-concluida {
-      background-color: #e6ffe6;
-    }
-  </style-->
+  </style>
 </head>
 <body>
 
   <div class="janela-consulta">
-    <div>
       <span class="titulo-janela">Iniciar Produção</span>
       <div class="container-fluid mt-4">
         <div class="row mb-3">
@@ -87,30 +61,33 @@
             <button id="btnIniciar" class="btn btn-primary">Iniciar Produção</button>
           </div>
         </div>
-      </div>
     </div>
 
-    <div id="infoProducao" class="card bordeglass mt-3 d-none">
-        <span class="titulo-janela mt-1">Controle de Produção</span>
-        <div class="container-fluid mt-1">
-            <div class="row">
-                <div class="col-md-2">
-                    <strong>Linha:</strong> <span id="nomeLinha"></span>
+    <div id="infoProducao" class="info-bloco d-none">
+        <div>
+            <span class="titulo-janela fw-bold">Controle de Produção</span>
+            <div class="container-fluid mt-2">
+                <div class="row">
+                    <div class="col-md-4">
+                        <span><strong>Linha:</strong> <span id="nomeLinha"></span></span>
+                    </div>
+                    <div class="col-md-4">
+                        <span><strong>Produto:</strong> <span id="nomeProduto"></span></span>
+                    </div>
+                    <div class="col-md-4">
+                        <span><strong>Quantidade:</strong> <span id="qtdProducao"></span></span>
+                    </div>
                 </div>
-                <div class="col-md-2">
-                    <strong>Produto:</strong> <span id="nomeProduto"></span>
-                </div>
-                <div class="col-md-2">
-                    <strong>Quantidade:</strong> <span id="qtdProducao"></span>
-                </div>
-                <div class="col-md-2">
-                    <strong>Início:</strong> <span id="dataInicio"></span>
-                </div>
-                <div class="col-md-2">
-                    <strong>Previsão:</strong> <span id="dataPrevisao"></span>
-                </div>
-                <div class="col-md-2">
-                    <strong>Término:</strong> <span id="dataTermino"></span>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <span><strong>Início:</strong> <span id="dataInicio"></span></span>
+                    </div>
+                    <div class="col-md-4">
+                        <span><strong>Previsão:</strong> <span id="dataPrevisao"></span></span>
+                    </div>
+                    <div class="col-md-4">
+                        <span><strong>Término:</strong> <span id="dataTermino"></span></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -365,7 +342,7 @@ function concluirEtapa(etapaId) {
         const etapas = tabela.rows().data().toArray();
         const etapaAnterior = etapas.find(e => e.ordem === (data.ordem - 1));
         if (!etapaAnterior || !etapaAnterior.concluida) {
-            mostrarMensagem('Atenção', 'É necessário concluir a etapa anterior primeiro!', 'erro');
+            mostrarMensagem('Atenção', 'É necessário concluir a etapa anterior primeiro!', 'alerta');
             return;
         }
     }
