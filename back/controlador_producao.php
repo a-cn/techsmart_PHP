@@ -353,62 +353,69 @@ try {
             }
             break;
 
+        case 'listar_linhas_status':
+            try {
+                $sql = "SELECT 
+                    p.producao_id as id,
+                    p.nome,
+                    pf.nome as produto_final,
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1 FROM Historico_Producao hp 
+                            WHERE hp.fk_producao = p.producao_id 
+                            AND hp.data_conclusao IS NULL
+                        ) THEN 'Ativa'
+                        ELSE 'Concluída'
+                    END as status,
+                    COALESCE(
+                        (
+                            SELECT COUNT(e.etapa_producao_id) 
+                            FROM Etapa_Producao e 
+                            WHERE e.fk_producao = p.producao_id
+                        ), 0
+                    ) as total_etapas,
+                    COALESCE(
+                        (
+                            SELECT COUNT(*) 
+                            FROM Historico_Producao hp
+                            WHERE hp.fk_producao = p.producao_id
+                            AND hp.ultima_etapa IS NOT NULL
+                        ), 0
+                    ) as etapas_concluidas
+                FROM Producao p
+                LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
+                WHERE p.ativo = 1
+                ORDER BY status DESC, p.nome";
+        
+                $stmt = sqlsrv_query($conn, $sql);
+                if ($stmt === false) {
+                    throw new Exception("Erro ao executar consulta: " . print_r(sqlsrv_errors(), true));
+                }
+                
+                $linhas = [];
+                while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                    $totalEtapas = $row['total_etapas'] ? (int)$row['total_etapas'] : 1;
+                    $concluidas = $row['etapas_concluidas'] ? (int)$row['etapas_concluidas'] : 0;
+                    $progresso = round(($concluidas / $totalEtapas) * 100);
+                    
+                    $linhas[] = [
+                        'id' => $row['id'],
+                        'nome' => $row['nome'],
+                        'produto_final' => $row['produto_final'] ?? 'N/A',
+                        'status' => $row['status'],
+                        'progresso' => $progresso
+                    ];
+                }
+                
+                echo json_encode($linhas);
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(["error" => $e->getMessage()]);
+            }
+            break;
+
         default:
             throw new Exception("Ação não reconhecida");
-
-            case 'listar_linhas_status':
-    $sql = "SELECT 
-                p.producao_id as id,
-                p.nome,
-                pf.nome as produto_final,
-                CASE 
-                    WHEN EXISTS (
-                        SELECT 1 FROM Historico_Producao hp 
-                        WHERE hp.fk_producao = p.producao_id 
-                        AND hp.data_conclusao IS NULL
-                    ) THEN 'Ativa'
-                    ELSE 'Concluída'
-                END as status,
-                COALESCE(
-                    (
-                        SELECT COUNT(e.etapa_producao_id) 
-                        FROM Etapa_Producao e 
-                        WHERE e.fk_producao = p.producao_id
-                    ), 0
-                ) as total_etapas,
-                COALESCE(
-                    (
-                        SELECT COUNT(he.etapa_producao_id) 
-                        FROM Historico_Etapas he
-                        JOIN Historico_Producao hp ON he.fk_historico = hp.historico_producao_id
-                        WHERE hp.fk_producao = p.producao_id
-                        AND he.concluida = 1
-                    ), 0
-                ) as etapas_concluidas
-            FROM Producao p
-            LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
-            WHERE p.ativo = 1
-            ORDER BY status DESC, p.nome";
-    
-    $stmt = sqlsrv_query($conn, $sql);
-    $linhas = [];
-    
-    while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $totalEtapas = $row['total_etapas'] ? (int)$row['total_etapas'] : 1;
-        $concluidas = $row['etapas_concluidas'] ? (int)$row['etapas_concluidas'] : 0;
-        $progresso = round(($concluidas / $totalEtapas) * 100);
-        
-        $linhas[] = [
-            'id' => $row['id'],
-            'nome' => $row['nome'],
-            'produto_final' => $row['produto_final'] ?? 'N/A',
-            'status' => $row['status'],
-            'progresso' => $progresso
-        ];
-    }
-    
-    echo json_encode($linhas);
-    break;
     }
 } catch (Exception $e) {
     http_response_code(500);

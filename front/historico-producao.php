@@ -77,7 +77,16 @@
     const tabelaLinhas = $('#tabelaLinhas').DataTable({
         ajax: {
             url: '../back/controlador_producao.php?acao=listar_linhas_status',
-            dataSrc: ''
+            dataSrc: '',
+            error: function(xhr, error, thrown) {
+                console.error('Erro na requisição AJAX:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText,
+                    error: error,
+                    thrown: thrown
+                });
+            }
         },
         columns: [
             { data: 'id' },
@@ -141,8 +150,8 @@
 });
 
 function acessarLinha(id) {
-    // Redireciona para a tela de etapas que criamos anteriormente
-    window.location.href = `iniciar_producao.html?linha_id=${id}`;
+    // Redireciona para a tela de controle de produção
+    window.location.href = `index.php?pg=controle-producao&linha_id=${id}`;
 }
     </script>
 </body>
