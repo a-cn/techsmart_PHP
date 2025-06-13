@@ -1,6 +1,6 @@
 -- PADRÕES DE CONSULTA
 -- Autora: Amanda Caetano Nasser
--- Última alteração em: 06/06/2025
+-- Última alteração em: 13/06/2025
 
 USE TechSmartDB;
 
@@ -39,6 +39,7 @@ select * from Producao
 -- CONSULTAR TELA DE ACOMPANHAMENTO DA PRODUÇÃO
 select * from Producao
 select * from Etapa_Producao
+select * from Componente
 select * from Historico_Producao
 
 -- CONSULTAR MOVIMENTAÇÕES

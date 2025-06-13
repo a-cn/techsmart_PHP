@@ -2,6 +2,14 @@
 header('Content-Type: application/json');
 require_once 'conexao_sqlserver.php';
 
+// Decodifica JSON do corpo da requisição, se necessário
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    $json = file_get_contents('php://input');
+    $data = json_decode($json, true);
+} else {
+    $data = $_POST; // fallback para formulários normais
+}
+
 $acao = $_GET['action'] ?? $_GET['acao'] ?? '';
 $id = $_GET['id'] ?? 0;
 
