@@ -3,6 +3,17 @@ header('Content-Type: application/json');
 require_once 'conexao_sqlserver.php';
 require_once 'verifica_sessao.php';
 
+// Função auxiliar para formatar datas em ISO 8601
+function formatarDataISO($datetime) {
+    if ($datetime instanceof DateTime) {
+        return $datetime->format(DateTime::ATOM);
+    }
+    if (is_array($datetime) && isset($datetime['date'])) {
+        return (new DateTime($datetime['date']))->format(DateTime::ATOM);
+    }
+    return null;
+}
+
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 try {
@@ -154,7 +165,18 @@ function iniciarProducao($conn) {
         // Obtém os dados atualizados da produção
         $sqlProducao = "SELECT * FROM Historico_Producao WHERE historico_producao_id = ?";
         $stmtProducao = sqlsrv_query($conn, $sqlProducao, [$historicoId]);
-        $producao = sqlsrv_fetch_array($stmtProducao, SQLSRV_FETCH_ASSOC);
+        $producaoRaw = sqlsrv_fetch_array($stmtProducao, SQLSRV_FETCH_ASSOC);
+
+        // Formata as datas no padrão ISO 8601 para o JavaScript
+        $producao = [
+            'historico_producao_id' => $producaoRaw['historico_producao_id'],
+            'fk_producao' => $producaoRaw['fk_producao'],
+            'quantidade_produto' => $producaoRaw['quantidade_produto'],
+            'ultima_etapa' => $producaoRaw['ultima_etapa'],
+            'data_inicio' => formatarDataISO($producaoRaw['data_inicio']),
+            'data_previsao' => formatarDataISO($producaoRaw['data_previsao']),
+            'data_conclusao' => $producaoRaw['data_conclusao'] ? formatarDataISO($producaoRaw['data_conclusao']) : null
+        ];
         
         echo json_encode([
             'status' => 'ok',
@@ -231,7 +253,17 @@ function concluirEtapa($conn) {
         // Obtém os dados atualizados da produção
         $sqlProducao = "SELECT * FROM Historico_Producao WHERE historico_producao_id = ?";
         $stmtProducao = sqlsrv_query($conn, $sqlProducao, [$historicoId]);
-        $producao = sqlsrv_fetch_array($stmtProducao, SQLSRV_FETCH_ASSOC);
+        $producaoRaw = sqlsrv_fetch_array($stmtProducao, SQLSRV_FETCH_ASSOC);
+
+        $producao = [
+            'historico_producao_id' => $producaoRaw['historico_producao_id'],
+            'fk_producao' => $producaoRaw['fk_producao'],
+            'quantidade_produto' => $producaoRaw['quantidade_produto'],
+            'ultima_etapa' => $producaoRaw['ultima_etapa'],
+            'data_inicio' => formatarDataISO($producaoRaw['data_inicio']),
+            'data_previsao' => formatarDataISO($producaoRaw['data_previsao']),
+            'data_conclusao' => $producaoRaw['data_conclusao'] ? formatarDataISO($producaoRaw['data_conclusao']) : null
+        ];
         
         echo json_encode([
             'status' => 'ok',
