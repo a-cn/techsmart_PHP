@@ -1,3 +1,8 @@
+<?php
+require_once '../back/conexao_sqlserver.php';
+require_once '../back/verifica_sessao.php';
+$loginTimestamp = time();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
