@@ -255,30 +255,49 @@ function renderizarEtapas() {
   }
 
   // Função para editar uma produção
-  async function editarProducao(id) {
-      try {
-          const response = await fetch(`../back/controlador_producao.php?acao=obter&id=${id}`);
-          if (!response.ok) throw new Error('Erro ao carregar produção');
-          
-          const producao = await response.json();
-          
-          // Preenche os campos do formulário
-          document.getElementById('producao_id').value = producao.id;
-          document.getElementById('tipoProducao').value = producao.tipo;
-          document.getElementById('acao').value = 'editar';
-          
-          // Carrega as etapas
-          etapas = producao.etapas || [];
-          renderizarEtapas();
-          
-          // Alterna para a janela de cadastro
-          alternaCadastroConsulta("divCadastroProducao", "divConsultaProducoes");
-          
-      } catch (error) {
-          console.error('Erro ao editar produção:', error);
-          mostrarMensagem("Erro", "Não foi possível carregar a produção para edição", "erro");
-      }
-  }
+async function editarProducao(id) {
+    try {
+        // 1. Garante que os custos estejam carregados
+        if (Object.keys(custosComponentes).length === 0) {
+            const responseCustos = await fetch('../back/controlador_producao.php?action=buscar_custos');
+            if (!responseCustos.ok) throw new Error('Erro ao buscar custos');
+            custosComponentes = await responseCustos.json();
+        }
+
+        // 2. Busca os dados da produção
+        const response = await fetch(`../back/controlador_producao.php?acao=obter&id=${id}`);
+        if (!response.ok) throw new Error('Erro ao carregar produção');
+
+        const producao = await response.json();
+
+        // 3. Preenche os campos do formulário
+        document.getElementById('producao_id').value = producao.id;
+        document.getElementById('tipoProducao').value = producao.tipo;
+        document.getElementById('acao').value = 'editar';
+
+        // 4. Reconstroi as etapas com os dados completos (nome do componente + custo)
+        etapas = (producao.etapas || []).map(etapa => {
+            const componente = componentesDisponiveis.find(c => c.componente_id == etapa.componenteId);
+            const custo = custosComponentes[etapa.componenteId] || 0;
+
+            return {
+                nome: etapa.nome,
+                componenteId: etapa.componenteId,
+                componenteNome: componente ? componente.nome : 'Desconhecido',
+                custo: parseFloat(custo)
+            };
+        });
+
+        // 5. Renderiza etapas e exibe formulário
+        renderizarEtapas();
+        alternaCadastroConsulta("divCadastroProducao", "divConsultaProducoes");
+
+    } catch (error) {
+        console.error('Erro ao editar produção:', error);
+        mostrarMensagem("Erro", "Não foi possível carregar a produção para edição", "erro");
+    }
+}
+
 
   // Função para excluir uma produção
   function excluirProducao(id) {

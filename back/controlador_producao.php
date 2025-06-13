@@ -194,9 +194,35 @@ try {
             if (empty($data['id'])) {
                 throw new Exception("ID da produção não informado");
             }
-            
+        
             if (empty($data['tipo'])) {
                 throw new Exception("Tipo de produção não informado");
+            }
+        
+            // Buscar custos dos componentes
+            $sql = "SELECT fc.fk_componente, fc.custo_componente 
+                    FROM Fornecedor_Componente fc
+                    INNER JOIN Componente c ON fc.fk_componente = c.componente_id
+                    WHERE c.ativo = 1";
+        
+            $stmt = sqlsrv_query($conn, $sql);
+            if ($stmt === false) {
+                throw new Exception("Erro ao buscar custos: " . print_r(sqlsrv_errors(), true));
+            }
+        
+            $custos = [];
+            while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $custos[$row['fk_componente']] = $row['custo_componente'];
+            }
+        
+            // Calcular custo total atualizado
+            $custoTotal = 0;
+            foreach ($data['etapas'] as $etapa) {
+                $componenteId = $etapa['componenteId'];
+                if (!isset($custos[$componenteId])) {
+                    throw new Exception("Custo do componente ID $componenteId não encontrado.");
+                }
+                $custoTotal += floatval($custos[$componenteId]);
             }
         
             // Inicia transação
@@ -205,11 +231,11 @@ try {
             }
         
             try {
-                // 1. Atualiza o nome da produção
-                $sqlProducao = "UPDATE Producao SET nome = ? WHERE producao_id = ?";
-                $params = array($data['tipo'], $data['id']);
+                // 1. Atualiza o nome e custo da produção
+                $sqlProducao = "UPDATE Producao SET nome = ?, custo = ? WHERE producao_id = ?";
+                $params = array($data['tipo'], $custoTotal, $data['id']);
                 $stmtProducao = sqlsrv_query($conn, $sqlProducao, $params);
-                
+        
                 if ($stmtProducao === false) {
                     throw new Exception("Erro ao atualizar produção: " . print_r(sqlsrv_errors(), true));
                 }
@@ -218,12 +244,11 @@ try {
                 $sqlEtapasExistentes = "SELECT etapa_producao_id, ordem FROM Etapa_Producao 
                                         WHERE fk_producao = ? AND ativo = 1
                                         ORDER BY ordem";
-                $stmtEtapasExistentes = sqlsrv_query($conn, $sqlEtapasExistentes, array($data['id']));
-                
+                $stmtEtapasExistentes = sqlsrv_query($conn, array($data['id']));
                 if ($stmtEtapasExistentes === false) {
                     throw new Exception("Erro ao consultar etapas existentes: " . print_r(sqlsrv_errors(), true));
                 }
-                
+        
                 $etapasExistentes = [];
                 while ($row = sqlsrv_fetch_array($stmtEtapasExistentes, SQLSRV_FETCH_ASSOC)) {
                     $etapasExistentes[$row['ordem']] = $row['etapa_producao_id'];
@@ -232,7 +257,7 @@ try {
                 // 3. Processa cada etapa enviada
                 foreach ($data['etapas'] as $index => $etapa) {
                     $ordem = $index + 1;
-                    
+        
                     if (isset($etapasExistentes[$ordem])) {
                         // Etapa existe - atualiza
                         $sqlAtualizar = "UPDATE Etapa_Producao 
@@ -243,17 +268,15 @@ try {
                             $etapa['componenteId'],
                             $etapasExistentes[$ordem]
                         );
-                        
+        
                         $stmtAtualizar = sqlsrv_query($conn, $sqlAtualizar, $paramsAtualizar);
-                        
                         if ($stmtAtualizar === false) {
                             throw new Exception("Erro ao atualizar etapa $ordem: " . print_r(sqlsrv_errors(), true));
                         }
-                        
-                        // Remove da lista de etapas existentes
-                        unset($etapasExistentes[$ordem]);
+        
+                        unset($etapasExistentes[$ordem]); // remove da lista
                     } else {
-                        // Etapa não existe - insere nova
+                        // Etapa nova
                         $sqlInserir = "INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente) 
                                         VALUES (?, ?, ?, ?)";
                         $paramsInserir = array(
@@ -262,34 +285,29 @@ try {
                             $etapa['nome'],
                             $etapa['componenteId']
                         );
-                        
+        
                         $stmtInserir = sqlsrv_query($conn, $sqlInserir, $paramsInserir);
-                        
                         if ($stmtInserir === false) {
                             throw new Exception("Erro ao inserir etapa $ordem: " . print_r(sqlsrv_errors(), true));
                         }
                     }
                 }
         
-                // 4. Remover etapas que não foram enviadas (se necessário)
+                // 4. Remover etapas não reenviadas
                 if (!empty($etapasExistentes)) {
                     $idsParaRemover = implode(',', array_values($etapasExistentes));
                     $sqlRemover = "UPDATE Etapa_Producao SET ativo = 0 
                                     WHERE etapa_producao_id IN ($idsParaRemover)";
-                    
                     $stmtRemover = sqlsrv_query($conn, $sqlRemover);
-                    
                     if ($stmtRemover === false) {
                         throw new Exception("Erro ao remover etapas extras: " . print_r(sqlsrv_errors(), true));
                     }
                 }
         
-                // Commit da transação
                 sqlsrv_commit($conn);
                 echo json_encode(["message" => "Produção atualizada com sucesso!"]);
-                
+        
             } catch (Exception $e) {
-                // Rollback em caso de erro
                 sqlsrv_rollback($conn);
                 throw $e;
             }
