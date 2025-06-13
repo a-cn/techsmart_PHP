@@ -98,7 +98,7 @@ if ($result) {
             <th>ID</th>
             <th>TIPO DE PRODUÇÃO</th>
             <th>ETAPAS</th>
-+            <th>AÇÕES</th>
+            <th>AÇÕES</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -430,50 +430,59 @@ async function editarProducao(id) {
       });
 
       // Configura o envio do formulário via AJAX
-      document.getElementById('form-producao').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          
-          const form = e.target;
-          const formData = new FormData(form);
-          const action = formData.get('acao');
-          const url = `../back/controlador_producao.php?acao=${action}`;
-          
-          try {
-              // Prepara os dados para envio
-              const data = {
-                  id: formData.get('id'),
-                  tipo: formData.get('tipo'),
-                  etapas: etapas.map(etapa => ({
-                      nome: etapa.nome,
-                      componenteId: etapa.componenteId
-                  }))
-              };
+      document.getElementById('form-producao').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-              const response = await fetch(url, {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(data)
-              });
+    const form = e.target;
+    const formData = new FormData(form);
+    const action = formData.get('acao');
+    const url = `../back/controlador_producao.php?acao=${action}`;
 
-              if (!response.ok) {
-                  const errorData = await response.json();
-                  throw new Error(errorData.error || 'Erro ao salvar produção');
-              }
+    try {
+        const data = {
+            id: formData.get('id'),
+            tipo: formData.get('tipo'),
+            etapas: etapas.map(etapa => ({
+                nome: etapa.nome,
+                componenteId: etapa.componenteId
+            }))
+        };
 
-              const result = await response.json();
-              mostrarMensagem("Sucesso", result.message || "Operação realizada com sucesso!", "sucesso");
-              form.reset();
-              etapas = [];
-              renderizarEtapas();
-              producaoTable.ajax.reload();
-              alternaCadastroConsulta("divConsultaProducoes", "divCadastroProducao");
-          } catch (error) {
-              console.error('Erro:', error);
-              mostrarMensagem("Erro", error.message || "Erro ao processar a requisição", "erro");
-          }
-      });
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const text = await response.text(); // Lê a resposta como texto
+
+        try {
+            const result = JSON.parse(text); // Faz parse manual do JSON
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Erro desconhecido');
+            }
+
+            mostrarMensagem("Sucesso", result.message || "Operação realizada com sucesso!", "sucesso");
+            form.reset();
+            etapas = [];
+            renderizarEtapas();
+            producaoTable.ajax.reload();
+            alternaCadastroConsulta("divConsultaProducoes", "divCadastroProducao");
+
+        } catch (parseError) {
+            console.error("Resposta inválida do servidor:", text);
+            mostrarMensagem("Erro", "Erro ao processar a resposta do servidor", "erro");
+        }
+
+    } catch (error) {
+        console.error("Erro:", error);
+        mostrarMensagem("Erro", error.message || "Erro ao processar a requisição", "erro");
+    }
+});
+
 
       // Inicializa o Select2 no campo de seleção de componente
       $('#novaEtapaComponente').select2({

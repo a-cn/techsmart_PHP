@@ -242,9 +242,10 @@ try {
         
                 // 2. Obtem etapas existentes
                 $sqlEtapasExistentes = "SELECT etapa_producao_id, ordem FROM Etapa_Producao 
-                                        WHERE fk_producao = ? AND ativo = 1
-                                        ORDER BY ordem";
-                $stmtEtapasExistentes = sqlsrv_query($conn, array($data['id']));
+                        WHERE fk_producao = ? AND ativo = 1
+                        ORDER BY ordem";
+                $stmtEtapasExistentes = sqlsrv_query($conn, $sqlEtapasExistentes, array($data['id'])); 
+
                 if ($stmtEtapasExistentes === false) {
                     throw new Exception("Erro ao consultar etapas existentes: " . print_r(sqlsrv_errors(), true));
                 }
