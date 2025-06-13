@@ -30,7 +30,7 @@ $stmt = sqlsrv_query($conn, $sql, $params);
 $dados = [];
 
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    $row['data_hora'] = $row['data_hora'] ? $row['data_hora']->format('d/m/Y H:i') : '';
+    $row['data_hora'] = $row['data_hora'] ? $row['data_hora']->format('d/m/Y, H:i') : '';
     $dados[] = $row;
 }
 

@@ -435,28 +435,7 @@ function concluirEtapa(etapaId) {
 // Função para formatar a data
 function formatarData(dataString) {
     if (!dataString) return '-';
-    
-    try {
-        // Cria a data e força o fuso horário para Brasília
-        const data = new Date(dataString);
-        if (isNaN(data.getTime())) return 'Data inválida';
-        
-        // Formata a data usando Intl.DateTimeFormat com fuso horário específico
-        const formatter = new Intl.DateTimeFormat('pt-BR', {
-            timeZone: 'America/Sao_Paulo',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        });
-        
-        return formatter.format(data);
-    } catch (error) {
-        console.error('Erro ao formatar data:', error);
-        return 'Data inválida';
-    }
+    return dataString; // Retorna a data já formatada do backend
 }
 
 </script>

@@ -80,7 +80,7 @@ if ($stmt === false) {
                 <tr id="row-<?= $row['pedido_id'] ?>">
                     <td name="pedido_id"><?= $row['pedido_id'] ?></td>
                     <td name="cpf_cnpj"><?= htmlspecialchars($row['cpf_cnpj']) ?></td>
-                    <td name="data_hora"><?= $row['data_hora']->format('d/m/Y H:i') ?></td>
+                    <td name="data_hora"><?= $row['data_hora']->format('d/m/Y, H:i') ?></td>
                     <td name="situacao" class="situacao-cell"><?= htmlspecialchars($row['situacao']) ?></td>
                     <td name="custo">R$ <?= number_format($row['custo'], 2, ',', '.') ?></td>
                     <?php if (esconderSeCliente()): ?>

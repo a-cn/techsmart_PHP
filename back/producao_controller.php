@@ -7,21 +7,18 @@ require_once 'verifica_sessao.php';
 function formatarDataISO($datetime) {
     try {
         if ($datetime instanceof DateTime) {
-            $datetime->setTimezone(new DateTimeZone('America/Sao_Paulo'));
-            return $datetime->format('Y-m-d\TH:i:s');
+            return $datetime->format('d/m/Y, H:i');
         }
         
         if (is_array($datetime) && isset($datetime['date'])) {
             $date = new DateTime($datetime['date']);
-            $date->setTimezone(new DateTimeZone('America/Sao_Paulo'));
-            return $date->format('Y-m-d\TH:i:s');
+            return $date->format('d/m/Y, H:i');
         }
         
         // Se for uma string de data do SQL Server
         if (is_string($datetime)) {
             $date = new DateTime($datetime);
-            $date->setTimezone(new DateTimeZone('America/Sao_Paulo'));
-            return $date->format('Y-m-d\TH:i:s');
+            return $date->format('d/m/Y, H:i');
         }
         
         return null;
