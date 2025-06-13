@@ -88,21 +88,19 @@ if ($result) {
 
     <div class="janela-consulta" id="divConsultaProducoes">
       <span class="titulo-janela">Linhas de Produção Cadastradas</span>
-      <div class="pesquisa">
-        <input type="text" id="pesquisar" placeholder="Pesquisar linha de produção...">
-        <button class="btn-pesquisar" onclick="pesquisarProducao()">Pesquisar</button>
-      </div>
-      <table id="tabelaProducoes" class="display nowrap" style="width:100%">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>TIPO DE PRODUÇÃO</th>
-            <th>ETAPAS</th>
-            <th>AÇÕES</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="container-fluid mt-4">
+        <table id="tabelaProducoes" class="display nowrap" style="width:100%">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>TIPO DE PRODUÇÃO</th>
+                <th>ETAPAS</th>
+                <th>AÇÕES</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </div>
     </div>
   </div>
 
@@ -322,21 +320,15 @@ async function editarProducao(id) {
       );
   }
 
-  // Função para pesquisar produções
-  function pesquisarProducao() {
-      const termo = document.getElementById('pesquisar').value;
-      producaoTable.search(termo).draw();
-  }
-
   // Inicialização quando o DOM estiver carregado
   document.addEventListener("DOMContentLoaded", function() {
       // Inicializa o DataTable
       producaoTable = $('#tabelaProducoes').DataTable({
     ajax: {
         url: '../back/controlador_producao.php',
-        data: { acao: 'listar' },  // Envia como parâmetro POST
-        type: 'GET',  // Alternativa mais segura que GET
-        dataSrc: 'data',  // Acessa a propriedade 'data' da resposta
+        data: { acao: 'listar' },
+        type: 'GET',
+        dataSrc: 'data',
         error: function(xhr) {
             let errorMsg = 'Erro ao carregar dados';
             try {
