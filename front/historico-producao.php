@@ -7,8 +7,11 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="css/_styles.css">
+  <link rel="stylesheet" type="text/css" href="css/borderglass.css">
+  <link rel="stylesheet" type="text/css" href="css/janelas.css">
 
-  <style>
+  <!--style>
     body {
       font-family: 'Segoe UI', sans-serif;
       padding: 20px;
@@ -52,58 +55,84 @@
     .etapa-concluida {
       background-color: #e6ffe6;
     }
-  </style>
+  </style-->
 </head>
 <body>
 
-  <h2>Iniciar Linha de Produção</h2>
+  <div class="janela-consulta">
+    <div>
+      <span class="titulo-janela">Iniciar Produção</span>
+      <div class="container-fluid mt-4">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="linhaProducao">Selecionar Linha de Produção:</label>
+            <select id="linhaProducao" class="form-select">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="produtoFinal">Produto Final:</label>
+            <select id="produtoFinal" class="form-select" disabled>
+              <option value="">Selecione a linha primeiro</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label for="quantidade">Quantidade a Produzir:</label>
+            <input type="number" id="quantidade" class="form-control" min="1">
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-12 d-flex justify-content-end">
+            <button id="btnIniciar" class="btn btn-primary">Iniciar Produção</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <label for="linhaProducao">Selecionar Linha de Produção:</label>
-      <select id="linhaProducao" class="form-select">
-        <option value="">Selecione...</option>
-      </select>
+    <div id="infoProducao" class="card bordeglass mt-3 d-none">
+        <span class="titulo-janela mt-1">Controle de Produção</span>
+        <div class="container-fluid mt-1">
+            <div class="row">
+                <div class="col-md-2">
+                    <strong>Linha:</strong> <span id="nomeLinha"></span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Produto:</strong> <span id="nomeProduto"></span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Quantidade:</strong> <span id="qtdProducao"></span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Início:</strong> <span id="dataInicio"></span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Previsão:</strong> <span id="dataPrevisao"></span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Término:</strong> <span id="dataTermino"></span>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col-md-3">
-      <label for="produtoFinal">Produto Final:</label>
-      <select id="produtoFinal" class="form-select" disabled>
-        <option value="">Selecione a linha primeiro</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <label for="quantidade">Quantidade a Produzir:</label>
-      <input type="number" id="quantidade" class="form-control" min="1">
+
+    <div class="card bordeglass mt-3">
+      <div class="card-body">
+        <table id="tabelaEtapas" class="display nowrap" style="width:100%">
+          <thead>
+            <tr>
+              <th>Ordem</th>
+              <th>Nome da Etapa</th>
+              <th>Componente Utilizado</th>
+              <th>Situação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
-  
-  <div class="row mb-3">
-    <div class="col-md-12 d-flex justify-content-end">
-      <button id="btnIniciar" class="btn btn-success">Iniciar Produção</button>
-    </div>
-  </div>
-
-  <div id="infoProducao" class="info-bloco d-none">
-    <span><strong>Linha:</strong> <span id="nomeLinha"></span></span>
-    <span><strong>Produto:</strong> <span id="nomeProduto"></span></span>
-    <span><strong>Quantidade:</strong> <span id="qtdProducao"></span></span>
-    <span><strong>Início:</strong> <span id="dataInicio"></span></span>
-    <span><strong>Previsão:</strong> <span id="dataPrevisao"></span></span>
-    <span><strong>Término:</strong> <span id="dataTermino"></span></span>
-  </div>
-
-  <table id="tabelaEtapas" class="display nowrap" style="width:100%">
-    <thead>
-      <tr>
-        <th>Ordem</th>
-        <th>Nome da Etapa</th>
-        <th>Componente Utilizado</th>
-        <th>Situação</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -112,6 +141,7 @@
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="scr/janelas.js"></script>
   
 <script>
     let tabela;
@@ -123,28 +153,7 @@
         dom: 'Bfrtip',
         buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
         language: {
-            "decimal": "",
-            "emptyTable": "Nenhum dado disponível na tabela",
-            "info": "Mostrando _START_ até _END_ de _TOTAL_ registros",
-            "infoEmpty": "Mostrando 0 até 0 de 0 registros",
-            "infoFiltered": "(filtrado de _MAX_ registros no total)",
-            "infoPostFix": "",
-            "thousands": ".",
-            "lengthMenu": "Mostrar _MENU_ registros",
-            "loadingRecords": "Carregando...",
-            "processing": "Processando...",
-            "search": "Pesquisar:",
-            "zeroRecords": "Nenhum registro correspondente encontrado",
-            "paginate": {
-                "first": "Primeiro",
-                "last": "Último",
-                "next": "Próximo",
-                "previous": "Anterior"
-            },
-            "aria": {
-                "sortAscending": ": ativar para ordenar coluna de forma ascendente",
-                "sortDescending": ": ativar para ordenar coluna de forma descendente"
-            }
+            url: 'data/datatables-pt_br.json'
         },
         columns: [
             { data: 'ordem', title: 'Ordem' },
@@ -164,7 +173,8 @@
                     if (row.concluida) {
                         return '<button class="btn btn-sm btn-secondary" disabled>Concluído</button>';
                     } else {
-                        return `<button class="btn btn-sm btn-primary btn-concluir" data-etapa="${row.etapa_producao_id}">Concluir</button>`;
+                        return `<button class="btn btn-sm btn-primary btn-concluir" 
+                                data-etapa="${row.etapa_producao_id}">Concluir</button>`;
                     }
                 }
             }
@@ -337,8 +347,27 @@ $('#linhaProducao').on('change', function() {
 function concluirEtapa(etapaId) {
     if (!producaoAtiva || !producaoAtiva.historico_producao_id) {
         console.error('Produção ativa:', producaoAtiva);
-        alert('Nenhuma produção ativa encontrada ou ID da produção inválido.');
+        mostrarMensagem('Erro', 'Nenhuma produção ativa encontrada ou ID da produção inválido.', 'erro');
         return;
+    }
+
+    // Obtém a linha atual
+    const row = tabela.row(`#${etapaId}`);
+    if (!row.length) {
+        mostrarMensagem('Erro', 'Etapa não encontrada na tabela.', 'erro');
+        return;
+    }
+
+    const data = row.data();
+    
+    // Verifica se a etapa anterior foi concluída
+    if (data.ordem > 1) {
+        const etapas = tabela.rows().data().toArray();
+        const etapaAnterior = etapas.find(e => e.ordem === (data.ordem - 1));
+        if (!etapaAnterior || !etapaAnterior.concluida) {
+            mostrarMensagem('Atenção', 'É necessário concluir a etapa anterior primeiro!', 'erro');
+            return;
+        }
     }
 
     console.log('Concluindo etapa:', {
@@ -362,25 +391,25 @@ function concluirEtapa(etapaId) {
                     const data = row.data();
                     data.concluida = true;
                     row.data(data).draw();
+                    
+                    // Atualiza a produção ativa
+                    producaoAtiva = resposta.producao;
+                    
+                    // Atualiza a data de término se a produção foi concluída
+                    if (resposta.producao.data_conclusao) {
+                        $('#dataTermino').text(formatarData(resposta.producao.data_conclusao));
+                    }
+                    
+                    mostrarMensagem('Sucesso', 'Etapa concluída com sucesso!', 'sucesso');
                 }
-                
-                // Atualiza a produção ativa
-                producaoAtiva = resposta.producao;
-                
-                // Atualiza a data de término se a produção foi concluída
-                if (resposta.producao.data_conclusao) {
-                    $('#dataTermino').text(formatarData(resposta.producao.data_conclusao));
-                }
-                
-                alert('Etapa concluída com sucesso!');
             } else {
-                alert('Erro: ' + resposta.mensagem);
+                mostrarMensagem('Erro', resposta.mensagem, 'erro');
             }
         },
         error: function(xhr, status, error) {
             console.error('Erro ao concluir etapa:', error);
             console.error('Resposta do servidor:', xhr.responseText);
-            alert('Erro ao concluir etapa. Consulte o console para detalhes.');
+            mostrarMensagem('Erro', 'Erro ao concluir etapa. Consulte o console para detalhes.', 'erro');
         }
     });
 }

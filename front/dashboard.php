@@ -33,7 +33,7 @@ Chart.register(ChartDataLabels);
 <div class="janela-consulta" id="divdashBoard">
     <span class="titulo-janela">Dashboard</span>
 
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <!-- Abas -->
         <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
             <li class="nav-item">
