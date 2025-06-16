@@ -367,17 +367,28 @@ try {
                         (
                             SELECT COUNT(e.etapa_producao_id) 
                             FROM Etapa_Producao e 
-                            WHERE e.fk_producao = p.producao_id
+                            WHERE e.fk_producao = p.producao_id AND e.ativo = 1
                         ), 0
                     ) as total_etapas,
-                    COALESCE(
-                        (
-                            SELECT COUNT(*) 
-                            FROM Historico_Producao hp2
-                            WHERE hp2.fk_producao = p.producao_id
-                            AND hp2.ultima_etapa IS NOT NULL
-                        ), 0
-                    ) as etapas_concluidas
+                    CASE 
+                        WHEN hp.data_conclusao IS NOT NULL THEN 100
+                        ELSE COALESCE(
+                            (
+                                SELECT COUNT(*) 
+                                FROM Etapa_Producao e 
+                                WHERE e.fk_producao = p.producao_id 
+                                AND e.ativo = 1 
+                                AND e.ordem <= hp.ultima_etapa
+                            ) * 100.0 / NULLIF(
+                                (
+                                    SELECT COUNT(*) 
+                                    FROM Etapa_Producao e 
+                                    WHERE e.fk_producao = p.producao_id 
+                                    AND e.ativo = 1
+                                ), 0
+                            ), 0
+                        )
+                    END as progresso
                 FROM Historico_Producao hp
                 INNER JOIN Producao p ON p.producao_id = hp.fk_producao
                 LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
@@ -391,16 +402,12 @@ try {
                 
                 $linhas = [];
                 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-                    $totalEtapas = $row['total_etapas'] ? (int)$row['total_etapas'] : 1;
-                    $concluidas = $row['etapas_concluidas'] ? (int)$row['etapas_concluidas'] : 0;
-                    $progresso = round(($concluidas / $totalEtapas) * 100);
-                    
                     $linhas[] = [
                         'id' => $row['id'],
                         'nome' => $row['nome'],
                         'produto_final' => $row['produto_final'] ?? 'N/A',
                         'status' => $row['status'],
-                        'progresso' => $progresso
+                        'progresso' => round($row['progresso'])
                     ];
                 }
                 
