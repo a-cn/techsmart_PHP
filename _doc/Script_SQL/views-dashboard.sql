@@ -1,6 +1,10 @@
--- VIEWS (l�gicas de consulta reutiliz�veis) PARA RELAT�RIOS DO SISTEMA
--- Autora: Amanda Caetano Nasser
--- �ltima altera��o em: 05/06/2025
+-- VIEWS (lógicas de consulta reutilizáveis) PARA RELATÓRIOS DO SISTEMA
+-- Responsável: Amanda Caetano Nasser
+-- Última alteração em: 16/06/2025
+
+-- Definindo a codificação UTF-8
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
 
 USE TechSmartDB;
 GO
@@ -31,7 +35,7 @@ GROUP BY pp.fk_pedido, pf.nome, c.nome, fc.custo_componente, pp.quantidade_item;
 GO
 
 -- ================================================================================
--- 2) Movimenta��o de entrada e sa�da de produtos com indicador de estoque m�nimo e m�ximo
+-- 2) Movimentação de entrada e saída de produtos com indicador de estoque mínimo e máximo
 -- ================================================================================
 CREATE VIEW vw_Estoque_Produtos_Alerta AS
 SELECT 
@@ -49,7 +53,7 @@ WHERE pf.ativo = 1;
 GO
 
 -- ================================================================================
--- 3) Estoque m�nimo e m�ximo de componentes com indicador
+-- 3) Estoque mínimo e máximo de componentes com indicador
 -- ================================================================================
 CREATE VIEW vw_Estoque_Componentes_Alerta AS
 SELECT 
@@ -67,21 +71,21 @@ WHERE c.ativo = 1;
 GO
 
 -- ================================================================================
--- 4) Previs�es de demandas futuras com base no hist�rico de movimenta��es
+-- 4) Previsões de demandas futuras com base no histórico de movimentações
 -- ================================================================================
 CREATE VIEW vw_Previsao_Demanda AS
 SELECT 
     FORMAT(data_hora, 'yyyy-MM') AS Mes,
     pf.nome AS Produto,
-    SUM(CASE WHEN m.tipo_movimentacao = 'Sa�da' THEN m.quantidade ELSE 0 END) AS Total_Saida
+    SUM(CASE WHEN m.tipo_movimentacao = 'Saída' THEN m.quantidade ELSE 0 END) AS Total_Saida
 FROM Movimentacao m
 JOIN ProdutoFinal pf ON pf.produtofinal_id = m.fk_produtofinal
-WHERE pf.ativo = 1	-- Evita considerar movimenta��es relacionadas a produtos descontinuados
+WHERE pf.ativo = 1	-- Evita considerar movimentações relacionadas a produtos descontinuados
 GROUP BY FORMAT(data_hora, 'yyyy-MM'), pf.nome;
 GO
 
 -- ================================================================================
--- 5) Relat�rio de produtos semiacabados VS acabados
+-- 5) Relatório de produtos semiacabados VS acabados
 -- ================================================================================
 CREATE VIEW dbo.vw_Status_Producao_Produto AS
 SELECT
@@ -89,28 +93,28 @@ SELECT
     hp.data_previsao,
     hp.data_conclusao,
     CASE
-        -- 1. Se a produ��o j� foi conclu�da na data prevista
+        -- 1. Se a produção já foi concluída na data prevista
         WHEN hp.data_conclusao IS NOT NULL
              AND hp.data_conclusao = hp.data_previsao
             THEN 'Acabado'
 
-        -- 2. Se j� concluiu, mas passou da data prevista
+        -- 2. Se já concluiu, mas passou da data prevista
         WHEN hp.data_conclusao IS NOT NULL
              AND hp.data_conclusao > hp.data_previsao
             THEN 'Acabado com atraso'
 
-        -- 3. Se n�o concluiu (data_conclusao IS NULL) e j� passou da data prevista
+        -- 3. Se não concluiu (data_conclusao IS NULL) e já passou da data prevista
         WHEN hp.data_conclusao IS NULL
              AND hp.data_previsao < GETDATE()
-            THEN 'Produ��o em atraso'
+            THEN 'Produção em atraso'
 
-        -- 4. Se n�o concluiu e ainda n�o chegou na data prevista
+        -- 4. Se não concluiu e ainda não chegou na data prevista
         WHEN hp.data_conclusao IS NULL
              AND hp.data_previsao >= GETDATE()
-            THEN 'Em produ��o'
+            THEN 'Em produção'
 
-        -- 5. Caso contr�rio
-        ELSE 'Situa��o n�o definida'
+        -- 5. Caso contrário
+        ELSE 'Situação não definida'
     END AS Status,
     pf.nome AS produto_nome
 FROM
@@ -120,7 +124,7 @@ FROM
 GO
 
 -- ================================================================================
--- 6) Relat�rio de feedback do cliente por pedido
+-- 6) Relatório de feedback do cliente por pedido
 -- ================================================================================
 CREATE VIEW vw_Feedback_Por_Pedido AS
 SELECT 
@@ -137,7 +141,7 @@ WHERE f.ativo = 1;
 GO
 
 -- ================================================================================
--- 7) Propor��o total entre avalia��es positivas, negativas e neutras
+-- 7) Proporção total entre avaliações positivas, negativas e neutras
 -- ================================================================================
 CREATE VIEW vw_Resumo_Avaliacoes_Geral AS
 SELECT
@@ -151,7 +155,7 @@ WHERE f.ativo = 1;
 GO
 
 -- ================================================================================
--- 8) Propor��o mensal entre avalia��es positivas, negativas e neutras
+-- 8) Proporção mensal entre avaliações positivas, negativas e neutras
 -- ================================================================================
 CREATE VIEW vw_Resumo_Avaliacoes_Mensal AS
 SELECT

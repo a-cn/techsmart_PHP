@@ -1,11 +1,14 @@
 -- SCRIPTS PARA:
--- > CriaÁ„o de credenciais para o banco de dados (respons·vel por conect·-lo ao back-end);
--- > CriaÁ„o do banco de dados e tabelas do projeto ("TechSmartDB");
+-- > Cria√ß√£o de credenciais para o banco de dados (respons√°vel por conect√°-lo ao back-end);
+-- > Cria√ß√£o do banco de dados e tabelas do projeto ("TechSmartDB");
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
--- Autora: Amanda Caetano Nasser
--- ⁄ltima alteraÁ„o em: 11/06/2025
+-- Respons√°vel: Amanda Caetano Nasser
+-- √öltima altera√ß√£o em: 16/06/2025
 
+-- Definindo a codifica√ß√£o UTF-8
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
 
 USE master; -- Acessa o banco de dados "master"
 GO
@@ -32,31 +35,31 @@ BEGIN
 END
 GO
 
-USE master; --Importante comeÁar no banco de dados "master"
+USE master; --Importante come√ßar no banco de dados "master"
 
-CREATE LOGIN techsmart_user WITH PASSWORD = 'Teste123!'; -- Cria um login com usu·rio e senha para permitir conex„o com o SQL Server
+CREATE LOGIN techsmart_user WITH PASSWORD = 'Teste123!'; -- Cria um login com usu√°rio e senha para permitir conex√£o com o SQL Server
 GO
 
-CREATE DATABASE TechSmartDB; -- Cria um banco de dados chamado "TechSmartDB" para garantir a padronizaÁ„o em todas as m·quinas
+CREATE DATABASE TechSmartDB; -- Cria um banco de dados chamado "TechSmartDB" para garantir a padroniza√ß√£o em todas as m√°quinas
 GO
 
-USE TechSmartDB; -- Acessa o banco que ser· utilizado. A partir daqui, as linhas seguintes ser„o executadas dentro do banco "TechSmartDB"
+USE TechSmartDB; -- Acessa o banco que ser√° utilizado. A partir daqui, as linhas seguintes ser√£o executadas dentro do banco "TechSmartDB"
 GO
 
-CREATE USER techsmart_user FOR LOGIN techsmart_user; -- Cria um usu·rio de banco de dados chamado "techsmart_user" com base no login criado acima
+CREATE USER techsmart_user FOR LOGIN techsmart_user; -- Cria um usu√°rio de banco de dados chamado "techsmart_user" com base no login criado acima
 GO
 
-ALTER ROLE db_owner ADD MEMBER techsmart_user; -- Atribui o papel de dono ao usu·rio "techsmart_user", dando permissıes administrativas completas dentro do banco "TechSmartDB"
+ALTER ROLE db_owner ADD MEMBER techsmart_user; -- Atribui o papel de dono ao usu√°rio "techsmart_user", dando permiss√µes administrativas completas dentro do banco "TechSmartDB"
 GO
 
 -- ================================================================================
 -- 1) Tabela: Tipo_Usuario
--- Armazena as categorias de usu·rios do sistema.
+-- Armazena as categorias de usu√°rios do sistema.
 -- ================================================================================
 CREATE TABLE Tipo_Usuario (
 	tipo_usuario_id	INT			NOT NULL	IDENTITY(1,1),
 	descricao		VARCHAR(15)	NOT NULL,
-	CONSTRAINT PK_Tipo_Usuario	-- Define a chave prim·ria
+	CONSTRAINT PK_Tipo_Usuario	-- Define a chave prim√°ria
 		PRIMARY KEY CLUSTERED (tipo_usuario_id ASC)
 );
 GO
@@ -69,7 +72,7 @@ GO
 
 -- ================================================================================
 -- 2) Tabela: Endereco
--- Armazena os endereÁos de usu·rios e fornecedores cadastrados no sistema.
+-- Armazena os endere√ßos de usu√°rios e fornecedores cadastrados no sistema.
 -- ================================================================================
 CREATE TABLE Endereco (
 	endereco_id	INT				NOT NULL	IDENTITY(1,1),
@@ -87,7 +90,7 @@ GO
 
 -- ================================================================================
 -- 3) Tabela: Pergunta_Seguranca
--- Armazena as perguntas de seguranÁa para a redefiniÁ„o de senha.
+-- Armazena as perguntas de seguran√ßa para a redefini√ß√£o de senha.
 -- ================================================================================
 CREATE TABLE Pergunta_Seguranca (
 	pergunta_seguranca_id	INT				NOT NULL	IDENTITY(1,1),
@@ -98,16 +101,16 @@ CREATE TABLE Pergunta_Seguranca (
 GO
 
 INSERT INTO Pergunta_Seguranca VALUES
-	('Qual È a sua comida favorita?'),
-	('Qual foi o primeiro local para onde vocÍ viajou?'),
-	('Qual È a sua cor favorita?'),
+	('Qual √© a sua comida favorita?'),
+	('Qual foi o primeiro local para onde voc√™ viajou?'),
+	('Qual √© a sua cor favorita?'),
 	('Qual foi o modelo do seu primeiro celular?'),
-	('Qual o nome do seu primeiro animal de estimaÁ„o?');
+	('Qual o nome do seu primeiro animal de estima√ß√£o?');
 GO
 
 -- ================================================================================
 -- 4) Tabela: Usuario
--- Armazena os dados de usu·rios cadastrados no sistema.
+-- Armazena os dados de usu√°rios cadastrados no sistema.
 -- ================================================================================
 CREATE TABLE Usuario (
 	usuario_id				INT				NOT NULL	IDENTITY(1,1),
@@ -123,13 +126,13 @@ CREATE TABLE Usuario (
 	fk_pergunta_seguranca	INT				NULL,
 	resposta_seguranca		VARCHAR(100)	NULL,
 	data_ultimo_estado		DATETIME		NULL,
-	ativo					BIT				NOT NULL	DEFAULT 1,	-- Novos registros estar„o com "ativo = 1" (ativo por padr„o). Para desativar o registro, dever· ser "ativo = 0"
+	ativo					BIT				NOT NULL	DEFAULT 1,	-- Novos registros estar√£o com "ativo = 1" (ativo por padr√£o). Para desativar o registro, dever√° ser "ativo = 0"
 	CONSTRAINT PK_Usuario
 		PRIMARY KEY CLUSTERED (usuario_id ASC),
-	CONSTRAINT FK_Usuario_Tipo_Usuario	-- Define a chave estrangeira e sua referÍncia
+	CONSTRAINT FK_Usuario_Tipo_Usuario	-- Define a chave estrangeira e sua refer√™ncia
 		FOREIGN KEY (fk_tipo_usuario) REFERENCES Tipo_Usuario (tipo_usuario_id)
-		ON DELETE NO ACTION		-- N„o permite excluir se houver registros dependentes
-		ON UPDATE NO ACTION,	-- N„o propaga atualizaÁ„o de chaves
+		ON DELETE NO ACTION		-- N√£o permite excluir se houver registros dependentes
+		ON UPDATE NO ACTION,	-- N√£o propaga atualiza√ß√£o de chaves
 	CONSTRAINT FK_Usuario_Endereco
 		FOREIGN KEY (fk_endereco) REFERENCES Endereco (endereco_id)
 		ON DELETE NO ACTION
@@ -183,7 +186,7 @@ GO
 
 -- ================================================================================
 -- 7) Tabela: Producao
--- Armazena as linhas de produÁ„o registradas.
+-- Armazena as linhas de produ√ß√£o registradas.
 -- ================================================================================
 CREATE TABLE Producao (
 	producao_id	INT			NOT NULL	IDENTITY(1,1),
@@ -197,7 +200,7 @@ GO
 
 -- ================================================================================
 -- 8) Tabela: Etapa_Producao
--- Armazena os dados das etapas de produÁ„o cadastradas.
+-- Armazena os dados das etapas de produ√ß√£o cadastradas.
 -- ================================================================================
 CREATE TABLE Etapa_Producao (
 	etapa_producao_id	INT			NOT NULL	IDENTITY(1,1),
@@ -232,7 +235,7 @@ CREATE TABLE ProdutoFinal (
 	quantidade			INT				NOT NULL,
 	nivel_minimo		INT				NOT NULL,
 	nivel_maximo		INT				NOT NULL,
-	tempo_producao_dias	INT				NOT NULL,	-- Quantos dias leva para montar tal produto (n˙mero inteiro)
+	tempo_producao_dias	INT				NOT NULL,	-- Quantos dias leva para montar tal produto (n√∫mero inteiro)
 	ativo				BIT				NOT NULL	DEFAULT 1,
 	CONSTRAINT PK_ProdutoFinal
 		PRIMARY KEY CLUSTERED (produtofinal_id ASC),
@@ -287,7 +290,7 @@ GO
 
 -- ================================================================================
 -- 12) Tabela: Feedback
--- Armazena as avaliaÁıes deixadas por clientes sobre seus pedidos.
+-- Armazena as avalia√ß√µes deixadas por clientes sobre seus pedidos.
 -- ================================================================================
 CREATE TABLE Feedback (
 	feedback_id	INT				NOT NULL	IDENTITY(1,1),
@@ -307,7 +310,7 @@ GO
 
 -- ================================================================================
 -- 13) Tabela: Movimentacao
--- Armazena as movimentaÁıes de estoque, isto È, se o produto terminou de ser montado pela empresa ou se foi comprado por um cliente (entrou ou saiu).
+-- Armazena as movimenta√ß√µes de estoque, isto √©, se o produto terminou de ser montado pela empresa ou se foi comprado por um cliente (entrou ou saiu).
 -- ================================================================================
 CREATE TABLE Movimentacao (
 	movimentacao_id		INT			NOT NULL	IDENTITY(1,1),
@@ -331,7 +334,7 @@ GO
 
 -- ================================================================================
 -- 14) Tabela: Fornecedor_Componente
--- Indica quais fornecedores est„o associados a quais componentes.
+-- Indica quais fornecedores est√£o associados a quais componentes.
 -- ================================================================================
 CREATE TABLE Fornecedor_Componente (
 	fornecedor_componente_id	INT		NOT NULL	IDENTITY(1,1),
@@ -353,7 +356,7 @@ GO
 
 -- ================================================================================
 -- 15) Tabela: Historico_Producao
--- MantÈm um histÛrico das linhas de produÁ„o iniciadas, em andamento e concluÌdas.
+-- Mant√©m um hist√≥rico das linhas de produ√ß√£o iniciadas, em andamento e conclu√≠das.
 -- ================================================================================
 CREATE TABLE Historico_Producao (
     historico_producao_id	INT			NOT NULL	IDENTITY(1,1),
@@ -361,8 +364,8 @@ CREATE TABLE Historico_Producao (
 	quantidade_produto		INT			NOT NULL,
     data_inicio				DATETIME	NOT NULL,
     data_previsao			DATETIME	NOT NULL,
-    data_conclusao			DATETIME	NULL,	-- Ser· nula, atÈ que seja registrada a conclus„o da ˙ltima etapa da linha de produÁ„o.
-    ultima_etapa			INT			NULL,	-- Pode ser nula, pois existe a possibilidade de iniciar uma produÁ„o e n„o marcar uma etapa como concluÌda na mesma sess„o. A partir do momento em que a 1™ etapa for concluÌda, isso ser· registrado.
+    data_conclusao			DATETIME	NULL,	-- Ser√° nula, at√© que seja registrada a conclus√£o da √∫ltima etapa da linha de produ√ß√£o.
+    ultima_etapa			INT			NULL,	-- Pode ser nula, pois existe a possibilidade de iniciar uma produ√ß√£o e n√£o marcar uma etapa como conclu√≠da na mesma sess√£o. A partir do momento em que a 1¬™ etapa for conclu√≠da, isso ser√° registrado.
     CONSTRAINT PK_Historico_Producao
         PRIMARY KEY CLUSTERED (historico_producao_id ASC),
     CONSTRAINT FK_Historico_Producao_Producao

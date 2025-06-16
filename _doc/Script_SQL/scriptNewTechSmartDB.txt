@@ -1,6 +1,10 @@
 -- BANCO DE DADOS SANITIZADO
--- Autora: Amanda Caetano Nasser
+-- Responsável: Amanda Caetano Nasser
 -- Data: 16/06/2025
+
+-- Definindo a codificação UTF-8
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
 
 USE master; -- Importante começar no banco de dados "master"
 

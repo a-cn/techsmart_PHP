@@ -1,10 +1,14 @@
--- PADR’ES DE CONSULTA
--- Autora: Amanda Caetano Nasser
--- ⁄ltima alteraÁ„o em: 13/06/2025
+-- PADR√ïES DE CONSULTA
+-- Respons√°vel: Amanda Caetano Nasser
+-- √öltima altera√ß√£o em: 16/06/2025
+
+-- Definindo a codifica√ß√£o UTF-8
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
 
 USE TechSmartDB;
 
--- CONSULTAR TELA DE USU¡RIOS
+-- CONSULTAR TELA DE USU√ÅRIOS
 select * from Tipo_Usuario
 select * from Usuario
 select * from Endereco
@@ -26,7 +30,7 @@ select * from Componente
 select * from Fornecedor
 select * from Fornecedor_Componente
 
--- CONSULTAR TELA DE PRODU«√O
+-- CONSULTAR TELA DE PRODU√á√ÉO
 select * from Producao
 select * from Etapa_Producao
 select * from Componente
@@ -36,13 +40,14 @@ select * from ProdutoFinal
 select * from ProdutoFinal
 select * from Producao
 
--- CONSULTAR TELA DE ACOMPANHAMENTO DA PRODU«√O
+-- CONSULTAR TELA DE ACOMPANHAMENTO DA PRODU√á√ÉO
 select * from Producao
 select * from Etapa_Producao
 select * from Componente
+select * from Fornecedor_Componente
 select * from Historico_Producao
 
--- CONSULTAR MOVIMENTA«’ES
+-- CONSULTAR MOVIMENTA√á√ïES
 select * from Movimentacao
 select * from Pedido
 select * from ProdutoFinal

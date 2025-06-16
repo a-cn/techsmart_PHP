@@ -1,11 +1,15 @@
--- TRIGGERS PARA AUTOMA«√O DA TABELA MOVIMENTACAO
--- Autora: Amanda Caetano Nasser
--- ⁄ltima alteraÁ„o em: 23/04/2025
+-- TRIGGERS PARA AUTOMA√á√ÉO DA TABELA MOVIMENTACAO
+-- Respons√°vel: Amanda Caetano Nasser
+-- √öltima altera√ß√£o em: 16/06/2025
+
+-- Definindo a codifica√ß√£o UTF-8
+SET NAMES 'utf8';
+SET CHARACTER SET utf8;
 
 use TechSmartDB
 
 /*
- Esta trigger È respons·vel por incluir dados na tabela "Movimentacao" quando um novo produto È cadastrado no sistema
+ Esta trigger √© respons√°vel por incluir dados na tabela "Movimentacao" quando um novo produto √© cadastrado no sistema
  OBS: Rodar o comando de maneira individual
 */
 CREATE TRIGGER trg_after_insert_ProdutoFinal
@@ -20,7 +24,7 @@ END;
 GO
 
 /*
- Esta trigger È respons·vel por incluir dados na tabela "Movimentacao" quando um novo pedido È registrado via banco de dados
+ Esta trigger √© respons√°vel por incluir dados na tabela "Movimentacao" quando um novo pedido √© registrado via banco de dados
  OBS: Rodar o comando de maneira individual
 */
 CREATE TRIGGER trg_after_insert_Pedido_ProdutoFinal
@@ -29,7 +33,7 @@ AFTER INSERT
 AS
 BEGIN
     INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade)
-    SELECT GETDATE(), 'SaÌda', fk_pedido, fk_produtofinal, quantidade_item
+    SELECT GETDATE(), 'Sa√≠da', fk_pedido, fk_produtofinal, quantidade_item
     FROM inserted;
 END;
 GO
