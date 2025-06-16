@@ -7,7 +7,7 @@ $loginTimestamp = time();
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Linhas de Produção</title>
+    <title>Histórico de Produção</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -41,19 +41,19 @@ $loginTimestamp = time();
 </head>
 <body>
     <div class="container mt-4">
-        <h2 class="mb-4">Linhas de Produção</h2>
+        <h2 class="mb-4">Histórico de Produção</h2>
         
         <div class="card mb-4">
             <div class="card-body">
                 <div class="filter-buttons mb-3">
                     <button class="btn btn-outline-primary active filter-btn" data-filter="todas">
-                        <i class="fas fa-list"></i> Todas
+                        <i class="fas fa-list"></i> Todas as Produções
                     </button>
                     <button class="btn btn-outline-success filter-btn" data-filter="ativas">
-                        <i class="fas fa-play-circle"></i> Ativas
+                        <i class="fas fa-play-circle"></i> Produções Ativas
                     </button>
                     <button class="btn btn-outline-secondary filter-btn" data-filter="concluidas">
-                        <i class="fas fa-check-circle"></i> Concluídas
+                        <i class="fas fa-check-circle"></i> Produções Concluídas
                     </button>
                 </div>
                 
@@ -155,8 +155,8 @@ $loginTimestamp = time();
 });
 
 function acessarLinha(id) {
-    // Redireciona para a tela de controle de produção
-    window.location.href = `index.php?pg=controle-producao&linha_id=${id}`;
+    // Redireciona para a tela de controle de produção com o ID do histórico
+    window.location.href = `index.php?pg=controle-producao&historico_id=${id}`;
 }
     </script>
 </body>

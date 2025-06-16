@@ -356,15 +356,11 @@ try {
         case 'listar_linhas_status':
             try {
                 $sql = "SELECT 
-                    p.producao_id as id,
+                    hp.historico_producao_id as id,
                     p.nome,
                     pf.nome as produto_final,
                     CASE 
-                        WHEN EXISTS (
-                            SELECT 1 FROM Historico_Producao hp 
-                            WHERE hp.fk_producao = p.producao_id 
-                            AND hp.data_conclusao IS NULL
-                        ) THEN 'Ativa'
+                        WHEN hp.data_conclusao IS NULL THEN 'Ativa'
                         ELSE 'Concluída'
                     END as status,
                     COALESCE(
@@ -377,12 +373,13 @@ try {
                     COALESCE(
                         (
                             SELECT COUNT(*) 
-                            FROM Historico_Producao hp
-                            WHERE hp.fk_producao = p.producao_id
-                            AND hp.ultima_etapa IS NOT NULL
+                            FROM Historico_Producao hp2
+                            WHERE hp2.fk_producao = p.producao_id
+                            AND hp2.ultima_etapa IS NOT NULL
                         ), 0
                     ) as etapas_concluidas
-                FROM Producao p
+                FROM Historico_Producao hp
+                INNER JOIN Producao p ON p.producao_id = hp.fk_producao
                 LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
                 WHERE p.ativo = 1
                 ORDER BY status DESC, p.nome";
