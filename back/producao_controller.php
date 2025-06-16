@@ -44,6 +44,9 @@ try {
         case 'concluir_etapa':
             concluirEtapa($conn);
             break;
+        case 'buscar_producao_historico':
+            buscarProducaoHistorico($conn);
+            break;
         default:
             echo json_encode(['status' => 'erro', 'mensagem' => 'Ação inválida']);
             break;
@@ -300,3 +303,86 @@ function concluirEtapa($conn) {
         echo json_encode(['status' => 'erro', 'mensagem' => $e->getMessage()]);
     }
 }
+
+function buscarProducaoHistorico($conn) {
+    $historicoId = $_GET['historico_id'] ?? 0;
+    
+    if (!$historicoId) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'ID do histórico não informado']);
+        return;
+    }
+    
+    // Busca os dados da produção no histórico
+    $sql = "SELECT 
+                hp.*,
+                p.nome as nome_producao,
+                pf.nome as nome_produto,
+                pf.produtofinal_id
+            FROM Historico_Producao hp
+            INNER JOIN Producao p ON p.producao_id = hp.fk_producao
+            LEFT JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id
+            WHERE hp.historico_producao_id = ?";
+            
+    $stmt = sqlsrv_query($conn, $sql, [$historicoId]);
+    
+    if (!$stmt || !sqlsrv_has_rows($stmt)) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Produção não encontrada']);
+        return;
+    }
+    
+    $producao = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    
+    // Busca as etapas da produção
+    $sqlEtapas = "SELECT 
+                    e.etapa_producao_id,
+                    e.ordem,
+                    e.nome as nome_etapa,
+                    c.nome as nome_componente,
+                    CASE 
+                        WHEN e.ordem <= ? THEN 1
+                        ELSE 0
+                    END as concluida
+                FROM Etapa_Producao e
+                LEFT JOIN Componente c ON c.componente_id = e.fk_componente
+                WHERE e.fk_producao = ? AND e.ativo = 1
+                ORDER BY e.ordem";
+                
+    $stmtEtapas = sqlsrv_query($conn, $sqlEtapas, [$producao['ultima_etapa'], $producao['fk_producao']]);
+    
+    if (!$stmtEtapas) {
+        echo json_encode(['status' => 'erro', 'mensagem' => 'Erro ao buscar etapas: ' . print_r(sqlsrv_errors(), true)]);
+        return;
+    }
+    
+    $etapas = [];
+    while ($etapa = sqlsrv_fetch_array($stmtEtapas, SQLSRV_FETCH_ASSOC)) {
+        $etapas[] = [
+            'etapa_producao_id' => $etapa['etapa_producao_id'],
+            'ordem' => $etapa['ordem'],
+            'nome_etapa' => $etapa['nome_etapa'],
+            'componente' => $etapa['nome_componente'] ?? 'Nenhum',
+            'concluida' => (bool)$etapa['concluida']
+        ];
+    }
+    
+    // Formata as datas
+    $producaoFormatada = [
+        'historico_producao_id' => $producao['historico_producao_id'],
+        'fk_producao' => $producao['fk_producao'],
+        'quantidade_produto' => $producao['quantidade_produto'],
+        'ultima_etapa' => $producao['ultima_etapa'],
+        'data_inicio' => formatarDataISO($producao['data_inicio']),
+        'data_previsao' => formatarDataISO($producao['data_previsao']),
+        'data_conclusao' => $producao['data_conclusao'] ? formatarDataISO($producao['data_conclusao']) : null,
+        'nome_producao' => $producao['nome_producao'],
+        'nome_produto' => $producao['nome_produto'],
+        'produtofinal_id' => $producao['produtofinal_id']
+    ];
+    
+    echo json_encode([
+        'status' => 'ok',
+        'producao' => $producaoFormatada,
+        'etapas' => $etapas
+    ]);
+}
+?>

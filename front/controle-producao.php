@@ -183,6 +183,14 @@ $loginTimestamp = time();
     // Carrega as linhas de produção
     carregarLinhasProducao();
     
+    // Verifica se há um histórico_id na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const historicoId = urlParams.get('historico_id');
+    
+    if (historicoId) {
+        carregarProducaoHistorico(historicoId);
+    }
+    
     // Inicializa o Select2 para a linha de produção
     $('#linhaProducao').select2({
         placeholder: "Selecione uma linha de produção",
@@ -441,6 +449,46 @@ function concluirEtapa(etapaId) {
 function formatarData(dataString) {
     if (!dataString) return '-';
     return dataString; // Retorna a data já formatada do backend
+}
+
+function carregarProducaoHistorico(historicoId) {
+    $.ajax({
+        url: '../back/producao_controller.php?action=buscar_producao_historico',
+        method: 'GET',
+        data: { historico_id: historicoId },
+        dataType: 'json',
+        success: function(resposta) {
+            if (resposta.status === 'ok') {
+                producaoAtiva = resposta.producao;
+                
+                // Preenche as informações da produção
+                $('#nomeLinha').text(resposta.producao.nome_producao);
+                $('#nomeProduto').text(resposta.producao.nome_produto);
+                $('#qtdProducao').text(resposta.producao.quantidade_produto);
+                $('#dataInicio').text(formatarData(resposta.producao.data_inicio));
+                $('#dataPrevisao').text(formatarData(resposta.producao.data_previsao));
+                $('#dataTermino').text(resposta.producao.data_conclusao ? formatarData(resposta.producao.data_conclusao) : '-');
+                
+                // Mostra o bloco de informações
+                $('#infoProducao').removeClass('d-none');
+                
+                // Desabilita os campos de seleção
+                $('#linhaProducao').prop('disabled', true);
+                $('#produtoFinal').prop('disabled', true);
+                $('#quantidade').prop('disabled', true);
+                $('#btnIniciar').prop('disabled', true);
+                
+                // Preenche a tabela de etapas
+                tabela.clear().rows.add(resposta.etapas).draw();
+            } else {
+                mostrarMensagem('Erro', resposta.mensagem, 'erro');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar produção:', error);
+            mostrarMensagem('Erro', 'Erro ao carregar produção. Consulte o console para detalhes.', 'erro');
+        }
+    });
 }
 
 </script>
