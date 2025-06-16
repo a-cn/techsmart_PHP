@@ -1,0 +1,1132 @@
+-- BANCO DE DADOS SANITIZADO
+-- Autora: Amanda Caetano Nasser
+-- Data: 16/06/2025
+
+USE master; -- Importante começar no banco de dados "master"
+
+CREATE DATABASE NewTechSmartDB; -- Cria um banco de dados chamado "NewTechSmartDB" para garantir a padronização em todas as máquinas
+GO
+
+USE NewTechSmartDB; -- Acessa o banco que será utilizado. A partir daqui, as linhas seguintes serão executadas dentro do banco "NewTechSmartDB"
+GO
+
+CREATE USER techsmart_user FOR LOGIN techsmart_user; -- Cria um usuário de banco de dados chamado "techsmart_user" com base no login criado acima
+GO
+
+ALTER ROLE db_owner ADD MEMBER techsmart_user; -- Atribui o papel de dono ao usuário "techsmart_user", dando permissões administrativas completas dentro do banco "NewTechSmartDB"
+GO
+
+-- ================================================================================
+-- 1) Tabela: Tipo_Usuario
+-- Armazena as categorias de usuários do sistema.
+-- ================================================================================
+CREATE TABLE Tipo_Usuario (
+	tipo_usuario_id	INT			NOT NULL	IDENTITY(1,1),
+	descricao		VARCHAR(15)	NOT NULL,
+	CONSTRAINT PK_Tipo_Usuario	-- Define a chave prim ria
+		PRIMARY KEY CLUSTERED (tipo_usuario_id ASC)
+);
+GO
+
+INSERT INTO Tipo_Usuario VALUES
+	('Administrador'),
+	('Colaborador'),
+	('Cliente');
+GO
+
+-- ================================================================================
+-- 2) Tabela: Endereco
+-- Armazena os endereços de usuários e fornecedores cadastrados no sistema.
+-- ================================================================================
+CREATE TABLE Endereco (
+	endereco_id	INT				NOT NULL	IDENTITY(1,1),
+	cep			VARCHAR(8)		NOT NULL,
+	logradouro	VARCHAR(150)	NOT NULL,
+	numero		INT				NOT NULL,
+	complemento	VARCHAR(100)	NULL,
+	bairro		VARCHAR(50)		NOT NULL,
+	cidade		VARCHAR(50)		NOT NULL,
+	estado		VARCHAR(50)		NOT NULL,
+	CONSTRAINT PK_Endereco
+		PRIMARY KEY CLUSTERED (endereco_id ASC)
+);
+GO
+
+-- ================================================================================
+-- 3) Tabela: Pergunta_Seguranca
+-- Armazena as perguntas de segurança para a redefinição de senha.
+-- ================================================================================
+CREATE TABLE Pergunta_Seguranca (
+	pergunta_seguranca_id	INT				NOT NULL	IDENTITY(1,1),
+	pergunta				VARCHAR(200)	NOT NULL,
+	CONSTRAINT PK_Pergunta_Seguranca
+		PRIMARY KEY CLUSTERED (pergunta_seguranca_id ASC)
+);
+GO
+
+INSERT INTO Pergunta_Seguranca VALUES
+	('Qual é a sua comida favorita?'),
+	('Qual foi o primeiro local para onde você viajou?'),
+	('Qual é a sua cor favorita?'),
+	('Qual foi o modelo do seu primeiro celular?'),
+	('Qual o nome do seu primeiro animal de estimação?');
+GO
+
+-- ================================================================================
+-- 4) Tabela: Usuario
+-- Armazena os dados de usuários cadastrados no sistema.
+-- ================================================================================
+CREATE TABLE Usuario (
+	usuario_id				INT				NOT NULL	IDENTITY(1,1),
+	fk_tipo_usuario			INT				NOT NULL,
+	nome					VARCHAR(100)	NOT NULL,
+	cpf_cnpj				VARCHAR(14)		NOT NULL,
+	data_nascimento			DATE			NULL,
+	email					VARCHAR(50)		NOT NULL,
+	num_principal			VARCHAR(15)		NOT NULL,
+	num_recado				VARCHAR(15)		NULL,
+	fk_endereco				INT				NOT NULL,
+	senha					VARCHAR(255)	NOT NULL,
+	fk_pergunta_seguranca	INT				NULL,
+	resposta_seguranca		VARCHAR(100)	NULL,
+	data_ultimo_estado		DATETIME		NULL,
+	ativo					BIT				NOT NULL	DEFAULT 1,	-- Novos registros estar o com "ativo = 1" (ativo por padrão). Para desativar o registro, deverá ser "ativo = 0"
+	CONSTRAINT PK_Usuario
+		PRIMARY KEY CLUSTERED (usuario_id ASC),
+	CONSTRAINT FK_Usuario_Tipo_Usuario	-- Define a chave estrangeira e sua referência
+		FOREIGN KEY (fk_tipo_usuario) REFERENCES Tipo_Usuario (tipo_usuario_id)
+		ON DELETE NO ACTION		-- Não permite excluir se houver registros dependentes
+		ON UPDATE NO ACTION,	-- Não propaga atualização de chaves
+	CONSTRAINT FK_Usuario_Endereco
+		FOREIGN KEY (fk_endereco) REFERENCES Endereco (endereco_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT FK_Usuario_Pergunta_Seguranca
+		FOREIGN KEY (fk_pergunta_seguranca) REFERENCES Pergunta_Seguranca (pergunta_seguranca_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT UQ_Usuario_Email UNIQUE (email)
+);
+GO
+
+-- ================================================================================
+-- 5) Tabela: Fornecedor
+-- Armazena os dados de fornecedores registrados no sistema.
+-- ================================================================================
+CREATE TABLE Fornecedor (
+	fornecedor_id	INT				NOT NULL	IDENTITY(1,1),
+	nome			VARCHAR(100)	NOT NULL,
+	cpf_cnpj		VARCHAR(14)		NOT NULL,
+	num_principal	VARCHAR(15)		NOT NULL,
+	num_secundario	VARCHAR(15)		NULL,
+	email			VARCHAR(50)		NOT NULL,
+	fk_endereco		INT				NOT NULL,
+	ativo			BIT				NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Fornecedor
+		PRIMARY KEY CLUSTERED (fornecedor_id ASC),
+	CONSTRAINT FK_Fornecedor_Endereco
+		FOREIGN KEY (fk_endereco) REFERENCES Endereco (endereco_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 6) Tabela: Componente
+-- Armazena os dados de componentes registrados no sistema.
+-- ================================================================================
+CREATE TABLE Componente (
+	componente_id	INT				NOT NULL	IDENTITY(1,1),
+	nome			VARCHAR(50)		NOT NULL,
+	especificacao	VARCHAR(100)	NOT NULL,
+	quantidade		INT				NOT NULL,
+	nivel_minimo	INT				NOT NULL,
+	nivel_maximo	INT				NOT NULL,
+	ativo			BIT				NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Componente
+		PRIMARY KEY CLUSTERED (componente_id ASC)
+);
+GO
+
+-- ================================================================================
+-- 7) Tabela: Producao
+-- Armazena as linhas de produção registradas.
+-- ================================================================================
+CREATE TABLE Producao (
+	producao_id	INT			NOT NULL	IDENTITY(1,1),
+	nome		VARCHAR(50)	NOT NULL,
+	custo		FLOAT		NOT NULL,
+	ativo		BIT			NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Producao
+		PRIMARY KEY CLUSTERED (producao_id ASC)
+);
+GO
+
+-- ================================================================================
+-- 8) Tabela: Etapa_Producao
+-- Armazena os dados das etapas de produção cadastradas.
+-- ================================================================================
+CREATE TABLE Etapa_Producao (
+	etapa_producao_id	INT			NOT NULL	IDENTITY(1,1),
+	fk_producao			INT			NOT NULL,
+	ordem				INT			NOT NULL,
+	nome				VARCHAR(50)	NOT NULL,
+	fk_componente		INT			NOT NULL,
+	ativo				BIT			NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Etapa_Producao
+		PRIMARY KEY CLUSTERED (etapa_producao_id ASC),
+	CONSTRAINT FK_Etapa_Producao_Producao
+		FOREIGN KEY (fk_producao) REFERENCES Producao (producao_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT FK_Etapa_Producao_Componente
+		FOREIGN KEY (fk_componente) REFERENCES Componente (componente_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 9) Tabela: ProdutoFinal
+-- Armazena os dados de produtos finais montados pela empresa.
+-- ================================================================================
+CREATE TABLE ProdutoFinal (
+	produtofinal_id		INT				NOT NULL	IDENTITY(1,1),
+	fk_producao			INT				NOT NULL,
+	nome				VARCHAR(50)		NOT NULL,
+	descricao			VARCHAR(100)	NOT NULL,
+	valor_venda			FLOAT			NOT NULL,
+	quantidade			INT				NOT NULL,
+	nivel_minimo		INT				NOT NULL,
+	nivel_maximo		INT				NOT NULL,
+	tempo_producao_dias	INT				NOT NULL,	-- Quantos dias leva para montar tal produto (número inteiro)
+	ativo				BIT				NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_ProdutoFinal
+		PRIMARY KEY CLUSTERED (produtofinal_id ASC),
+	CONSTRAINT FK_ProdutoFinal_Producao
+		FOREIGN KEY (fk_producao) REFERENCES Producao (producao_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 10) Tabela: Pedido
+-- Armazena os dados de pedidos solicitados por clientes da TechSmart.
+-- ================================================================================
+CREATE TABLE Pedido (
+	pedido_id	INT			NOT NULL	IDENTITY(1,1),
+	data_hora	DATETIME	NOT NULL,
+	fk_usuario	INT			NOT NULL,
+	valor_total	FLOAT		NOT NULL,
+	situacao	VARCHAR(50)	NULL,
+	ativo		BIT			NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Pedido
+		PRIMARY KEY CLUSTERED (pedido_id ASC),
+	CONSTRAINT FK_Pedido_Usuario
+		FOREIGN KEY (fk_usuario) REFERENCES Usuario (usuario_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 11) Tabela: Pedido_ProdutoFinal
+-- Indica a quantidade de cada produto final selecionado nos pedidos de clientes.
+-- ================================================================================
+CREATE TABLE Pedido_ProdutoFinal (
+	pedido_produtofinal_id	INT NOT NULL IDENTITY(1,1),
+	fk_pedido				INT NOT NULL,
+	fk_produtofinal			INT NOT NULL,
+	quantidade_item			INT	NOT NULL,
+	CONSTRAINT PK_Pedido_ProdutoFinal
+		PRIMARY KEY CLUSTERED (pedido_produtofinal_id ASC),
+	CONSTRAINT FK_Pedido_ProdutoFinal_Pedido
+		FOREIGN KEY (fk_pedido) REFERENCES Pedido (pedido_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT FK_Pedido_ProdutoFinal_ProdutoFinal
+		FOREIGN KEY (fk_produtofinal) REFERENCES ProdutoFinal (produtofinal_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 12) Tabela: Feedback
+-- Armazena as avaliações deixadas por clientes sobre seus pedidos.
+-- ================================================================================
+CREATE TABLE Feedback (
+	feedback_id	INT				NOT NULL	IDENTITY(1,1),
+	data_hora	DATETIME		NOT NULL,
+	fk_pedido	INT				NOT NULL,
+	avaliacao	INT				NOT NULL,
+	observacao	VARCHAR(100)	NULL,
+	ativo		BIT				NOT NULL	DEFAULT 1,
+	CONSTRAINT PK_Feedback
+		PRIMARY KEY CLUSTERED (feedback_id ASC),
+	CONSTRAINT FK_Feedback_Pedido
+		FOREIGN KEY (fk_pedido) REFERENCES Pedido (pedido_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 13) Tabela: Movimentacao
+-- Armazena as movimentações de estoque, isto é, se o produto terminou de ser montado pela empresa ou se foi comprado por um cliente (entrou ou saiu).
+-- ================================================================================
+CREATE TABLE Movimentacao (
+	movimentacao_id		INT			NOT NULL	IDENTITY(1,1),
+	data_hora			DATETIME	NOT NULL,
+	tipo_movimentacao	VARCHAR(50)	NOT NULL,
+	fk_pedido			INT			NULL,
+	fk_produtofinal		INT			NOT NULL,
+	quantidade			INT			NOT NULL,
+	CONSTRAINT PK_Movimentacao
+		PRIMARY KEY CLUSTERED (movimentacao_id ASC),
+	CONSTRAINT FK_Movimentacao_Pedido
+		FOREIGN KEY (fk_pedido) REFERENCES Pedido (pedido_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT FK_Movimentacao_ProdutoFinal
+		FOREIGN KEY (fk_produtofinal) REFERENCES ProdutoFinal (produtofinal_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 14) Tabela: Fornecedor_Componente
+-- Indica quais fornecedores estão associados a quais componentes.
+-- ================================================================================
+CREATE TABLE Fornecedor_Componente (
+	fornecedor_componente_id	INT		NOT NULL	IDENTITY(1,1),
+	fk_fornecedor				INT		NOT NULL,
+	fk_componente				INT		NOT NULL,
+	custo_componente			FLOAT	NOT NULL,
+	CONSTRAINT PK_Fornecedor_Componente
+		PRIMARY KEY CLUSTERED (fornecedor_componente_id ASC),
+	CONSTRAINT FK_Fornecedor_Componente_Fornecedor
+		FOREIGN KEY (fk_fornecedor) REFERENCES Fornecedor (fornecedor_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT FK_Fornecedor_Componente_Componente
+		FOREIGN KEY (fk_componente) REFERENCES Componente (componente_id)
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+GO
+
+-- ================================================================================
+-- 15) Tabela: Historico_Producao
+-- Mantém um histórico das linhas de produção iniciadas, em andamento e concluídas.
+-- ================================================================================
+CREATE TABLE Historico_Producao (
+    historico_producao_id	INT			NOT NULL	IDENTITY(1,1),
+    fk_producao				INT			NOT NULL,
+	quantidade_produto		INT			NOT NULL,
+    data_inicio				DATETIME	NOT NULL,
+    data_previsao			DATETIME	NOT NULL,
+    data_conclusao			DATETIME	NULL,	-- Será nula, até que seja registrada a conclusão da última etapa da linha de produção.
+    ultima_etapa			INT			NULL,	-- Pode ser nula, pois existe a possibilidade de iniciar uma produção e n o marcar uma etapa como concluída na mesma sessão. A partir do momento em que a 1ª etapa for concluída, isso será registrado.
+    CONSTRAINT PK_Historico_Producao
+        PRIMARY KEY CLUSTERED (historico_producao_id ASC),
+    CONSTRAINT FK_Historico_Producao_Producao
+        FOREIGN KEY (fk_producao) REFERENCES Producao (producao_id)
+        ON DELETE NO ACTION
+        ON UPDATE NO ACTION,
+);
+GO
+
+
+
+-- ================================================================================
+-- VIEWS PARA OS DASHBOARDS
+-- ================================================================================
+
+-- ================================================================================
+-- 1) Registrar o consumo de componentes por item do pedido
+-- ================================================================================
+CREATE VIEW [dbo].[vw_Consumo_Componentes_Por_Pedido] AS
+SELECT 
+    pp.fk_pedido AS PedidoID,
+    pf.nome AS Produto,
+    c.nome AS Componente,
+	fc.custo_componente * pp.quantidade_item AS Custo,
+    SUM(pp.quantidade_item) AS QtdeProdutosPedido,
+    COUNT(*) AS QtdeEtapasComponente, -- quantas vezes esse componente aparece na estrutura
+    SUM(pp.quantidade_item * 1) AS TotalConsumido -- total consumido = qtd * vezes na estrutura
+FROM Pedido_ProdutoFinal pp
+JOIN ProdutoFinal pf ON pf.produtofinal_id = pp.fk_produtofinal
+JOIN Producao p ON p.producao_id = pf.fk_producao
+JOIN Etapa_Producao ep ON ep.fk_producao = p.producao_id
+JOIN Componente c ON c.componente_id = ep.fk_componente
+JOIN Fornecedor_Componente fc on fc.fk_componente = c.componente_id
+WHERE pf.ativo = 1
+  AND ep.ativo = 1
+  AND c.ativo = 1
+  AND pp.quantidade_item > 0
+GROUP BY pp.fk_pedido, pf.nome, c.nome, fc.custo_componente, pp.quantidade_item;
+GO
+
+-- ================================================================================
+-- 2) Movimentação de entrada e saída de produtos com indicador de estoque mínimo e máximo
+-- ================================================================================
+CREATE VIEW vw_Estoque_Produtos_Alerta AS
+SELECT 
+    pf.nome AS Produto,
+    pf.quantidade,
+    pf.nivel_minimo,
+    pf.nivel_maximo,
+    CASE 
+        WHEN pf.quantidade < pf.nivel_minimo THEN 'Estoque Baixo'
+        WHEN pf.quantidade > pf.nivel_maximo THEN 'Estoque Alto'
+        ELSE 'Estoque Normal'
+    END AS Alerta
+FROM ProdutoFinal pf
+WHERE pf.ativo = 1;
+GO
+
+-- ================================================================================
+-- 3) Estoque mínimo e máximo de componentes com indicador
+-- ================================================================================
+CREATE VIEW vw_Estoque_Componentes_Alerta AS
+SELECT 
+    c.nome AS Componente,
+    c.quantidade,
+    c.nivel_minimo,
+    c.nivel_maximo,
+    CASE 
+        WHEN c.quantidade < c.nivel_minimo THEN 'Estoque Baixo'
+        WHEN c.quantidade > c.nivel_maximo THEN 'Estoque Alto'
+        ELSE 'Estoque Normal'
+    END AS Alerta
+FROM Componente c
+WHERE c.ativo = 1;
+GO
+
+-- ================================================================================
+-- 4) Previsões de demandas futuras com base no histórico de movimentações
+-- ================================================================================
+CREATE VIEW vw_Previsao_Demanda AS
+SELECT 
+    FORMAT(data_hora, 'yyyy-MM') AS Mes,
+    pf.nome AS Produto,
+    SUM(CASE WHEN m.tipo_movimentacao = 'Saída' THEN m.quantidade ELSE 0 END) AS Total_Saida
+FROM Movimentacao m
+JOIN ProdutoFinal pf ON pf.produtofinal_id = m.fk_produtofinal
+WHERE pf.ativo = 1	-- Evita considerar movimentações relacionadas a produtos descontinuados
+GROUP BY FORMAT(data_hora, 'yyyy-MM'), pf.nome;
+GO
+
+-- ================================================================================
+-- 5) Relatório de produtos semiacabados VS acabados
+-- ================================================================================
+CREATE VIEW dbo.vw_Status_Producao_Produto AS
+SELECT
+    hp.data_inicio,
+    hp.data_previsao,
+    hp.data_conclusao,
+    CASE
+        -- 1. Se a produção já foi concluída na data prevista
+        WHEN hp.data_conclusao IS NOT NULL
+             AND hp.data_conclusao = hp.data_previsao
+            THEN 'Acabado'
+
+        -- 2. Se já concluiu, mas passou da data prevista
+        WHEN hp.data_conclusao IS NOT NULL
+             AND hp.data_conclusao > hp.data_previsao
+            THEN 'Acabado com atraso'
+
+        -- 3. Se não concluiu (data_conclusao IS NULL) e já passou da data prevista
+        WHEN hp.data_conclusao IS NULL
+             AND hp.data_previsao < GETDATE()
+            THEN 'Produção em atraso'
+
+        -- 4. Se não concluiu e ainda não chegou na data prevista
+        WHEN hp.data_conclusao IS NULL
+             AND hp.data_previsao >= GETDATE()
+            THEN 'Em produção'
+
+        -- 5. Caso contrário
+        ELSE 'Situação não definida'
+    END AS Status,
+    pf.nome AS produto_nome
+FROM
+    dbo.Historico_Producao AS hp
+    INNER JOIN dbo.ProdutoFinal AS pf
+        ON hp.fk_producao = pf.fk_producao;
+GO
+
+-- ================================================================================
+-- 6) Relatório de feedback do cliente por pedido
+-- ================================================================================
+CREATE VIEW vw_Feedback_Por_Pedido AS
+SELECT 
+    f.feedback_id,
+    f.data_hora,
+    u.nome AS Cliente,
+    p.pedido_id,
+    f.avaliacao,
+    f.observacao
+FROM Feedback f
+JOIN Pedido p ON p.pedido_id = f.fk_pedido
+JOIN Usuario u ON u.usuario_id = p.fk_usuario
+WHERE f.ativo = 1;
+GO
+
+-- ================================================================================
+-- 7) Proporção total entre avaliações positivas, negativas e neutras
+-- ================================================================================
+CREATE VIEW vw_Resumo_Avaliacoes_Geral AS
+SELECT
+    COUNT(*) AS TotalAvaliacoes,
+    SUM(CASE WHEN f.avaliacao >= 4 THEN 1 ELSE 0 END) AS AvaliacoesPositivas,
+    SUM(CASE WHEN f.avaliacao <= 2 THEN 1 ELSE 0 END) AS AvaliacoesNegativas,
+    SUM(CASE WHEN f.avaliacao = 3 THEN 1 ELSE 0 END) AS AvaliacoesNeutras,
+    AVG(CAST(f.avaliacao AS FLOAT)) AS MediaGeral
+FROM Feedback f
+WHERE f.ativo = 1;
+GO
+
+-- ================================================================================
+-- 8) Proporção mensal entre avaliações positivas, negativas e neutras
+-- ================================================================================
+CREATE VIEW vw_Resumo_Avaliacoes_Mensal AS
+SELECT
+    FORMAT(f.data_hora, 'yyyy-MM') AS Mes,
+    COUNT(*) AS TotalAvaliacoes,
+    SUM(CASE WHEN f.avaliacao >= 4 THEN 1 ELSE 0 END) AS AvaliacoesPositivas,
+    SUM(CASE WHEN f.avaliacao <= 2 THEN 1 ELSE 0 END) AS AvaliacoesNegativas,
+    SUM(CASE WHEN f.avaliacao = 3 THEN 1 ELSE 0 END) AS AvaliacoesNeutras,
+    AVG(CAST(f.avaliacao AS FLOAT)) AS MediaMensal
+FROM Feedback f
+WHERE f.ativo = 1
+GROUP BY FORMAT(f.data_hora, 'yyyy-MM');
+-- Utilizar "ORDER BY Mes" ao fazer o SELECT externo desta View.
+GO
+
+
+
+-- ================================================================================
+-- INSERTS PARA TODAS AS TABELAS
+-- ================================================================================
+
+-- ENDERECO: Inserção de registros de endereço na tabela "Endereco" a fim de testar o acesso de usuários no sistema, pois o endereço é obrigatório no cadastro
+INSERT INTO Endereco VALUES
+('80020000', 'Rua das Palmeiras', 456, 'Casa', 'Batel', 'Curitiba', 'PR'),
+('80030000', 'Avenida Brasil', 789, NULL, 'Água Verde', 'Curitiba', 'PR'),
+('80040000', 'Rua Marechal', 321, 'Bloco B', 'Cristo Rei', 'Curitiba', 'PR'),
+('80010000', 'Rua XV de Novembro', 123, 'Ap 302', 'Centro', 'Curitiba', 'PR'),
+('80000004', 'Rua Fagundes Varela', 713, 'Apto 23', 'Água Verde', 'Curitiba', 'PR'),
+('80000005', 'Av. Sete de Setembro', 310, 'Apto 98', 'Centro', 'Curitiba', 'PR'),
+('80240000', 'Rua Coronel Dulcídio', 588, 'Ap 404', 'Batel', 'Curitiba', 'PR'),
+('80230010', 'Rua Bento Viana', 1231, NULL, 'Água Verde', 'Curitiba', 'PR'),
+('80050000', 'Rua Schiller', 678, 'Casa 1', 'Cristo Rei', 'Curitiba', 'PR'),
+('80060000', 'Rua Barão do Cerro Azul', 95, 'Bloco A', 'Centro', 'Curitiba', 'PR');
+GO
+
+-- USUARIO: Inserção de usuários na tabela "Usuario" a fim de testar o acesso ao sistema. Senha e resposta de segurança são enviadas criptografadas
+-- Senha: Carlos@123 | Resposta: Pizza123 | Tipo: Administrador
+INSERT INTO Usuario VALUES (
+    1, 'Carlos Eduardo', '12345678901', '19950510', 'carlos.edu@gmail.com', '41999998888', '41988887777', 1,
+    '$2b$12$QmKMbCWY4coE.QLnHX/M5eIZXFfyY3yAcLms.NzPyJLgMu11gW1KC', 3,
+    '858a44e789c923fe5d2594f8996b621ab73e3293d960a7fc0e98194eb8b60499', GETDATE(), 1
+);
+GO
+
+-- Senha: F3r@Lima90 | Resposta: Verde@98 | Tipo: Colaborador
+INSERT INTO Usuario VALUES (
+    2, 'Fernanda Lima', '98765432100', '19900921', 'fernanda.lima@gmail.com', '41997654321', NULL, 2,
+    '$2b$12$B8KSc7U5WQhw9.vMF1Yt3OU9UfrugCuHHZi7raGZjC4DxruaWvcHK', 3,
+    '66085f88bdf8adde16d3ed2e4b22ca178ffde6832df020f60f25b6e6a86cb53f', GETDATE(), 1
+);
+GO
+
+-- Senha: Joao123!@# | Resposta: Rex#2020 | Tipo: Cliente
+INSERT INTO Usuario VALUES (
+    3, 'João Pedro Silva', '11223344556', '20021201', 'joao.pedro@hotmail.com', '41991231234', NULL, 3,
+    '$2b$12$3Vc/lW7fecVE1TmagwacoeMmFEfdzGINZPwGoifumiqcpQCUNO2Ui', 3,
+    'f29e8c02927096297eea5fdf7095591f570cb8755c7ffcde77ab54f25155cad1', GETDATE(), 1
+);
+GO
+
+INSERT INTO Usuario VALUES (
+    3, 'Carlos Almeida', '11223344874', '20001201', 'carlos.almeida@hotmail.com', '41992547234', NULL, 4,
+    '$2b$12$3Vc/lW7fecVE1TmagwacoeMmFEfdzGINZPwGoifumiqcpQCUNO2Ui', 3,
+    'f29e8c02927096297eea5fdf7095591f570cb8755c7ffcde77ab54f25155cad1', GETDATE(), 1
+);
+GO
+
+INSERT INTO Usuario VALUES (
+    3, 'Amanda Silva', '11223254734', '20020406', 'amanda.silva@hotmail.com', '41992325478', NULL, 5,
+    '$2b$12$3Vc/lW7fecVE1TmagwacoeMmFEfdzGINZPwGoifumiqcpQCUNO2Ui', 3,
+    'f29e8c02927096297eea5fdf7095591f570cb8755c7ffcde77ab54f25155cad1', GETDATE(), 1
+);
+GO
+
+INSERT INTO Usuario VALUES (
+    3, 'Arthur dal Bosco', '41222365851', '19950827', 'arthur.bosco@hotmail.com', '41992547234', NULL, 6,
+    '$2b$12$3Vc/lW7fecVE1TmagwacoeMmFEfdzGINZPwGoifumiqcpQCUNO2Ui', 3,
+    'f29e8c02927096297eea5fdf7095591f570cb8755c7ffcde77ab54f25155cad1', GETDATE(), 1
+);
+GO
+
+-- FORNECEDOR
+INSERT INTO Fornecedor VALUES
+('LG Eletronics', '69776076000100', '41999990000', '41988259611', 'lgeletronics@fornecedores.com', 7, 1);
+GO
+
+INSERT INTO Fornecedor VALUES
+('Motorola Tech', '28961265000175', '41999990001', '41988348107', 'motorolatech@fornecedores.com', 8, 1);
+GO
+
+INSERT INTO Fornecedor VALUES
+('Huawei Distribuidora', '02897667000164', '41999990002', '41988458875', 'huaweidistribuidora@fornecedores.com', 9, 1);
+GO
+
+INSERT INTO Fornecedor VALUES
+('Dell Suprimentos', '82276769000100', '41999990005', NULL, 'dellsuprimentos@fornecedores.com', 10, 1);
+GO
+
+--COMPONENTES
+INSERT INTO Componente (nome, especificacao, quantidade, nivel_minimo, nivel_maximo, ativo)
+VALUES
+  -- MacBook Air M2
+  ('Display',            'Retina IPS 13.6\"',         100, 10, 200, 1),
+  ('Keyboard',           'Magic Keyboard retroiluminado',200,20,500,1),
+  ('Trackpad',           'Force Touch',               150, 15, 300, 1),
+  ('Battery',            'Li-Po 52.6 Wh',              80,  5, 100, 1),
+  ('RAM',                '8 GB LPDDR5',               120, 10, 400, 1),
+  ('Logic Board',        'Apple M2',                   60,  5, 100, 1),
+  ('Cooling',            'Dissipador passivo',         90, 10, 200, 1),
+  ('Chassis',            'Unibody alumínio',           70, 10, 150, 1),
+
+  -- Dell XPS 13 (2024)
+  ('Display',            'IPS 13.4\" QHD+',            90,   5, 150, 1),
+  ('Keyboard',           'Chiclet retroiluminado',    180,  20, 400, 1),
+  ('Battery',            'Li-Ion 51 Wh',               70,   5, 120, 1),
+  ('RAM',                '16 GB LPDDR4X',             100,  10, 300, 1),
+  ('Storage',            'SSD NVMe 512 GB',           130,  20, 300, 1),
+  ('Logic Board',        'Custom XPS',                 50,   5, 100, 1),
+  ('Cooling',            'Ventoinha PWM',             120,  10, 300, 1),
+  ('Chassis',            'Fibra de carbono',           60,  10, 150, 1),
+
+  -- HP Spectre x360 14"
+  ('Display',            'OLED 14\" 3K2K',             50,   5, 100, 1),
+  ('Keyboard',           'Chiclet retroiluminado',    120,  10, 300, 1),
+  ('Battery',            'Li-Ion 60 Wh',               60,   5, 100, 1),
+  ('RAM',                '16 GB LPDDR4X',              80,  10, 200, 1),
+  ('Storage',            'SSD NVMe 512 GB',           100,  10, 200, 1),
+  ('Logic Board',        'Custom Spectre',             45,   5,  90, 1),
+  ('Cooling',            'Cooler a vapor',             35,   5,  80, 1),
+  ('Chassis',            'Alumínio usinado',           55,  10, 150, 1),
+
+  -- iPad Air (5ª Geração)
+  ('Display',            'Liquid Retina 10.9\"',      200,  20, 400, 1),
+  ('SoC',                'Apple M1',                  150,  10, 300, 1),
+  ('Battery',            'Li-Po 28.6 Wh',             100,  10, 200, 1),
+  ('RAM',                '8 GB LPDDR4X',              180,  20, 400, 1),
+  ('Storage',            'SSD NVMe 256 GB',           160,  10, 300, 1),
+  ('Chassis',            'Unibody alumínio',           90,  10, 200, 1),
+  ('Speakers',           'Estéreo dual',               20,   5,  50, 1),
+  ('Touch IC',           'Controlador touch',          30,   5,  80, 1),
+
+  -- Galaxy Tab S9
+  ('Display',            'LTPS 11\"',                 180,  20, 300, 1),
+  ('SoC',                'Snapdragon 8 Gen 2',        140,  10, 250, 1),
+  ('Battery',            'Li-Po 8000 mAh',             90,  10, 200, 1),
+  ('RAM',                '8 GB LPDDR5',               150,  20, 300, 1),
+  ('Storage',            'UFS 128 GB',                170,  10, 300, 1),
+  ('Camera Rear',        '13 MP',                      60,   5, 150, 1),
+  ('Camera Front',       '8 MP',                       40,   5, 100, 1),
+  ('Chassis',            'Mg-alloy',                   50,  10, 150, 1),
+
+  -- Surface Pro 9
+  ('Display',            'PixelSense 13\"',            80,  10, 150, 1),
+  ('Keyboard',           'Type Cover',                120,  10, 300, 1),
+  ('Battery',            'Li-Ion 47.4 Wh',             70,   5, 120, 1),
+  ('RAM',                '8 GB LPDDR4X',              110,  10, 250, 1),
+  ('Storage',            'SSD NVMe 256 GB',           130,  10, 200, 1),
+  ('Kickstand',          'Integrado ajustável',        25,   5, 100, 1),
+  ('Camera',             'Windows Hello IR',           50,   5, 150, 1),
+  ('Speakers',           'Stereo Waves',               30,   5, 100, 1),
+
+  -- iPhone 16 Pro
+  ('Display',            'AMOLED 6.1\"',               300,  20, 500, 1),
+  ('SoC',                'Apple A18',                  250,  10, 400, 1),
+  ('Battery',            'Li-Ion 3279 mAh',            200,  10, 300, 1),
+  ('RAM',                '8 GB LPDDR5',               220,  20, 400, 1),
+  ('Storage',            'SSD NVMe 256 GB',           240,  10, 400, 1),
+  ('Camera Rear',        'Tripla 48+12+12 MP',        200,  10, 300, 1),
+  ('Camera Front',       'TrueDepth',                  30,   5, 100, 1),
+  ('Chassis',            'Aço inoxidável',             40,  10, 150, 1),
+
+  -- Galaxy S24 Ultra
+  ('Display',            'AMOLED 6.8\"',               250,  20, 400, 1),
+  ('SoC',                'Snapdragon 8 Gen 3',        200,  10, 350, 1),
+  ('Battery',            'Li-Po 5000 mAh',            180,  10, 300, 1),
+  ('RAM',                '12 GB LPDDR5X',             210,  20, 400, 1),
+  ('Storage',            'UFS 256 GB',                230,  10, 400, 1),
+  ('S Pen',              'Active Pen',                 40,   5, 100, 1),
+  ('Camera Quad',        '200 MP+3 auxiliares',       250,  10, 400, 1),
+  ('Chassis',            'Armor Aluminum',             60,  10, 200, 1),
+
+  -- Google Pixel 8 Pro
+  ('Display',            'LTPO OLED 6.7\"',            120,  10, 300, 1),
+  ('SoC',                'Tensor G3',                  100,   5, 200, 1),
+  ('Battery',            'Li-Po 5050 mAh',            140,  10, 300, 1),
+  ('RAM',                '12 GB LPDDR5X',             130,  10, 300, 1),
+  ('Storage',            'UFS 128 GB',                150,  10, 300, 1),
+  ('Security',           'Titan M2',                   25,   5,  50, 1),
+  ('Camera',             'Tripla 50+48+12 MP',        220,  10, 300, 1),
+  ('Chassis',            'Policarbonato',              45,  10, 150, 1),
+
+  -- OnePlus 12
+  ('Display',            'AMOLED 6.7\"',               160,  10, 300, 1),
+  ('SoC',                'Snapdragon 8 Gen 3',        140,  10, 300, 1),
+  ('Battery',            'Li-Po 5200 mAh',            120,  10, 300, 1),
+  ('RAM',                '12 GB LPDDR5X',             150,  10, 300, 1),
+  ('Storage',            'UFS 256 GB',                170,  10, 300, 1),
+  ('Camera',             'Hasselblad',                230,  10, 300, 1),
+  ('Charging',           'Warp Charge 100W',           50,   5, 100, 1),
+  ('Chassis',            'Sandstone Black',            55,  10, 150, 1);
+GO
+
+--FORNECEDOR_COMPONENTE
+-- MacBook Air M2
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 1, c.componente_id, 1500.00 FROM Componente c WHERE c.nome='Display'         AND c.especificacao='Retina IPS 13.6\"' UNION ALL
+SELECT 1, c.componente_id,  200.00 FROM Componente c WHERE c.nome='Keyboard'        AND c.especificacao='Magic Keyboard retroiluminado' UNION ALL
+SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Trackpad'        AND c.especificacao='Force Touch' UNION ALL
+SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'         AND c.especificacao='Li-Po 52.6 Wh' UNION ALL
+SELECT 1, c.componente_id,   80.00 FROM Componente c WHERE c.nome='RAM'             AND c.especificacao='8 GB LPDDR5' UNION ALL
+SELECT 1, c.componente_id, 2000.00 FROM Componente c WHERE c.nome='Logic Board'     AND c.especificacao='Apple M2' UNION ALL
+SELECT 4, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Cooling'         AND c.especificacao='Dissipador passivo' UNION ALL
+SELECT 4, c.componente_id,  150.00 FROM Componente c WHERE c.nome='Chassis'         AND c.especificacao='Unibody alumínio';
+GO
+
+-- Dell XPS 13 (2024)
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 4, c.componente_id,  400.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='IPS 13.4\" QHD+' UNION ALL
+SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Chiclet retroiluminado' UNION ALL
+SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 51 Wh' UNION ALL
+SELECT 4, c.componente_id,   70.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='16 GB LPDDR4X' UNION ALL
+SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 512 GB' UNION ALL
+SELECT 4, c.componente_id,  500.00 FROM Componente c WHERE c.nome='Logic Board'  AND c.especificacao='Custom XPS' UNION ALL
+SELECT 2, c.componente_id,  130.00 FROM Componente c WHERE c.nome='Cooling'      AND c.especificacao='Ventoinha PWM' UNION ALL
+SELECT 4, c.componente_id,   80.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Fibra de carbono';
+GO
+
+-- HP Spectre x360 14"
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 1, c.componente_id,  550.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='OLED 14\" 3K2K' UNION ALL
+SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Chiclet retroiluminado' UNION ALL
+SELECT 3, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 60 Wh' UNION ALL
+SELECT 4, c.componente_id,   85.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='16 GB LPDDR4X' UNION ALL
+SELECT 4, c.componente_id,  110.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 512 GB' UNION ALL
+SELECT 4, c.componente_id,  480.00 FROM Componente c WHERE c.nome='Logic Board'  AND c.especificacao='Custom Spectre' UNION ALL
+SELECT 2, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Cooling'      AND c.especificacao='Cooler a vapor' UNION ALL
+SELECT 4, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Alumínio usinado';
+GO
+
+-- iPad Air (5ª Geração)
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 1, c.componente_id,  320.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='Liquid Retina 10.9\"' UNION ALL
+SELECT 1, c.componente_id,  650.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple M1' UNION ALL
+SELECT 3, c.componente_id,  110.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 28.6 Wh' UNION ALL
+SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
+SELECT 4, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
+SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Unibody alumínio' UNION ALL
+SELECT 3, c.componente_id,   25.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Estéreo dual' UNION ALL
+SELECT 2, c.componente_id,   40.00 FROM Componente c WHERE c.nome='Touch IC'     AND c.especificacao='Controlador touch';
+GO
+
+-- Galaxy Tab S9
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 3, c.componente_id,  280.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPS 11\"' UNION ALL
+SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 2' UNION ALL
+SELECT 2, c.componente_id,   70.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 8000 mAh' UNION ALL
+SELECT 3, c.componente_id,   85.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR5' UNION ALL
+SELECT 3, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
+SELECT 2, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='13 MP' UNION ALL
+SELECT 2, c.componente_id,   45.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='8 MP' UNION ALL
+SELECT 4, c.componente_id,   70.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Mg-alloy';
+GO
+
+-- Surface Pro 9
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 4, c.componente_id,  380.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='PixelSense 13\"' UNION ALL
+SELECT 4, c.componente_id,  130.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Type Cover' UNION ALL
+SELECT 4, c.componente_id,   85.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 47.4 Wh' UNION ALL
+SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
+SELECT 4, c.componente_id,  170.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
+SELECT 1, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Kickstand'    AND c.especificacao='Integrado ajustável' UNION ALL
+SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Windows Hello IR' UNION ALL
+SELECT 4, c.componente_id,   35.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Stereo Waves';
+GO
+
+-- iPhone 16 Pro
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 1, c.componente_id,  350.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.1\"' UNION ALL
+SELECT 1, c.componente_id,  700.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple A18' UNION ALL
+SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 3279 mAh' UNION ALL
+SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR5' UNION ALL
+SELECT 1, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
+SELECT 1, c.componente_id,  220.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='Tripla 48+12+12 MP' UNION ALL
+SELECT 1, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='TrueDepth' UNION ALL
+SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Aço inoxidável';
+GO
+
+-- Galaxy S24 Ultra
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 3, c.componente_id,  300.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.8\"' UNION ALL
+SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 3' UNION ALL
+SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5000 mAh' UNION ALL
+SELECT 3, c.componente_id,  130.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
+SELECT 3, c.componente_id,  210.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 256 GB' UNION ALL
+SELECT 3, c.componente_id,   45.00 FROM Componente c WHERE c.nome='S Pen'         AND c.especificacao='Active Pen' UNION ALL
+SELECT 3, c.componente_id,  270.00 FROM Componente c WHERE c.nome='Camera Quad'  AND c.especificacao='200 MP+3 auxiliares' UNION ALL
+SELECT 4, c.componente_id,   80.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Armor Aluminum';
+GO
+
+-- Google Pixel 8 Pro
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 2, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPO OLED 6.7\"' UNION ALL
+SELECT 2, c.componente_id,  220.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Tensor G3' UNION ALL
+SELECT 3, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5050 mAh' UNION ALL
+SELECT 2, c.componente_id,  110.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
+SELECT 2, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
+SELECT 3, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Security'     AND c.especificacao='Titan M2' UNION ALL
+SELECT 2, c.componente_id,  250.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Tripla 50+48+12 MP' UNION ALL
+SELECT 4, c.componente_id,   55.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Policarbonato';
+GO
+
+-- OnePlus 12
+INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
+SELECT 2, c.componente_id,  190.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.7\"' UNION ALL
+SELECT 2, c.componente_id,  220.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 3' UNION ALL
+SELECT 2, c.componente_id,   85.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5200 mAh' UNION ALL
+SELECT 2, c.componente_id,  120.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
+SELECT 2, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 256 GB' UNION ALL
+SELECT 1, c.componente_id,  310.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Hasselblad' UNION ALL
+SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Charging'     AND c.especificacao='Warp Charge 100W' UNION ALL
+SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Sandstone Black';
+GO
+
+--PRODUCAO
+INSERT INTO Producao (nome, custo, ativo) VALUES
+  ('Montagem de MacBook Air M2',           8000.00, 1),
+  ('Montagem de Dell XPS 13 (2024)',        9000.00, 1),
+  ('Montagem de HP Spectre x360 14\"',      8500.00, 1),
+  ('Montagem de Apple iPad Air 5ª Geração', 2000.00, 1),
+  ('Montagem de Galaxy Tab S9',             1800.00, 1),
+  ('Montagem de Surface Pro 9',             3000.00, 1),
+  ('Montagem de iPhone 16 Pro',             5000.00, 1),
+  ('Montagem de Galaxy S24 Ultra',          4500.00, 1),
+  ('Montagem de Google Pixel 8 Pro',        3000.00, 1),
+  ('Montagem de OnePlus 12',                2500.00, 1);
+GO
+
+--PRODUTO_FINAL
+INSERT INTO ProdutoFinal ( fk_producao, nome, descricao, valor_venda, quantidade, nivel_minimo, nivel_maximo, tempo_producao_dias, ativo)
+VALUES
+  (1,  'MacBook Air M2 13\"',   'Apple M2, 8-core CPU, 8 GB RAM, 256 GB SSD, 13.6\" Retina',         13000.00, 50,  5, 100, 7, 1),
+  (2,  'Dell XPS 13 (2024)',    'Intel Core i7-1360P, 16 GB RAM, 512 GB SSD, 13.4\" QHD+',            15000.00, 40,  4,  80, 6, 1),
+  (3,  'HP Spectre x360 14\"',  'Intel Core i7-1355U, 16 GB RAM, 512 GB SSD, 14\" 3K2K OLED',         14000.00, 30,  3,  60, 6, 1),
+  (4,  'iPad Air (5ª Geração)', 'Apple M1, 8 GB RAM, 256 GB, 10.9\" Liquid Retina',                   4000.00, 100, 10, 200, 5, 1),
+  (5,  'Galaxy Tab S9',        'Snapdragon 8 Gen 2, 8 GB RAM, 128 GB, 11\" LTPS TFT',                3500.00,  80,  8, 160, 5, 1),
+  (6,  'Surface Pro 9',        'Intel Core i5-1235U, 8 GB RAM, 256 GB SSD, 13\" PixelSense',          7000.00,  60,  6, 120, 7, 1),
+  (7,  'iPhone 16 Pro',        'Apple A18 Bionic, 8 GB RAM, 256 GB, 6.1\" ProMotion OLED',           8000.00, 150, 15, 300, 8, 1),
+  (8,  'Galaxy S24 Ultra',     'Snapdragon 8 Gen 3, 12 GB RAM, 256 GB, 6.8\" AMOLED',                6000.00, 120, 12, 240, 8, 1),
+  (9,  'Google Pixel 8 Pro',   'Tensor G3, 12 GB RAM, 128 GB, 6.7\" LTPO OLED',                      5000.00,  90,  9, 180, 7, 1),
+  (10, 'OnePlus 12',           'Snapdragon 8 Gen 3, 12 GB RAM, 256 GB, 6.7\" AMOLED',                4500.00,  70,  7, 140, 7, 1);
+GO
+
+--ETAPA_PRODUCAO
+-- Etapas de produção para MacBook Air M2 (fk_producao = 1)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 1, 1, 'Soldagem dos conectores da placa lógica',   c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Apple M2'            UNION ALL
+SELECT 1, 2, 'Aplicação de pasta térmica no módulo',     c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Dissipador passivo'   UNION ALL
+SELECT 1, 3, 'Instalação do módulo de RAM',             c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'           UNION ALL
+SELECT 1, 4, 'Fixação do display',                      c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Retina IPS 13.6"'      UNION ALL
+SELECT 1, 5, 'Conexão dos cabos de vídeo',              c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Retina IPS 13.6"'      UNION ALL
+SELECT 1, 6, 'Montagem do teclado',                     c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Magic Keyboard retroiluminado' UNION ALL
+SELECT 1, 7, 'Integração do trackpad',                  c.componente_id FROM Componente c WHERE c.nome='Trackpad'    AND c.especificacao='Force Touch'           UNION ALL
+SELECT 1, 8, 'Fixação do chassi e fechamento',          c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Unibody alumínio';
+GO
+
+-- Etapas de produção para Dell XPS 13 (2024) (fk_producao = 2)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 2, 1, 'Verificação estrutural do chassi',        c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Fibra de carbono'      UNION ALL
+SELECT 2, 2, 'Soldagem da placa lógica XPS',           c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Custom XPS'          UNION ALL
+SELECT 2, 3, 'Instalação do processador e RAM',        c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='16 GB LPDDR4X'         UNION ALL
+SELECT 2, 4, 'Montagem do SSD NVMe',                   c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 512 GB'       UNION ALL
+SELECT 2, 5, 'Fixação do display e cabos',             c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='IPS 13.4\" QHD+'       UNION ALL
+SELECT 2, 6, 'Colocação da bateria',                   c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 51 Wh'          UNION ALL
+SELECT 2, 7, 'Instalação do teclado retroiluminado',   c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Chiclet retroiluminado' UNION ALL
+SELECT 2, 8, 'Engate da ventoinha PWM',                c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Ventoinha PWM';
+GO
+
+-- Etapas de produção para HP Spectre x360 14" (fk_producao = 3)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 3, 1, 'Instalação do painel OLED',               c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='OLED 14\" 3K2K'        UNION ALL
+SELECT 3, 2, 'Soldagem de chips na placa-mãe',         c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Custom Spectre'     UNION ALL
+SELECT 3, 3, 'Inserção de módulos de RAM',             c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='16 GB LPDDR4X'         UNION ALL
+SELECT 3, 4, 'Montagem de SSD',                        c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 512 GB'       UNION ALL
+SELECT 3, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 60 Wh'          UNION ALL
+SELECT 3, 6, 'Instalação do teclado',                  c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Chiclet retroiluminado' UNION ALL
+SELECT 3, 7, 'Fixação do cooler a vapor',              c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Cooler a vapor'        UNION ALL
+SELECT 3, 8, 'Fechamento do chassi',                   c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Alumínio usinado';
+GO
+
+-- Etapas de produção para iPad Air (5ª Geração) (fk_producao = 4)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 4, 1, 'Colocação do display Liquid Retina',      c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Liquid Retina 10.9\"'  UNION ALL
+SELECT 4, 2, 'Soldagem do chip Apple M1',              c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Apple M1'             UNION ALL
+SELECT 4, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR4X'          UNION ALL
+SELECT 4, 4, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'       UNION ALL
+SELECT 4, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 28.6 Wh'         UNION ALL
+SELECT 4, 6, 'Fixação dos alto-falantes',              c.componente_id FROM Componente c WHERE c.nome='Speakers'    AND c.especificacao='Estéreo dual'          UNION ALL
+SELECT 4, 7, 'Programação do controlador touch',       c.componente_id FROM Componente c WHERE c.nome='Touch IC'    AND c.especificacao='Controlador touch'     UNION ALL
+SELECT 4, 8, 'Fechamento do corpo em alumínio',        c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Unibody alumínio';
+GO
+
+-- Etapas de produção para Galaxy Tab S9 (fk_producao = 5)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 5, 1, 'Montagem do painel LTPS',                c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='LTPS 11\"'            UNION ALL
+SELECT 5, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 2'   UNION ALL
+SELECT 5, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'          UNION ALL
+SELECT 5, 4, 'Instalação do UFS 128 GB',               c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 128 GB'           UNION ALL
+SELECT 5, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 8000 mAh'       UNION ALL
+SELECT 5, 6, 'Fixação da câmera traseira',             c.componente_id FROM Componente c WHERE c.nome='Camera Rear' AND c.especificacao='13 MP'               UNION ALL
+SELECT 5, 7, 'Fixação da câmera frontal',              c.componente_id FROM Componente c WHERE c.nome='Camera Front'AND c.especificacao='8 MP'                UNION ALL
+SELECT 5, 8, 'Encaixe do chassi em liga leve',         c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Mg-alloy';
+GO
+
+-- Etapas de produção para Surface Pro 9 (fk_producao = 6)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 6, 1, 'Instalação do display PixelSense',        c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='PixelSense 13\"'      UNION ALL
+SELECT 6, 2, 'Conexão do Type Cover',                  c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Type Cover'            UNION ALL
+SELECT 6, 3, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'       UNION ALL
+SELECT 6, 4, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR4X'          UNION ALL
+SELECT 6, 5, 'Instalação da bateria',                  c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 47.4 Wh'        UNION ALL
+SELECT 6, 6, 'Fixação do kickstand integrado',         c.componente_id FROM Componente c WHERE c.nome='Kickstand'  AND c.especificacao='Integrado ajustável'   UNION ALL
+SELECT 6, 7, 'Conexão do Windows Hello IR',            c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Windows Hello IR'      UNION ALL
+SELECT 6, 8, 'Instalação dos alto-falantes',           c.componente_id FROM Componente c WHERE c.nome='Speakers'    AND c.especificacao='Stereo Waves';
+GO
+
+-- Etapas de produção para iPhone 16 Pro (fk_producao = 7)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 7, 1, 'Montagem do display AMOLED',              c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.1\"'           UNION ALL
+SELECT 7, 2, 'Soldagem do chip A18 Bionic',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Apple A18'              UNION ALL
+SELECT 7, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'            UNION ALL
+SELECT 7, 4, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'        UNION ALL
+SELECT 7, 5, 'Fixação da bateria',                      c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 3279 mAh'        UNION ALL
+SELECT 7, 6, 'Instalação das câmeras traseiras',        c.componente_id FROM Componente c WHERE c.nome='Camera Rear' AND c.especificacao='Tripla 48+12+12 MP'    UNION ALL
+SELECT 7, 7, 'Configuração do TrueDepth frontal',       c.componente_id FROM Componente c WHERE c.nome='Camera Front'AND c.especificacao='TrueDepth'             UNION ALL
+SELECT 7, 8, 'Fechamento do corpo metálico',            c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Aço inoxidável';
+GO
+
+-- Etapas de produção para Galaxy S24 Ultra (fk_producao = 8)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 8, 1, 'Instalação do display AMOLED',            c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.8\"'           UNION ALL
+SELECT 8, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 3'     UNION ALL
+SELECT 8, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'           UNION ALL
+SELECT 8, 4, 'Montagem de UFS 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 256 GB'              UNION ALL
+SELECT 8, 5, 'Fixação da S Pen',                       c.componente_id FROM Componente c WHERE c.nome='S Pen'       AND c.especificacao='Active Pen'              UNION ALL
+SELECT 8, 6, 'Instalação da bateria',                  c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5000 mAh'          UNION ALL
+SELECT 8, 7, 'Configuração das câmeras traseiras',     c.componente_id FROM Componente c WHERE c.nome='Camera Quad' AND c.especificacao='200 MP+3 auxiliares'   UNION ALL
+SELECT 8, 8, 'Encaixe do chassi reforçado',             c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Armor Aluminum';
+GO
+
+-- Etapas de produção para Google Pixel 8 Pro (fk_producao = 9)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 9, 1, 'Montagem do display LTPO OLED',           c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='LTPO OLED 6.7\"'         UNION ALL
+SELECT 9, 2, 'Soldagem do chip Tensor G3',              c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Tensor G3'               UNION ALL
+SELECT 9, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'            UNION ALL
+SELECT 9, 4, 'Montagem de UFS 128 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 128 GB'               UNION ALL
+SELECT 9, 5, 'Integração do módulo Titan M2',          c.componente_id FROM Componente c WHERE c.nome='Security'    AND c.especificacao='Titan M2'                 UNION ALL
+SELECT 9, 6, 'Fixação da bateria',                      c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5050 mAh'           UNION ALL
+SELECT 9, 7, 'Configuração das câmeras traseiras',     c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Tripla 50+48+12 MP'       UNION ALL
+SELECT 9, 8, 'Fechamento do corpo em policarbonato',    c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Policarbonato';
+GO
+
+-- Etapas de produção para OnePlus 12 (fk_producao = 10)
+INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
+SELECT 10, 1, 'Instalação do display AMOLED',           c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.7\"'             UNION ALL
+SELECT 10, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 3'       UNION ALL
+SELECT 10, 3, 'Inserção de memória RAM',               c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'            UNION ALL
+SELECT 10, 4, 'Montagem de UFS 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 256 GB'               UNION ALL
+SELECT 10, 5, 'Fixação da bateria',                     c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5200 mAh'           UNION ALL
+SELECT 10, 6, 'Integração da câmera Hasselblad',       c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Hasselblad'               UNION ALL
+SELECT 10, 7, 'Configuração do módulo de carregamento',c.componente_id FROM Componente c WHERE c.nome='Charging'    AND c.especificacao='Warp Charge 100W'         UNION ALL
+SELECT 10, 8, 'Encaixe final do chassi',               c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Sandstone Black';
+GO
+
+--PEDIDO
+INSERT INTO Pedido (data_hora, fk_usuario, valor_total, situacao) VALUES
+  -- João Pedro Silva (usuário 3)
+  ('20250610 14:30:00', 3, 13000.00, 'Entregue'),
+  ('20250605 16:20:00', 3, 29000.00, 'Entregue'),
+
+  -- Carlos Almeida (usuário 4)
+  ('20250611 09:15:00', 4, 15000.00, 'Processando'),
+
+  -- Amanda Silva (usuário 5)
+  ('20250601 13:05:00', 5, 16000.00, 'Cancelado'),
+  ('20250612 19:45:00', 5,  7500.00, 'Enviado'),
+
+  -- Arthur dal Bosco (usuário 6)
+  ('20250613 11:00:00', 6, 12000.00, 'Pendente');
+GO
+
+--PEDIDO_PRODUTOFINAL
+INSERT INTO Pedido_ProdutoFinal (fk_pedido, fk_produtofinal, quantidade_item) VALUES
+  -- Pedido 1 (João): 1×MacBook Air M2
+  (1, 1, 1),
+
+  -- Pedido 2 (João): 1×HP Spectre x360 + 1×Dell XPS 13
+  (2, 3, 1),
+  (2, 2, 1),
+
+  -- Pedido 3 (Carlos): 1×Galaxy S24 Ultra + 2×OnePlus 12
+  (3, 8, 1),
+  (3, 10, 2),
+
+  -- Pedido 4 (Amanda): 2×iPhone 16 Pro
+  (4, 7, 2),
+
+  -- Pedido 5 (Amanda): 1×iPad Air + 1×Galaxy Tab S9
+  (5, 4, 1),
+  (5, 5, 1),
+
+  -- Pedido 6 (Arthur): 1×Google Pixel 8 Pro + 1×Surface Pro 9
+  (6, 9, 1),
+  (6, 6, 1);
+GO
+
+--FEEDBACK
+INSERT INTO Feedback (data_hora, fk_pedido, avaliacao, observacao) VALUES
+  ('20250612 11:20:00', 1, 5, 'Entrega rápida, produto em perfeito estado.'),  
+  ('20250608 17:45:00', 2, 4, 'Produtos de ótima qualidade, mas houve pequeno atraso na entrega.');
+GO
+
+--MOVIMENTACAO
+INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade) VALUES
+  ('20250601 07:00:00', 'Entrada', NULL, 1, 10),  -- MacBook Air M2
+  ('20250601 07:30:00', 'Entrada', NULL, 2, 10),  -- Dell XPS 13
+  ('20250601 08:00:00', 'Entrada', NULL, 3, 10),  -- HP Spectre x360
+  ('20250601 08:30:00', 'Entrada', NULL, 4, 10),  -- iPad Air
+  ('20250601 09:00:00', 'Entrada', NULL, 5, 10),  -- Galaxy Tab S9
+  ('20250602 07:00:00', 'Entrada', NULL, 6, 10),  -- Surface Pro 9
+  ('20250602 07:30:00', 'Entrada', NULL, 7, 10),  -- iPhone 16 Pro
+  ('20250602 08:00:00', 'Entrada', NULL, 8, 10),  -- Galaxy S24 Ultra
+  ('20250602 08:30:00', 'Entrada', NULL, 9, 10),  -- Google Pixel 8 Pro
+  ('20250602 09:00:00', 'Entrada', NULL, 10, 10);
+GO
+
+INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade) VALUES
+  -- Pedido 1 (João Pedro): 1×MacBook Air M2
+  ('20250610 14:30:00', 'Saida', 1, 1, 1),
+
+  -- Pedido 2 (João Pedro): 1×HP Spectre x360 + 1×Dell XPS 13
+  ('20250605 16:20:00', 'Saida', 2, 3, 1),
+  ('20250605 16:20:00', 'Saida', 2, 2, 1),
+
+  -- Pedido 3 (Carlos Almeida): 1×Galaxy S24 Ultra + 2×OnePlus 12
+  ('20250611 09:15:00', 'Saida', 3, 8, 1),
+  ('20250611 09:15:00', 'Saida', 3, 10, 2),
+
+  -- Pedido 4 (Amanda Silva): 2×iPhone 16 Pro
+  ('20250601 13:05:00', 'Saida', 4, 7, 2),
+
+  -- Pedido 5 (Amanda Silva): 1×iPad Air + 1×Galaxy Tab S9
+  ('20250612 19:45:00', 'Saida', 5, 4, 1),
+  ('20250612 19:45:00', 'Saida', 5, 5, 1),
+
+  -- Pedido 6 (Arthur dal Bosco): 1×Google Pixel 8 Pro + 1×Surface Pro 9
+  ('20250613 11:00:00', 'Saida', 6, 9, 1),
+  ('20250613 11:00:00', 'Saida', 6, 6, 1);
+GO
+
+--HISTORICO_PRODUCAO
+INSERT INTO Historico_Producao (fk_producao, quantidade_produto, data_inicio, data_previsao, data_conclusao, ultima_etapa) VALUES
+  -- MacBook Air M2 (7 dias)
+  (1, 10, '20250601 07:00:00', '20250608 07:00:00', '20250608 07:00:00', 8),
+  -- Dell XPS 13 (6 dias)
+  (2, 10, '20250601 07:30:00', '20250607 07:30:00', '20250607 07:30:00', 8),
+  -- HP Spectre x360 (6 dias)
+  (3, 10, '20250601 08:00:00', '20250607 08:00:00', '20250607 08:00:00', 8),
+  -- iPad Air (5 dias)
+  (4, 10, '20250601 08:30:00', '20250606 08:30:00', '20250606 08:30:00', 8),
+  -- Galaxy Tab S9 (5 dias)
+  (5, 10, '20250601 09:00:00', '20250606 09:00:00', '20250606 09:00:00', 8),
+  -- Surface Pro 9 (7 dias)
+  (6, 10, '20250602 07:00:00', '20250609 07:00:00', '20250609 07:00:00', 8),
+  -- iPhone 16 Pro (8 dias)
+  (7, 10, '20250602 07:30:00', '20250610 07:30:00', '20250610 07:30:00', 8),
+  -- Galaxy S24 Ultra (8 dias)
+  (8, 10, '20250602 08:00:00', '20250610 08:00:00', '20250610 08:00:00', 8),
+  -- Google Pixel 8 Pro (7 dias)
+  (9, 10, '20250602 08:30:00', '20250609 08:30:00', '20250609 08:30:00', 8),
+  -- OnePlus 12 (7 dias)
+  (10,10, '20250602 09:00:00', '20250609 09:00:00', '20250609 09:00:00', 8);
+GO
+
+INSERT INTO Historico_Producao (fk_producao, quantidade_produto, data_inicio, data_previsao, data_conclusao, ultima_etapa) VALUES
+  -- Galaxy Tab S9 (5 dias) – previsto 2025-06-08, hoje já é 13/06 → atrasada
+  (5, 10, '20250603 09:00:00', '20250608 09:00:00', NULL, 5),
+
+  -- HP Spectre x360 (6 dias) – previsto 2025-06-12, hoje já é 13/06 → atrasada
+  (3, 10, '20250606 08:00:00', '20250612 08:00:00', NULL, 4),
+
+  -- Surface Pro 9 (7 dias) – previsto 2025-06-12, hoje já é 13/06 → atrasada
+  (6, 10, '20250605 07:00:00', '20250612 07:00:00', NULL, 3),
+
+  -- Dell XPS 13 (6 dias) – previsto 2025-06-14, hoje é 13/06 → dentro do prazo
+  (2, 10, '20250608 07:30:00', '20250614 07:30:00', NULL, 3),
+
+  -- iPad Air (5 dias) – previsto 2025-06-14, hoje é 13/06 → dentro do prazo
+  (4, 10, '20250609 08:30:00', '20250614 08:30:00', NULL, 2),
+
+  -- Google Pixel 8 Pro (7 dias) – previsto 2025-06-14, hoje é 13/06 → dentro do prazo
+  (9, 10, '20250607 08:30:00', '20250614 08:30:00', NULL, 5);
+GO
+
+
+
+-- ================================================================================
+-- TRIGGERS PARA A TABELA MOVIMENTACAO
+-- ================================================================================
+
+/*
+ Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando um novo produto é cadastrado no sistema
+ OBS: Rodar o comando de maneira individual
+*/
+CREATE TRIGGER trg_after_insert_ProdutoFinal
+ON ProdutoFinal
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade)
+    SELECT GETDATE(), 'Entrada', NULL, produtofinal_id, quantidade
+    FROM inserted;
+END;
+GO
+
+/*
+ Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando um novo pedido é registrado via banco de dados
+ OBS: Rodar o comando de maneira individual
+*/
+CREATE TRIGGER trg_after_insert_Pedido_ProdutoFinal
+ON Pedido_ProdutoFinal
+AFTER INSERT
+AS
+BEGIN
+    INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade)
+    SELECT GETDATE(), 'Saída', fk_pedido, fk_produtofinal, quantidade_item
+    FROM inserted;
+END;
+GO
