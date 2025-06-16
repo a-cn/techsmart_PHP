@@ -1,0 +1,83 @@
+/* Estilos personalizados para DataTables */
+#tabelaLinhas,
+#tabelaUsuarios,
+#tabelaComponentes,
+#tabelaComponentesInativos,
+#tabelaProdutos,
+#tabelaProdutosInativos,
+#tabelaFeedbacks,
+#tabelaFornecedores,
+#tabelaPedidos,
+#tabelaEtapas,
+#tabelaStatusProducao,
+#tabelaEstoqueComponentes,
+#tabelaEstoqueProdutos,
+#tabelaConsumoComponentes,
+#tabelaMovimentacoes {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Estilo para cabeçalhos das tabelas */
+#tabelaLinhas th,
+#tabelaUsuarios th,
+#tabelaComponentes th,
+#tabelaComponentesInativos th,
+#tabelaProdutos th,
+#tabelaProdutosInativos th,
+#tabelaFeedbacks th,
+#tabelaFornecedores th,
+#tabelaPedidos th,
+#tabelaEtapas th,
+#tabelaStatusProducao th,
+#tabelaEstoqueComponentes th,
+#tabelaEstoqueProdutos th,
+#tabelaConsumoComponentes th,
+#tabelaMovimentacoes th {
+    font-weight: 600 !important;
+}
+
+/* Estilo para células das tabelas */
+#tabelaLinhas td,
+#tabelaUsuarios td,
+#tabelaComponentes td,
+#tabelaComponentesInativos td,
+#tabelaProdutos td,
+#tabelaProdutosInativos td,
+#tabelaFeedbacks td,
+#tabelaFornecedores td,
+#tabelaPedidos td,
+#tabelaEtapas td,
+#tabelaStatusProducao td,
+#tabelaEstoqueComponentes td,
+#tabelaEstoqueProdutos td,
+#tabelaConsumoComponentes td,
+#tabelaMovimentacoes td {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Estilo para elementos de controle do DataTables */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate,
+.dataTables_wrapper .dataTables_paginate .paginate_button,
+.dataTables_wrapper .dt-buttons .dt-button {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Estilo para botões do DataTables */
+.dt-buttons .dt-button {
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 500 !important;
+}
+
+/* Estilo para campos de busca */
+.dataTables_filter input {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Estilo para seletor de registros por página */
+.dataTables_length select {
+    font-family: 'Poppins', sans-serif !important;
+} 
