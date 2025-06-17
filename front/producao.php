@@ -5,7 +5,11 @@ $loginTimestamp = time();
 
 // Carrega componentes disponíveis
 $componentes = [];
-$sql = "SELECT componente_id, nome FROM Componente WHERE ativo = 1";
+$sql = "SELECT c.componente_id, c.nome, c.especificacao, f.nome as fornecedor_nome 
+        FROM Componente c
+        LEFT JOIN Fornecedor_Componente fc ON c.componente_id = fc.fk_componente
+        LEFT JOIN Fornecedor f ON fc.fk_fornecedor = f.fornecedor_id
+        WHERE c.ativo = 1";
 $result = sqlsrv_query($conn, $sql);
 
 if ($result) {
@@ -63,7 +67,11 @@ if ($result) {
               <select id="novaEtapaComponente" style="flex: 1;">
                 <option value="">Selecione um componente</option>
                 <?php foreach ($componentes as $componente): ?>
-                  <option value="<?= $componente['componente_id'] ?>"><?= htmlspecialchars($componente['nome']) ?></option>
+                  <option value="<?= $componente['componente_id'] ?>">
+                    ID <?= $componente['componente_id'] ?> - <?= htmlspecialchars($componente['nome']) ?> 
+                    (<?= htmlspecialchars($componente['especificacao']) ?>)
+                    - Fornecedor: <?= htmlspecialchars($componente['fornecedor_nome'] ?? 'Não cadastrado') ?>
+                  </option>
                 <?php endforeach; ?>
               </select>
               <button type="button" class="btn-cadastrar" onclick="adicionarEtapa()" style="width: auto;">
@@ -162,6 +170,7 @@ async function adicionarEtapa() {
         nome: nome,
         componenteId: componenteId,
         componenteNome: componente.nome,
+        especificacao: componente.especificacao,
         custo: parseFloat(custo)
     });
     
@@ -203,7 +212,7 @@ function renderizarEtapas() {
         divInfo.className = 'etapa-info';
         divInfo.innerHTML = `
             <span class="etapa-nome">${etapa.nome}</span>
-            <span class="etapa-componente">Componente: ${etapa.componenteNome}</span>
+            <span class="etapa-componente">Componente: ID ${etapa.componenteId} - ${etapa.componenteNome} (${etapa.especificacao || 'Sem especificação'})</span>
             <span class="etapa-custo">Custo: R$ ${etapa.custo.toFixed(2)}</span>
         `;
         
@@ -256,6 +265,7 @@ async function editarProducao(id) {
                 nome: etapa.nome,
                 componenteId: etapa.componenteId,
                 componenteNome: componente ? componente.nome : 'Desconhecido',
+                especificacao: componente ? componente.especificacao : null,
                 custo: parseFloat(custo)
             };
         });
@@ -625,9 +635,26 @@ async function editarProducao(id) {
 }
 .select2-container--default .select2-selection--single .select2-selection__rendered {
   line-height: normal !important;
+  white-space: normal !important;
+  padding: 8px 12px !important;
 }
 .select2-container--default .select2-selection--single .select2-selection__arrow {
   height: 100%;
+}
+.select2-dropdown {
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.select2-container--default .select2-results__option {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+.select2-container--default .select2-results__option:last-child {
+  border-bottom: none;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #007bff;
+  color: white;
 }
 
 .etapa-item {
