@@ -76,7 +76,6 @@ techsmart_PHP/
 │   └── api/                     → Endpoints específicos para fornecer dados via JSON.
 │
 ├── front/                       → Código da interface e interação com o usuário.
-│   ├── Pages/                   → Telas internas organizadas por funcionalidades (versão passada).
 │   ├── css/                     → Arquivos CSS personalizados (temas, layouts).
 │   ├── data/                    → Arquivos auxiliares como traduções e configurações do DataTables.
 │   ├── dashboard/               → Gráficos, relatórios e dashboards organizados por categoria.
