@@ -612,16 +612,13 @@ VALUES
   ('Keyboard',           'Chiclet retroiluminado',    180,  20, 400, 1),
   ('Battery',            'Li-Ion 51 Wh',               70,   5, 120, 1),
   ('RAM',                '16 GB LPDDR4X',             100,  10, 300, 1),
-  ('Storage',            'SSD NVMe 512 GB',           130,  20, 300, 1),
   ('Logic Board',        'Custom XPS',                 50,   5, 100, 1),
   ('Cooling',            'Ventoinha PWM',             120,  10, 300, 1),
   ('Chassis',            'Fibra de carbono',           60,  10, 150, 1),
 
   -- HP Spectre x360 14"
   ('Display',            'OLED 14\" 3K2K',             50,   5, 100, 1),
-  ('Keyboard',           'Chiclet retroiluminado',    120,  10, 300, 1),
   ('Battery',            'Li-Ion 60 Wh',               60,   5, 100, 1),
-  ('RAM',                '16 GB LPDDR4X',              80,  10, 200, 1),
   ('Storage',            'SSD NVMe 512 GB',           100,  10, 200, 1),
   ('Logic Board',        'Custom Spectre',             45,   5,  90, 1),
   ('Cooling',            'Cooler a vapor',             35,   5,  80, 1),
@@ -632,8 +629,6 @@ VALUES
   ('SoC',                'Apple M1',                  150,  10, 300, 1),
   ('Battery',            'Li-Po 28.6 Wh',             100,  10, 200, 1),
   ('RAM',                '8 GB LPDDR4X',              180,  20, 400, 1),
-  ('Storage',            'SSD NVMe 256 GB',           160,  10, 300, 1),
-  ('Chassis',            'Unibody alumínio',           90,  10, 200, 1),
   ('Speakers',           'Estéreo dual',               20,   5,  50, 1),
   ('Touch IC',           'Controlador touch',          30,   5,  80, 1),
 
@@ -641,7 +636,6 @@ VALUES
   ('Display',            'LTPS 11\"',                 180,  20, 300, 1),
   ('SoC',                'Snapdragon 8 Gen 2',        140,  10, 250, 1),
   ('Battery',            'Li-Po 8000 mAh',             90,  10, 200, 1),
-  ('RAM',                '8 GB LPDDR5',               150,  20, 300, 1),
   ('Storage',            'UFS 128 GB',                170,  10, 300, 1),
   ('Camera Rear',        '13 MP',                      60,   5, 150, 1),
   ('Camera Front',       '8 MP',                       40,   5, 100, 1),
@@ -652,7 +646,6 @@ VALUES
   ('Keyboard',           'Type Cover',                120,  10, 300, 1),
   ('Battery',            'Li-Ion 47.4 Wh',             70,   5, 120, 1),
   ('RAM',                '8 GB LPDDR4X',              110,  10, 250, 1),
-  ('Storage',            'SSD NVMe 256 GB',           130,  10, 200, 1),
   ('Kickstand',          'Integrado ajustável',        25,   5, 100, 1),
   ('Camera',             'Windows Hello IR',           50,   5, 150, 1),
   ('Speakers',           'Stereo Waves',               30,   5, 100, 1),
@@ -661,7 +654,6 @@ VALUES
   ('Display',            'AMOLED 6.1\"',               300,  20, 500, 1),
   ('SoC',                'Apple A18',                  250,  10, 400, 1),
   ('Battery',            'Li-Ion 3279 mAh',            200,  10, 300, 1),
-  ('RAM',                '8 GB LPDDR5',               220,  20, 400, 1),
   ('Storage',            'SSD NVMe 256 GB',           240,  10, 400, 1),
   ('Camera Rear',        'Tripla 48+12+12 MP',        200,  10, 300, 1),
   ('Camera Front',       'TrueDepth',                  30,   5, 100, 1),
@@ -681,7 +673,6 @@ VALUES
   ('Display',            'LTPO OLED 6.7\"',            120,  10, 300, 1),
   ('SoC',                'Tensor G3',                  100,   5, 200, 1),
   ('Battery',            'Li-Po 5050 mAh',            140,  10, 300, 1),
-  ('RAM',                '12 GB LPDDR5X',             130,  10, 300, 1),
   ('Storage',            'UFS 128 GB',                150,  10, 300, 1),
   ('Security',           'Titan M2',                   25,   5,  50, 1),
   ('Camera',             'Tripla 50+48+12 MP',        220,  10, 300, 1),
@@ -691,7 +682,6 @@ VALUES
   ('Display',            'AMOLED 6.7\"',               160,  10, 300, 1),
   ('SoC',                'Snapdragon 8 Gen 3',        140,  10, 300, 1),
   ('Battery',            'Li-Po 5200 mAh',            120,  10, 300, 1),
-  ('RAM',                '12 GB LPDDR5X',             150,  10, 300, 1),
   ('Storage',            'UFS 256 GB',                170,  10, 300, 1),
   ('Camera',             'Hasselblad',                230,  10, 300, 1),
   ('Charging',           'Warp Charge 100W',           50,   5, 100, 1),
@@ -708,13 +698,11 @@ SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'     
 SELECT 1, c.componente_id,   80.00 FROM Componente c WHERE c.nome='RAM'             AND c.especificacao='8 GB LPDDR5' UNION ALL
 SELECT 1, c.componente_id, 2000.00 FROM Componente c WHERE c.nome='Logic Board'     AND c.especificacao='Apple M2' UNION ALL
 SELECT 4, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Cooling'         AND c.especificacao='Dissipador passivo' UNION ALL
-SELECT 4, c.componente_id,  150.00 FROM Componente c WHERE c.nome='Chassis'         AND c.especificacao='Unibody alumínio';
 GO
 
 -- Dell XPS 13 (2024)
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
 SELECT 4, c.componente_id,  400.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='IPS 13.4\" QHD+' UNION ALL
-SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Chiclet retroiluminado' UNION ALL
 SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 51 Wh' UNION ALL
 SELECT 4, c.componente_id,   70.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='16 GB LPDDR4X' UNION ALL
 SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 512 GB' UNION ALL
@@ -728,8 +716,6 @@ INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_component
 SELECT 1, c.componente_id,  550.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='OLED 14\" 3K2K' UNION ALL
 SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Chiclet retroiluminado' UNION ALL
 SELECT 3, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 60 Wh' UNION ALL
-SELECT 4, c.componente_id,   85.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='16 GB LPDDR4X' UNION ALL
-SELECT 4, c.componente_id,  110.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 512 GB' UNION ALL
 SELECT 4, c.componente_id,  480.00 FROM Componente c WHERE c.nome='Logic Board'  AND c.especificacao='Custom Spectre' UNION ALL
 SELECT 2, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Cooling'      AND c.especificacao='Cooler a vapor' UNION ALL
 SELECT 4, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Alumínio usinado';
@@ -741,7 +727,6 @@ SELECT 1, c.componente_id,  320.00 FROM Componente c WHERE c.nome='Display'     
 SELECT 1, c.componente_id,  650.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple M1' UNION ALL
 SELECT 3, c.componente_id,  110.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 28.6 Wh' UNION ALL
 SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
-SELECT 4, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
 SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Unibody alumínio' UNION ALL
 SELECT 3, c.componente_id,   25.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Estéreo dual' UNION ALL
 SELECT 2, c.componente_id,   40.00 FROM Componente c WHERE c.nome='Touch IC'     AND c.especificacao='Controlador touch';
@@ -752,7 +737,6 @@ INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_component
 SELECT 3, c.componente_id,  280.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPS 11\"' UNION ALL
 SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 2' UNION ALL
 SELECT 2, c.componente_id,   70.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 8000 mAh' UNION ALL
-SELECT 3, c.componente_id,   85.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR5' UNION ALL
 SELECT 3, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
 SELECT 2, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='13 MP' UNION ALL
 SELECT 2, c.componente_id,   45.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='8 MP' UNION ALL
@@ -765,7 +749,6 @@ SELECT 4, c.componente_id,  380.00 FROM Componente c WHERE c.nome='Display'     
 SELECT 4, c.componente_id,  130.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Type Cover' UNION ALL
 SELECT 4, c.componente_id,   85.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 47.4 Wh' UNION ALL
 SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
-SELECT 4, c.componente_id,  170.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
 SELECT 1, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Kickstand'    AND c.especificacao='Integrado ajustável' UNION ALL
 SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Windows Hello IR' UNION ALL
 SELECT 4, c.componente_id,   35.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Stereo Waves';
@@ -776,7 +759,6 @@ INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_component
 SELECT 1, c.componente_id,  350.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.1\"' UNION ALL
 SELECT 1, c.componente_id,  700.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple A18' UNION ALL
 SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 3279 mAh' UNION ALL
-SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR5' UNION ALL
 SELECT 1, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
 SELECT 1, c.componente_id,  220.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='Tripla 48+12+12 MP' UNION ALL
 SELECT 1, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='TrueDepth' UNION ALL
@@ -788,7 +770,6 @@ INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_component
 SELECT 3, c.componente_id,  300.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.8\"' UNION ALL
 SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 3' UNION ALL
 SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5000 mAh' UNION ALL
-SELECT 3, c.componente_id,  130.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
 SELECT 3, c.componente_id,  210.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 256 GB' UNION ALL
 SELECT 3, c.componente_id,   45.00 FROM Componente c WHERE c.nome='S Pen'         AND c.especificacao='Active Pen' UNION ALL
 SELECT 3, c.componente_id,  270.00 FROM Componente c WHERE c.nome='Camera Quad'  AND c.especificacao='200 MP+3 auxiliares' UNION ALL
@@ -800,7 +781,6 @@ INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_component
 SELECT 2, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPO OLED 6.7\"' UNION ALL
 SELECT 2, c.componente_id,  220.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Tensor G3' UNION ALL
 SELECT 3, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5050 mAh' UNION ALL
-SELECT 2, c.componente_id,  110.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
 SELECT 2, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
 SELECT 3, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Security'     AND c.especificacao='Titan M2' UNION ALL
 SELECT 2, c.componente_id,  250.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Tripla 50+48+12 MP' UNION ALL

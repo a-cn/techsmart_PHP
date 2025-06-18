@@ -7,12 +7,25 @@
     <link rel="stylesheet" type="text/css" href="front/css/_styles.css">
     <link rel="stylesheet" type="text/css" href="front/css/borderglass.css">
     <link rel="stylesheet" type="text/css" href="front/css/janelas.css">
-    <script src="front/scr/script.js"></script>
-    <script src="front/scr/janelas.js"></script>
     <title>Login</title>
 </head>
 
 <body>
+    <!-- Overlay -->
+    <div id="overlay" class="overlay" style="display: none;"></div>
+
+    <!-- Janela de Mensagens/Dialogo -->
+    <div id="janela-mensagens" class="popup-bordeglass" style="display: none;">
+        <div class="conteudo">
+            <h2 id="popup-titulo">Mensagem</h2>
+            <p id="popup-texto">Texto da mensagem ou pergunta.</p>
+            <div class="botoes-popup">
+                <button id="btn-sim" style="display: none;">Sim</button>
+                <button id="btn-nao" style="display: none;">Não</button>
+                <button id="btn-fechar">Fechar</button>
+            </div>
+        </div>
+    </div>
     <div class="login-background">
         <video id="videoBKG" autoplay muted loop>
             <source src="imgs/Login1.mp4" type="video/MP4">
@@ -33,17 +46,10 @@
             </form>
         </div>
     </div>
-    <!-- Overlay e Popup -->
-    <div id="overlay"></div>
-    <div id="janela-mensagens" class="popup-bordeglass">
-        <h2 id="popup-titulo"></h2>
-        <p id="popup-texto"></p>
-        <button id="btn-sim">Sim</button>
-        <button id="btn-nao">Não</button>
-        <button id="btn-fechar">Fechar</button>
-    </div>
 
     <script src="front/scr/index.js"></script>
+    <script src="front/scr/script.js"></script>
+    <script src="front/scr/janelas.js"></script>
     <script>
         // Chama a função para obter um vídeo aleatório e atualiza o player
         const videoAleatorio = obterVideoAleatorio();
