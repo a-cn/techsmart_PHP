@@ -64,7 +64,7 @@ $loginTimestamp = time();
             </select>
           </div>
           <div class="col-md-3">
-            <label for="produtoFinal">Produto Final:</label>
+            <label for="produtoFinal">Produto Montado:</label>
             <select id="produtoFinal" class="form-select" disabled>
               <option value="">Selecione a linha primeiro</option>
             </select>

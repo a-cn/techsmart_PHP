@@ -109,9 +109,9 @@ export async function renderTabelaEstoqueProdutos(containerId) {
             <thead>
             <tr>
                 <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Mínimo</th>
-                <th>Máximo</th>
+                <th>Quantidade Disponível</th>
+                <th>Nível Mínimo</th>
+                <th>Nível Máximo</th>
                 <th>Situação</th>
             </tr>
             </thead>

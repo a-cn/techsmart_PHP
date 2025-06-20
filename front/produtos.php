@@ -117,10 +117,10 @@ if ($stmtProducao) {
                     <th>ID</th>
                     <th>Nome</th>
                     <th>Descrição</th>
-                    <th>Qtd Disponível</th>
+                    <th>Quantidade Disponível</th>
                     <th>Custo de Produção</th>
-                    <th>Nível Min.</th>
-                    <th>Nível Máx.</th>
+                    <th>Nível Mínimo</th>
+                    <th>Nível Máximo</th>
                     <th>Dias p/ Produção</th>
                 </tr>
             </thead>

@@ -15,7 +15,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
             <tr>
                 <th>ID</th>
                 <th>ID Pedido</th>
-                <th>Avaliação</th>
+                <th>Avaliação (1-5)</th>
                 <th>Observação</th>
                 <th>Data/Hora</th>
             </tr>

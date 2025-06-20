@@ -76,7 +76,7 @@ $loginTimestamp = time();
                         <tr>
                             <th>ID</th>
                             <th>Nome</th>
-                            <th>Produto Final</th>
+                            <th>Produto Montado</th>
                             <th>Status</th>
                             <th>Progresso</th>
                             <th>Ações</th>
