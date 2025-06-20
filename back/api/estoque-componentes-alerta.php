@@ -5,7 +5,7 @@
 header('Content-Type: application/json');
 include '../conexao_sqlserver.php';
 
-$sql = "SELECT Componente, quantidade, nivel_minimo, nivel_maximo, Alerta FROM vw_Estoque_Componentes_Alerta";
+$sql = "SELECT Componente, especificacao, quantidade, nivel_minimo, nivel_maximo, Fornecedor, Alerta FROM vw_Estoque_Componentes_Alerta";
 $stmt = sqlsrv_query($conn, $sql);
 
 if ($stmt === false) {
@@ -18,11 +18,13 @@ $dados = [];
 
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     $dados[] = [
-        'componente' => $row['Componente'],
-        'quantidade' => $row['quantidade'],
-        'nivel_minimo' => $row['nivel_minimo'],
-        'nivel_maximo' => $row['nivel_maximo'],
-        'alerta' => $row['Alerta']
+        'componente'     => $row['Componente'],
+        'especificacao'  => $row['especificacao'],
+        'quantidade'     => $row['quantidade'],
+        'nivel_minimo'   => $row['nivel_minimo'],
+        'nivel_maximo'   => $row['nivel_maximo'],
+        'fornecedor'     => $row['Fornecedor'],
+        'alerta'         => $row['Alerta']
     ];
 }
 

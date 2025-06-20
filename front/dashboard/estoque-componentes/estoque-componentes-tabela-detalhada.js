@@ -158,6 +158,8 @@ export async function renderTabelaEstoqueComponentes(containerId) {
             <thead>
             <tr>
                 <th>Componente</th>
+                <th>Especificação</th>
+                <th>Fornecedor</th>
                 <th>Quantidade Disponível</th>
                 <th>Nível Mínimo</th>
                 <th>Nível Máximo</th>
@@ -232,6 +234,8 @@ export async function renderTabelaEstoqueComponentes(containerId) {
             data: dadosFiltrados,
             columns: [
                 { data: 'componente' },
+                { data: 'especificacao' },
+                { data: 'fornecedor' },
                 { data: 'quantidade' },
                 { data: 'nivel_minimo' },
                 { data: 'nivel_maximo' },

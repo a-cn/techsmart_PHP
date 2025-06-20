@@ -54,16 +54,20 @@ GO
 CREATE VIEW vw_Estoque_Componentes_Alerta AS
 SELECT 
     c.nome AS Componente,
+    c.especificacao,
     c.quantidade,
     c.nivel_minimo,
     c.nivel_maximo,
+    f.nome AS Fornecedor,
     CASE 
         WHEN c.quantidade < c.nivel_minimo THEN 'Estoque Baixo'
         WHEN c.quantidade > c.nivel_maximo THEN 'Estoque Alto'
         ELSE 'Estoque Normal'
     END AS Alerta
 FROM Componente c
-WHERE c.ativo = 1;
+INNER JOIN Fornecedor_Componente fc ON c.componente_id = fc.fk_componente
+INNER JOIN Fornecedor f ON fc.fk_fornecedor = f.fornecedor_id
+WHERE c.ativo = 1 AND f.ativo = 1;
 GO
 
 -- ================================================================================

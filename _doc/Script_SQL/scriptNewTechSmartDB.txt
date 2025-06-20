@@ -394,16 +394,20 @@ GO
 CREATE VIEW vw_Estoque_Componentes_Alerta AS
 SELECT 
     c.nome AS Componente,
+    c.especificacao,
     c.quantidade,
     c.nivel_minimo,
     c.nivel_maximo,
+    f.nome AS Fornecedor,
     CASE 
         WHEN c.quantidade < c.nivel_minimo THEN 'Estoque Baixo'
         WHEN c.quantidade > c.nivel_maximo THEN 'Estoque Alto'
         ELSE 'Estoque Normal'
     END AS Alerta
 FROM Componente c
-WHERE c.ativo = 1;
+INNER JOIN Fornecedor_Componente fc ON c.componente_id = fc.fk_componente
+INNER JOIN Fornecedor f ON fc.fk_fornecedor = f.fornecedor_id
+WHERE c.ativo = 1 AND f.ativo = 1;
 GO
 
 -- ================================================================================
@@ -510,7 +514,7 @@ GO
 
 
 -- ================================================================================
--- INSERTS PARA TODAS AS TABELAS
+-- INSERTS PARA TODAS AS TABELAS, INCLUINDO MOVIMENTACAO
 -- ================================================================================
 
 -- ENDERECO: Inserção de registros de endereço na tabela "Endereco" a fim de testar o acesso de usuários no sistema, pois o endereço é obrigatório no cadastro
@@ -1058,7 +1062,33 @@ INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofin
   ('20250602 07:30:00', 'Entrada', NULL, 7, 10),  -- iPhone 16 Pro
   ('20250602 08:00:00', 'Entrada', NULL, 8, 10),  -- Galaxy S24 Ultra
   ('20250602 08:30:00', 'Entrada', NULL, 9, 10),  -- Google Pixel 8 Pro
-  ('20250602 09:00:00', 'Entrada', NULL, 10, 10);
+  ('20250602 09:00:00', 'Entrada', NULL, 10, 10),
+  ('20241009 10:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241009 10:00'), 3, 1),
+  ('20241108 20:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241108 20:00'), 5, 1),
+  ('20241108 20:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241108 20:00'), 6, 1),
+  ('20241108 20:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241108 20:00'), 7, 1),
+  ('20241217 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241217 16:00'), 2, 1),
+  ('20241217 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241217 16:00'), 3, 3),
+  ('20241217 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241217 16:00'), 8, 2),
+  ('20241217 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20241217 16:00'), 9, 1),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 3, 2),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 5, 4),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 9, 7),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 3, 2),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 5, 4),
+  ('20250124 12:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250124 12:00'), 9, 7),
+  ('20250208 09:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250208 09:00'), 1, 2),
+  ('20250208 09:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250208 09:00'), 5, 4),
+  ('20250208 09:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250208 09:00'), 10, 1),
+  ('20250319 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250319 16:00'), 3, 3),
+  ('20250319 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250319 16:00'), 5, 2),
+  ('20250319 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250319 16:00'), 7, 3),
+  ('20250319 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250319 16:00'), 8, 1),
+  ('20250319 16:00', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250319 16:00'), 9, 4),
+  ('20250422 13:30', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250422 13:30'), 2, 1),
+  ('20250422 13:30', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250422 13:30'), 3, 1),
+  ('20250530 23:50', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250530 23:50'), 2, 3),
+  ('20250530 23:50', 'Saída', (SELECT p.pedido_id FROM Pedido p WHERE p.data_hora = '20250530 23:50'), 10, 4);
 GO
 
 INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade) VALUES
