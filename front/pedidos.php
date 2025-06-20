@@ -30,7 +30,8 @@ $sql = "SELECT
             p.data_hora, 
             p.situacao, 
             SUM(prod.custo * ppf.quantidade_item) as custo, 
-            u.cpf_cnpj 
+            u.cpf_cnpj,
+            u.nome 
         FROM 
             Pedido p 
             JOIN Usuario u on u.usuario_id = p.fk_usuario 
@@ -42,7 +43,8 @@ $sql = "SELECT
             p.pedido_id, 
             p.data_hora, 
             p.situacao,  
-            u.cpf_cnpj 
+            u.cpf_cnpj,
+            u.nome 
         ORDER BY p.data_hora DESC";
 
 $stmt = sqlsrv_query($conn, $sql, $params);
@@ -68,6 +70,7 @@ if ($stmt === false) {
             <thead>
                 <tr>
                     <th>ID Pedido</th>
+                    <th>Cliente</th>
                     <th>CPF/CNPJ</th>
                     <th>Data/Hora</th>
                     <th>Situação</th>
@@ -79,6 +82,7 @@ if ($stmt === false) {
                 <?php while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)): ?>
                 <tr id="row-<?= $row['pedido_id'] ?>">
                     <td name="pedido_id"><?= $row['pedido_id'] ?></td>
+                    <td name="nome_cliente"><?= htmlspecialchars($row['nome']) ?></td>
                     <td name="cpf_cnpj"><?= htmlspecialchars($row['cpf_cnpj']) ?></td>
                     <td name="data_hora"><?= $row['data_hora']->format('d/m/Y, H:i') ?></td>
                     <td name="situacao" class="situacao-cell"><?= htmlspecialchars($row['situacao']) ?></td>
@@ -159,7 +163,7 @@ if ($stmt === false) {
                     }
 
                     // Verifica se o pedido está entregue antes de mostrar opções de feedback
-                    if (selectedRow[3] !== 'Entregue') { // índice 3 é a coluna de situação
+                    if (selectedRow[4] !== 'Entregue') { // índice 4 é a coluna de situação
                         mostrarMensagem("Aviso", "Só é possível enviar feedback para pedidos que já foram entregues.", "alerta");
                         return;
                     }
