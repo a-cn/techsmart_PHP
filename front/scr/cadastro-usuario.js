@@ -31,6 +31,16 @@ export function toggleCPFCNPJ() {
 // Tornar a função global para compatibilidade com onclick no HTML
 window.toggleCPFCNPJ = toggleCPFCNPJ;
 
+//Restringe entrada a apenas números para Número Principal para Contato
+document.getElementById("num_principal")?.addEventListener("input", function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+});
+
+//Restringe entrada a apenas números para Número de Recado
+document.getElementById("num_recado")?.addEventListener("input", function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+});
+
 //Adiciona evento para sincronizar os campos
 document.getElementById("nome")?.addEventListener("input", function(e) {
     const razaoSocial = document.getElementById("razao_social");
@@ -50,7 +60,9 @@ document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
 });
 
 //Função chamada ao buscar pelo CEP
-document.getElementById('cep')?.addEventListener('input', function () {
+document.getElementById('cep')?.addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+    
     // Limpa o erro quando o usuário começa a digitar
     const erroCep = document.getElementById('erroCep');
     erroCep.style.display = 'none';

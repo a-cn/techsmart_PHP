@@ -20,6 +20,19 @@ export async function renderPrevisaoDemanda(containerId) {
         </div>
     `;
 
+    const colorPalette = [
+        'rgb(255, 99, 132)',  // Red
+        'rgb(54, 162, 235)',  // Blue
+        'rgb(255, 206, 86)', // Yellow
+        'rgb(75, 192, 192)',  // Teal
+        'rgb(153, 102, 255)',// Purple
+        'rgb(255, 159, 64)', // Orange
+        'rgb(46, 204, 113)', // Green
+        'rgb(231, 76, 60)',  // Pomegranate
+        'rgb(149, 165, 166)',// Gray
+        'rgb(52, 73, 94)'    // Dark Blue
+    ];
+
     const BASE_URL = `${window.location.origin}${window.location.pathname.split('/').slice(0, -2).join('/')}`;
     const API_URL = `${BASE_URL}/back/api/previsao-demanda.php`;
     
@@ -59,56 +72,76 @@ export async function renderPrevisaoDemanda(containerId) {
         }
 
         function desenharGrafico(produtoSelecionado = '', anoSelecionado = '') {
-            // Filtra os datasets
-            const datasetsFiltrados = rawDatasets
-                .filter(ds => !produtoSelecionado || ds.label === produtoSelecionado)
-                .map(ds => {
-                    // Filtra os dados pelo ano
-                    const dadosFiltrados = ds.data
-                        .filter(d => !anoSelecionado || d.ano.toString() === anoSelecionado);
+            // Filtra os datasets por produto, se um produto for selecionado
+            const datasetsFiltradosPorProduto = rawDatasets
+                .filter(ds => !produtoSelecionado || ds.label === produtoSelecionado);
 
-                    // Cria um objeto para agrupar por mês
-                    const dadosPorMes = {};
-                    dadosFiltrados.forEach(d => {
-                        const mes = parseInt(d.x);
-                        const ano = d.ano;
-                        const chave = formatarMesAno(mes, ano);
-                        dadosPorMes[chave] = d.y;
+            // Coleta todas as chaves (mês/ano) de todos os datasets filtrados e as ordena cronologicamente
+            const todasAsChaves = new Set();
+            datasetsFiltradosPorProduto.forEach(ds => {
+                const dadosFiltradosPorAno = ds.data
+                    .filter(d => !anoSelecionado || d.ano.toString() === anoSelecionado);
+                dadosFiltradosPorAno.forEach(d => {
+                    todasAsChaves.add(formatarMesAno(parseInt(d.x), d.ano));
+                });
+            });
+            
+            const labelsOrdenadas = Array.from(todasAsChaves).sort((a, b) => {
+                const [mesStrA, anoStrA] = a.split('/');
+                const [mesStrB, anoStrB] = b.split('/');
+                const anoA = parseInt(anoStrA);
+                const anoB = parseInt(anoStrB);
+                if (anoA !== anoB) return anoA - anoB;
+                const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                return meses.indexOf(mesStrA) - meses.indexOf(mesStrB);
+            });
+
+            // Mapeia os datasets para o formato do Chart.js, garantindo que todos usem as mesmas labels ordenadas
+            const datasetsFiltrados = datasetsFiltradosPorProduto.map((ds, index) => {
+                const dadosPorMes = new Map();
+                ds.data
+                    .filter(d => !anoSelecionado || d.ano.toString() === anoSelecionado)
+                    .forEach(d => {
+                        dadosPorMes.set(formatarMesAno(parseInt(d.x), d.ano), d.y);
                     });
 
-                    // Ordena as chaves para garantir ordem cronológica
-                    const chaves = Object.keys(dadosPorMes).sort((a, b) => {
-                        const [mesA, anoA] = a.split('/');
-                        const [mesB, anoB] = b.split('/');
-                        if (anoA !== anoB) return parseInt(anoA) - parseInt(anoB);
-                        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-                                        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-                        return meses.indexOf(mesA) - meses.indexOf(mesB);
-                    });
+                const data = labelsOrdenadas.map(chave => ({
+                    x: chave,
+                    y: dadosPorMes.has(chave) ? dadosPorMes.get(chave) : null
+                }));
 
-                    return {
-                        label: ds.label,
-                        data: chaves.map(chave => ({
-                            x: chave,
-                            y: dadosPorMes[chave]
-                        })),
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgb(54, 162, 235)',
-                        borderWidth: 2,
-                        tension: 0.1,
-                        fill: false,
-                        pointStyle: 'circle',
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    };
-                })
-                .filter(ds => ds.data.length > 0);
+                const color = colorPalette[index % colorPalette.length];
+
+                return {
+                    label: ds.label,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: color,
+                    borderWidth: 2,
+                    tension: 0.1,
+                    fill: false,
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    spanGaps: true // Conectar pontos sobre dados nulos para manter a linha contínua
+                };
+            }).filter(ds => ds.data.some(d => d.y !== null)); // Apenas incluir datasets com dados
 
             if (chart) {
                 chart.destroy();
             }
 
             if (datasetsFiltrados.length > 0) {
+                let maxY = 0;
+                datasetsFiltrados.forEach(dataset => {
+                    dataset.data.forEach(dataPoint => {
+                        if (dataPoint.y !== null && dataPoint.y > maxY) {
+                            maxY = dataPoint.y;
+                        }
+                    });
+                });
+
                 chart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -123,7 +156,7 @@ export async function renderPrevisaoDemanda(containerId) {
                         },
                         plugins: {
                             legend: {
-                                display: false
+                                display: true
                             },
                             tooltip: {
                                 mode: 'nearest', //Modo para o tooltip exibir apenas quando passar sobre um ponto
@@ -133,7 +166,10 @@ export async function renderPrevisaoDemanda(containerId) {
                                         return context[0].label; //Mostra o título (mês/ano)
                                     },
                                     label: (context) => {
-                                        return `${context.dataset.label}: ${context.parsed.y}`;
+                                        if (context.parsed.y !== null) {
+                                            return `${context.dataset.label}: ${context.parsed.y}`;
+                                        }
+                                        return null;
                                     }
                                 }
                             },
@@ -146,7 +182,7 @@ export async function renderPrevisaoDemanda(containerId) {
                                     weight: 'bold',
                                     size: 11
                                 },
-                                formatter: (value) => value.y
+                                formatter: (value) => (value.y !== null ? value.y : '')
                             }
                         },
                         scales: {
@@ -166,6 +202,7 @@ export async function renderPrevisaoDemanda(containerId) {
                                     display: false
                                 },
                                 beginAtZero: true,
+                                suggestedMax: maxY + 1,
                                 ticks: {
                                     callback: (value) => (value % 1 === 0 ? value : '')
                                 }
