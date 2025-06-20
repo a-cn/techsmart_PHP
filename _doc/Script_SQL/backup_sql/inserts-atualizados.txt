@@ -2,10 +2,6 @@
 -- Responsável: Amanda Caetano Nasser
 -- Data: 20/06/2025
 
--- Definindo a codificação UTF-8
-SET NAMES 'utf8';
-SET CHARACTER SET utf8;
-
 -- ================================================================================
 -- INSERTS PARA TODAS AS TABELAS, INCLUINDO MOVIMENTACAO
 -- ================================================================================

@@ -2,10 +2,6 @@
 -- Responsável: Amanda Caetano Nasser
 -- Data: 20/06/2025
 
--- Definindo a codificação UTF-8
-SET NAMES 'utf8';
-SET CHARACTER SET utf8;
-
 USE master; -- Importante começar no banco de dados "master"
 
 CREATE DATABASE NewTechSmartDB; -- Cria um banco de dados chamado "NewTechSmartDB" para garantir a padronização em todas as máquinas

@@ -4,11 +4,7 @@
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Responsável: Amanda Caetano Nasser
--- Última alteração em: 16/06/2025
-
--- Definindo a codificação UTF-8
-SET NAMES 'utf8';
-SET CHARACTER SET utf8;
+-- Última alteração em: 20/06/2025
 
 USE master; -- Acessa o banco de dados "master"
 GO

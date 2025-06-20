@@ -1,10 +1,6 @@
 -- TRIGGERS PARA AUTOMAÇÃO DA TABELA MOVIMENTACAO
 -- Responsável: Amanda Caetano Nasser
--- Última alteração em: 16/06/2025
-
--- Definindo a codificação UTF-8
-SET NAMES 'utf8';
-SET CHARACTER SET utf8;
+-- Última alteração em: 20/06/2025
 
 USE TechSmartDB;
 GO
