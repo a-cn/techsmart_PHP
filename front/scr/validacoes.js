@@ -90,28 +90,3 @@ export function validarCNPJ(cnpj) {
     
     return true;
 }
-
-//Função para validar email
-export function validarEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-}
-
-//Função para validar CEP
-export function validarCEP(cep) {
-    const cepLimpo = cep.replace(/\D/g, '');
-    return cepLimpo.length === 8;
-}
-
-//Função para validar telefone
-export function validarTelefone(telefone) {
-    const telefoneLimpo = telefone.replace(/\D/g, '');
-    return telefoneLimpo.length >= 10 && telefoneLimpo.length <= 11;
-}
-
-//Função para validar senha forte
-export function validarSenhaForte(senha) {
-    // Mínimo 8 caracteres, pelo menos uma letra maiúscula, uma minúscula, um número e um caractere especial
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return regex.test(senha);
-}
