@@ -107,9 +107,6 @@ if ($result) {
                         class="form-control" required>
                 </div>
             </div>
-            <div class="form-group" style="margin-top: -20px;">
-                <small id="erroCep" style="display: none; color: #ff431b; font-weight: 500;"></small>
-            </div>
 
             <div class="form-row">
                 <div class="form-group">
