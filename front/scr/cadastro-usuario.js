@@ -1,5 +1,8 @@
+// Importar funções de validação do módulo validacoes.js
+import { validaCPF, validarCNPJ } from './validacoes.js';
+
 //Função para alternar os campos de acordo com a escolha entre CPF ou CNPJ
-function toggleCPFCNPJ() {
+export function toggleCPFCNPJ() {
     const tipoPessoa = document.querySelector('input[name="tipo_pessoa"]:checked')?.value;
     const nrs_Fields = document.getElementById("lbl-nome-razao_social");
     const cc_Fields = document.getElementById("lbl-cpf-cnpj");
@@ -25,6 +28,9 @@ function toggleCPFCNPJ() {
     }
 }
 
+// Tornar a função global para compatibilidade com onclick no HTML
+window.toggleCPFCNPJ = toggleCPFCNPJ;
+
 //Adiciona evento para sincronizar os campos
 document.getElementById("nome")?.addEventListener("input", function(e) {
     const razaoSocial = document.getElementById("razao_social");
@@ -36,6 +42,19 @@ document.getElementById("nome")?.addEventListener("input", function(e) {
 //Restringe entrada a apenas números para CPF/CNPJ
 document.getElementById("cpf_cnpj").addEventListener("input", function (e) {
     e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+    
+    // Limpa o erro quando o usuário começa a digitar
+    const erroCpfCnpj = document.getElementById('erroCpfCnpj');
+    erroCpfCnpj.style.display = 'none';
+    erroCpfCnpj.textContent = '';
+});
+
+//Função chamada ao buscar pelo CEP
+document.getElementById('cep')?.addEventListener('input', function () {
+    // Limpa o erro quando o usuário começa a digitar
+    const erroCep = document.getElementById('erroCep');
+    erroCep.style.display = 'none';
+    erroCep.textContent = '';
 });
 
 //Função chamada ao buscar pelo CEP
@@ -44,6 +63,12 @@ document.getElementById('cep')?.addEventListener('blur', function () {
     const erroCep = document.getElementById('erroCep');
     erroCep.style.display = 'none';
     erroCep.textContent = '';
+
+    // Se o campo está vazio, não mostra erro
+    if (!cep) {
+        return;
+    }
+
     if (cep.length !== 8) {
         erroCep.textContent = 'CEP inválido.';
         erroCep.style.display = 'block';
@@ -66,6 +91,39 @@ document.getElementById('cep')?.addEventListener('blur', function () {
             erroCep.textContent = 'Erro ao buscar o CEP.';
             erroCep.style.display = 'block';
         });
+});
+
+//Função de validação do CPF/CNPJ
+document.getElementById('cpf_cnpj').addEventListener('blur', function () {
+    const cpf_cnpj = this.value.replace(/\D/g, '');
+    const erroCpfCnpj = document.getElementById('erroCpfCnpj');
+    
+    // Sempre limpa o erro primeiro
+    erroCpfCnpj.style.display = 'none';
+    erroCpfCnpj.textContent = '';
+    
+    // Se o campo está vazio, não mostra erro
+    if (!cpf_cnpj) {
+        return;
+    }
+    
+    if (cpf_cnpj.length == 11) {
+        if (!validaCPF(cpf_cnpj)) {
+            erroCpfCnpj.textContent = 'CPF inválido.';
+            erroCpfCnpj.style.display = 'block';
+            return;
+        }
+    } else if (cpf_cnpj.length == 14) {
+        if (!validarCNPJ(cpf_cnpj)) {
+            erroCpfCnpj.textContent = 'CNPJ inválido.';
+            erroCpfCnpj.style.display = 'block';
+            return;
+        }
+    } else {
+        erroCpfCnpj.textContent = 'CPF/CNPJ inválido.';
+        erroCpfCnpj.style.display = 'block';
+        return;
+    }
 });
 
 //Esconde o texto de regras de senha até que o usuário clique no campo correspondente
@@ -105,6 +163,18 @@ function validateForm() {
     if (!nascimento && tipoPessoa.value === "cpf") {
         mostrarMensagem('Aviso', 'O campo Data de Nascimento é obrigatório.', 'alerta');
         return false;
+    }
+
+    if (tipoPessoa.value === "cpf") {
+        if (!validaCPF(cpf_cnpj)) {
+            mostrarMensagem('Aviso', 'CPF inválido.', 'alerta');
+            return false;
+        }
+    } else {
+        if (!validarCNPJ(cpf_cnpj)) {
+            mostrarMensagem('Aviso', 'CNPJ inválido.', 'alerta');
+            return false;
+        }
     }
 
     const camposComuns = [

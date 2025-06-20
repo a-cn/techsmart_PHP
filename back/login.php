@@ -10,7 +10,7 @@ if (!empty($_POST)){
 	$senha = $login["senha"];
 	
 	//Procurar o usuário pelo email informado
-	$tsql = "SELECT [usuario_id], [nome], [cpf_cnpj], [email], [senha], [fk_tipo_usuario] FROM dbo.Usuario WHERE [email] = ?";
+	$tsql = "SELECT [usuario_id], [nome], [cpf_cnpj], [email], [senha], [fk_tipo_usuario], [ativo] FROM dbo.Usuario WHERE [email] = ?";
 	$getUsuario = sqlsrv_query($conn, $tsql, array($email), array( "Scrollable" => 'static' ));
 	$numUsuarios = sqlsrv_num_rows($getUsuario);
 	if ($numUsuarios > 0){
@@ -25,6 +25,12 @@ if (!empty($_POST)){
 			$rowTipoUsuario = sqlsrv_fetch_array($getTipoUsuario, SQLSRV_FETCH_ASSOC);
 			sqlsrv_free_stmt($getTipoUsuario);
 			$descricaoTipoUsuario = strtolower($rowTipoUsuario['descricao']); //Transforma o resultado em letras minúsculas
+		}
+
+		//Verifica se o usuário está ativo
+		if ($rowUsuario['ativo'] == 0) {
+			header("Location: ../index.html?erro=bloqueado");
+			exit;
 		}
 
 		//Compara a senha digitada com o registro no banco de dados

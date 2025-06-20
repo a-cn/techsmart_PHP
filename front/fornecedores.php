@@ -25,6 +25,9 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                 <div class="form-group">
                     <label id="lbl-cpf-cnpj" for="cpf_cnpj">CNPJ ou CPF:</label>
                     <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" placeholder="Digite o CNPJ ou CPF" pattern="\d{14}" required>
+                    <div class="form-group" style="margin-top: -10px;">
+                        <small id="erroCpfCnpj" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                    </div>
                 </div>
                 <!-- Campos de Endereço -->
                 <div class="form-group" style="display: none"><!-- Campo ocultado contendo id para localização do endereço que será enviado para gravação ao $_POST-->
@@ -36,15 +39,15 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                     <input type="text" id="cep" name="cep" placeholder="Ex.: 80000000" class="form-control"
                         maxlength="8" required>
                     <div class="form-group" style="margin-top: -10px;">
-                        <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
+                        <small id="erroCep" style="display: none; color: #ff431b; font-weight: 500;"></small>
                     </div>
                 </div>
             </div>
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="estado">Estado:</label>
-                    <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná"
+                    <label for="estado">Estado (UF):</label>
+                    <input type="text" id="estado" name="estado" maxlength="2" placeholder="Ex.: PR"
                         class="form-control" required>
                 </div>
                 <div class="form-group">
@@ -139,7 +142,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
         </table>
     </div>
 </div>
-<script src="./scr/cadastro-fornecedor.js"></script>
+<script type="module" src="./scr/cadastro-fornecedor.js"></script>
 
 <!-- Este script obrigatoriamente deve ser carregado após toda a renderização da página -->
 <script>
@@ -181,7 +184,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                             mostrarMensagem("Sucesso", "Fornecedor inativado com sucesso.", "sucesso");
                             oTable.ajax.reload();
                         } else {
-                            mostrarMensagem("Erro", "Erro ao inativar fornecedor.", "erro");
+                            mostrarMensagem("Erro", data.mensagem || "Erro ao inativar fornecedor.", "erro");
                         }
                     });
                 }, null, "alerta");

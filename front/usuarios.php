@@ -25,6 +25,7 @@ if ($result) {
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
+<script src="scr/janelas.js"></script>
 <script src="scr/script.js"></script>
 <div>
     <div class="janela-cadastro oculta" id="divCadastroUsuario">
@@ -74,6 +75,9 @@ if ($result) {
                     <div class="form-group">
                         <label id="lbl-cpf-cnpj" for="cpf">CPF:</label>
                         <input type="text" id="cpf_cnpj" name="cpf_cnpj" maxlength="14" placeholder="Digite seu CPF" required>
+                        <div class="form-group" style="margin-top: -10px;">
+                            <small id="erroCpfCnpj" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                        </div>
                     </div>
                     <div id="dvDtNasc" class="form-group">
                         <label for="data_nascimento">Data de Nascimento:</label>
@@ -93,15 +97,18 @@ if ($result) {
                     <label for="cep">CEP:</label>
                     <input type="text" id="cep" name="cep" placeholder="Ex.: 80000000" class="form-control"
                         maxlength="8" required>
+                    <div class="form-group" style="margin-top: -10px;">
+                        <small id="erroCep" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="estado">Estado:</label>
-                    <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná"
+                    <label for="estado">Estado (UF):</label>
+                    <input type="text" id="estado" name="estado" maxlength="2" placeholder="Ex.: PR"
                         class="form-control" required>
                 </div>
             </div>
             <div class="form-group" style="margin-top: -20px;">
-                <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
+                <small id="erroCep" style="display: none; color: #ff431b; font-weight: 500;"></small>
             </div>
 
             <div class="form-row">
@@ -178,7 +185,7 @@ if ($result) {
                 </div>
             </div>
             <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
-                <small style="color: #1976d2; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
+                <small style="color: #ff431b; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
             </div>
 
             <!-- Campo para selecionar perguntas de segurança, puxando-as do banco de dados -->
@@ -246,7 +253,8 @@ if ($result) {
         </table>
     </div>
 </div>
-<script src="./scr/cadastro-usuario.js"></script>
+<script type="module" src="./scr/validacoes.js"></script>
+<script type="module" src="./scr/cadastro-usuario.js"></script>
 
 <!-- Este script obrigatoriamente deve ser carregado após toda a renderização da página -->
 <script>
@@ -327,7 +335,7 @@ if ($result) {
                                     mostrarMensagem("Sucesso","Usuário inativado com sucesso.","sucesso");
                                     oTable.ajax.reload();
                                 } else {
-                                    mostrarMensagem("Erro","Erro ao inativar usuário.","erro");
+                                    mostrarMensagem("Erro", data.message || "Erro ao inativar usuário.", "erro");
                                 }
                             });
                         },

@@ -326,12 +326,24 @@ try {
             }
 
             try {
+
+                //Verifica se a produção está associada a um produto final ativo e se há histórico sem conclusão
+                $sql = "SELECT COUNT(*) as total FROM Producao p JOIN ProdutoFinal pf ON pf.fk_producao = p.producao_id JOIN Historico_Producao hp ON hp.fk_producao = p.producao_id WHERE p.producao_id = ? AND pf.ativo = 1 AND hp.data_conclusao IS NULL";
+                $stmt = sqlsrv_query($conn, $sql, array($id));
+                $resultado = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+                $total = $resultado['total'];
+                
+                if ($total > 0) {
+                    echo json_encode(["sucesso" => false, "mensagem" => "Produção não pode ser inativada pois está associada a um produto ativo e há histórico sem conclusão"]);
+                    exit;
+                }
+
                 // 1. Marca produção como inativa
                 $sqlProducao = "UPDATE Producao SET ativo = 0 WHERE producao_id = ?";
                 $stmtProducao = sqlsrv_query($conn, $sqlProducao, array($id));
                 
                 if ($stmtProducao === false) {
-                    throw new Exception("Erro ao excluir produção: " . print_r(sqlsrv_errors(), true));
+                    throw new Exception("Erro ao inativar produção: " . print_r(sqlsrv_errors(), true));
                 }
 
                 // 2. Marca etapas como inativas
@@ -344,7 +356,7 @@ try {
 
                 // Commit da transação
                 sqlsrv_commit($conn);
-                echo json_encode(["message" => "Produção excluída com sucesso!"]);
+                echo json_encode(["message" => "Produção inativada com sucesso!"]);
                 
             } catch (Exception $e) {
                 // Rollback em caso de erro

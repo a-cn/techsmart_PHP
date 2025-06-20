@@ -83,6 +83,9 @@
                         <div class="form-group">
                             <label for="cpf">CPF:</label>
                             <input type="number" id="cpf" name="cpf" maxlength="11" placeholder="Digite seu CPF">
+                            <div class="form-group" style="margin-top: -10px;">
+                                <small id="erroCpf" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="data_nascimento">Data de Nascimento:</label>
@@ -100,6 +103,9 @@
                         <div class="form-group">
                             <label for="cnpj">CNPJ:</label>
                             <input type="number" id="cnpj" name="cnpj" maxlength="14" placeholder="Digite seu CNPJ">
+                            <div class="form-group" style="margin-top: -10px;">
+                                <small id="erroCnpj" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -108,14 +114,14 @@
                     <div class="form-group">
                         <label for="cep">CEP:</label>
                         <input type="text" id="cep" name="cep" placeholder="Ex.: 80000000" class="form-control" maxlength="8" required>
+                        <div class="form-group" style="margin-top: -10px;">
+                            <small id="erroCep" style="display: none; color: #ff431b; font-weight: 500;"></small>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="estado">Estado:</label>
-                        <input type="text" id="estado" name="estado" maxlength="50" placeholder="Ex.: Paraná" class="form-control" required>
+                        <label for="estado">Estado (UF):</label>
+                        <input type="text" id="estado" name="estado" maxlength="2" placeholder="Ex.: PR" class="form-control" required>
                     </div>
-                </div>
-                <div class="form-group" style="margin-top: -20px;">
-                    <small id="erroCep" style="display: none; color: #1976d2; font-weight: 500;"></small>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -175,7 +181,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
-                    <small style="color: #1976d2; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
+                    <small style="color: #ff431b; font-weight: 500;">As senhas devem ter entre 9 e 15 caracteres, conter pelo menos uma letra maiúscula, um número e um caractere especial.</small>
                 </div>
                 <!-- Campo para selecionar perguntas de segurança, puxando-as do banco de dados -->
                 <div class="form-row">
@@ -209,7 +215,9 @@
         </div>
     </main>
 </div>
-<script src="./scr/autocadastro-usuario.js"></script>
+<script type="module" src="./scr/validacoes.js"></script>
+<script type="module" src="./scr/autocadastro-usuario.js"></script>
+
 <script>
 //PERMITE ESCONDER/MOSTRAR A BARRA LATERAL
 function toggleSidebar() {

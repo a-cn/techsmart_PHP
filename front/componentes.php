@@ -188,7 +188,7 @@ if ($stmtFornecedores) {
                             mostrarMensagem("Sucesso", "Componente inativado com sucesso.", "sucesso");
                             oTable.ajax.reload();
                         } else {
-                            mostrarMensagem("Erro", "Erro ao inativar componente.", "erro");
+                            mostrarMensagem("Erro", data.mensagem || "Erro ao inativar componente.", "erro");
                         }
                     });
                 }, null, "alerta");

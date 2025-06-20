@@ -200,7 +200,7 @@ if ($stmtProducao) {
                             mostrarMensagem("Sucesso", "Produto inativado com sucesso.", "sucesso");
                             oTable.ajax.reload();
                         } else {
-                            mostrarMensagem("Erro", "Erro ao inativar produto.", "erro");
+                            mostrarMensagem("Erro", data.mensagem || "Erro ao inativar produto.", "erro");
                         }
                     });
                 }, null, "alerta");

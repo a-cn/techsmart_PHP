@@ -1,5 +1,8 @@
+// Importar funções de validação
+import { validaCPF, validarCNPJ } from './validacoes.js';
+
 //Função para mostrar/esconder os campos de acordo com a escolha entre CPF ou CNPJ
-function toggleFields() {
+export function toggleFields() {
     const tipoPessoa = document.querySelector('input[name="tipo_pessoa"]:checked')?.value;
     const cpfFields = document.getElementById("cpf-fields");
     const cnpjFields = document.getElementById("cnpj-fields");
@@ -13,13 +16,35 @@ function toggleFields() {
     }
 }
 
+// Tornar a função global para compatibilidade com onclick no HTML
+window.toggleFields = toggleFields;
+
 //Restringe entrada a apenas números para CPF
 document.getElementById("cpf").addEventListener("input", function (e) {
     e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+    
+    // Limpa o erro quando o usuário começa a digitar
+    const erroCpfCnpj = document.getElementById('erroCpf');
+    erroCpfCnpj.style.display = 'none';
+    erroCpfCnpj.textContent = '';
 });
+
 //Restringe entrada a apenas números para CNPJ
 document.getElementById("cnpj").addEventListener("input", function (e) {
     e.target.value = e.target.value.replace(/\D/g, ""); //Remove caracteres não numéricos
+    
+    // Limpa o erro quando o usuário começa a digitar
+    const erroCpfCnpj = document.getElementById('erroCnpj');
+    erroCpfCnpj.style.display = 'none';
+    erroCpfCnpj.textContent = '';
+});
+
+//Limpa o erro quando o usuário começa a digitar o CEP
+document.getElementById('cep')?.addEventListener('input', function () {
+    // Limpa o erro quando o usuário começa a digitar
+    const erroCep = document.getElementById('erroCep');
+    erroCep.style.display = 'none';
+    erroCep.textContent = '';
 });
 
 //Função chamada ao buscar pelo CEP
@@ -50,6 +75,48 @@ document.getElementById('cep')?.addEventListener('blur', function () {
             erroCep.textContent = 'Erro ao buscar o CEP.';
             erroCep.style.display = 'block';
         });
+});
+
+//Função de validação do CPF
+document.getElementById('cpf').addEventListener('blur', function () {
+    const cpf = this.value.replace(/\D/g, '');
+    const erroCpf = document.getElementById('erroCpf');
+    
+    // Sempre limpa o erro primeiro
+    erroCpf.style.display = 'none';
+    erroCpf.textContent = '';
+    
+    // Se o campo está vazio, não mostra erro
+    if (!cpf) {
+        return;
+    }
+    
+    if (!validaCPF(cpf)) {
+        erroCpf.textContent = 'CPF inválido.';
+        erroCpf.style.display = 'block';
+        return;
+    }
+});
+
+//Função de validação do CNPJ
+document.getElementById('cnpj').addEventListener('blur', function () {
+    const cnpj = this.value.replace(/\D/g, '');
+    const erroCnpj = document.getElementById('erroCnpj');
+    
+    // Sempre limpa o erro primeiro
+    erroCnpj.style.display = 'none';
+    erroCnpj.textContent = '';
+    
+    // Se o campo está vazio, não mostra erro
+    if (!cnpj) {
+        return;
+    }
+    
+    if (!validarCNPJ(cnpj)) {
+        erroCnpj.textContent = 'CNPJ inválido.';
+        erroCnpj.style.display = 'block';
+        return;
+    }
 });
 
 //Esconde o texto de regras de senha até que o usuário clique no campo correspondente
@@ -93,6 +160,12 @@ function validateForm() {
 
         if (razao === "") mensagensErro.push("O campo Razão Social é obrigatório.");
         if (cnpj === "") mensagensErro.push("O campo CNPJ é obrigatório.");
+    }
+
+    if (tipo === "cpf") {
+        if (!validaCPF(cpf)) mensagensErro.push("CPF inválido.");
+    } else {
+        if (!validarCNPJ(cnpj)) mensagensErro.push("CNPJ inválido.");
     }
 
     //Verificação de campos comuns obrigatórios

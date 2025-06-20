@@ -1,6 +1,6 @@
 -- CRIAÇÃO COMPLETA DE UM NOVO BANCO DE DADOS, INCLUINDO AS VIEWS, INSERTS E TRIGGERS
 -- Responsável: Amanda Caetano Nasser
--- Data: 16/06/2025
+-- Data: 19/06/2025
 
 -- Definindo a codificação UTF-8
 SET NAMES 'utf8';
@@ -511,8 +511,6 @@ GROUP BY FORMAT(f.data_hora, 'yyyy-MM');
 -- Utilizar "ORDER BY Mes" ao fazer o SELECT externo desta View.
 GO
 
-
-
 -- ================================================================================
 -- INSERTS PARA TODAS AS TABELAS
 -- ================================================================================
@@ -608,196 +606,199 @@ VALUES
   ('Chassis',            'Unibody alumínio',           70, 10, 150, 1),
 
   -- Dell XPS 13 (2024)
-  ('Display',            'IPS 13.4\" QHD+',            90,   5, 150, 1),
-  ('Keyboard',           'Chiclet retroiluminado',    180,  20, 400, 1),
-  ('Battery',            'Li-Ion 51 Wh',               70,   5, 120, 1),
-  ('RAM',                '16 GB LPDDR4X',             100,  10, 300, 1),
-  ('Logic Board',        'Custom XPS',                 50,   5, 100, 1),
-  ('Cooling',            'Ventoinha PWM',             120,  10, 300, 1),
-  ('Chassis',            'Fibra de carbono',           60,  10, 150, 1),
+  ('Display',            'IPS 13.4\" QHD+',            90,   5, 150, 1), 
+  ('Keyboard',           'Chiclet retroiluminado',    180,  20, 400, 1), 
+  ('Battery',            'Li-Ion 51 Wh',               70,   5, 120, 1), 
+  ('RAM',                '16 GB LPDDR4X',             100,  10, 300, 1), 
+  ('Logic Board',        'Custom XPS',                 50,   5, 100, 1), 
+  ('Cooling',            'Ventoinha PWM',             120,  10, 300, 1), 
+  ('Chassis',            'Fibra de carbono',           60,  10, 150, 1), 
 
   -- HP Spectre x360 14"
-  ('Display',            'OLED 14\" 3K2K',             50,   5, 100, 1),
-  ('Battery',            'Li-Ion 60 Wh',               60,   5, 100, 1),
-  ('Storage',            'SSD NVMe 512 GB',           100,  10, 200, 1),
-  ('Logic Board',        'Custom Spectre',             45,   5,  90, 1),
-  ('Cooling',            'Cooler a vapor',             35,   5,  80, 1),
-  ('Chassis',            'Alumínio usinado',           55,  10, 150, 1),
+  ('Display',            'OLED 14\" 3K2K',             50,   5, 100, 1), 
+  ('Battery',            'Li-Ion 60 Wh',               60,   5, 100, 1), 
+  ('Storage',            'SSD NVMe 512 GB',           100,  10, 200, 1), 
+  ('Logic Board',        'Custom Spectre',             45,   5,  90, 1), 
+  ('Cooling',            'Cooler a vapor',             35,   5,  80, 1), 
+  ('Chassis',            'Alumínio usinado',           55,  10, 150, 1), 
 
   -- iPad Air (5ª Geração)
-  ('Display',            'Liquid Retina 10.9\"',      200,  20, 400, 1),
-  ('SoC',                'Apple M1',                  150,  10, 300, 1),
-  ('Battery',            'Li-Po 28.6 Wh',             100,  10, 200, 1),
-  ('RAM',                '8 GB LPDDR4X',              180,  20, 400, 1),
-  ('Speakers',           'Estéreo dual',               20,   5,  50, 1),
-  ('Touch IC',           'Controlador touch',          30,   5,  80, 1),
+  ('Display',            'Liquid Retina 10.9\"',      200,  20, 400, 1), 
+  ('SoC',                'Apple M1',                  150,  10, 300, 1), 
+  ('Battery',            'Li-Po 28.6 Wh',             100,  10, 200, 1), 
+  ('RAM',                '8 GB LPDDR4X',              180,  20, 400, 1), 
+  ('Speakers',           'Estéreo dual',               20,   5,  50, 1), 
+  ('Touch IC',           'Controlador touch',          30,   5,  80, 1), 
 
   -- Galaxy Tab S9
-  ('Display',            'LTPS 11\"',                 180,  20, 300, 1),
-  ('SoC',                'Snapdragon 8 Gen 2',        140,  10, 250, 1),
-  ('Battery',            'Li-Po 8000 mAh',             90,  10, 200, 1),
-  ('Storage',            'UFS 128 GB',                170,  10, 300, 1),
-  ('Camera Rear',        '13 MP',                      60,   5, 150, 1),
-  ('Camera Front',       '8 MP',                       40,   5, 100, 1),
-  ('Chassis',            'Mg-alloy',                   50,  10, 150, 1),
+  ('Display',            'LTPS 11\"',                 180,  20, 300, 1), 
+  ('SoC',                'Snapdragon 8 Gen 2',        140,  10, 250, 1), 
+  ('Battery',            'Li-Po 8000 mAh',             90,  10, 200, 1), 
+  ('Camera Rear',        '13 MP',                      60,   5, 150, 1), 
+  ('Camera Front',       '8 MP',                       40,   5, 100, 1), 
+  ('Chassis',            'Mg-alloy',                   50,  10, 150, 1), 
 
   -- Surface Pro 9
-  ('Display',            'PixelSense 13\"',            80,  10, 150, 1),
-  ('Keyboard',           'Type Cover',                120,  10, 300, 1),
-  ('Battery',            'Li-Ion 47.4 Wh',             70,   5, 120, 1),
-  ('RAM',                '8 GB LPDDR4X',              110,  10, 250, 1),
-  ('Kickstand',          'Integrado ajustável',        25,   5, 100, 1),
-  ('Camera',             'Windows Hello IR',           50,   5, 150, 1),
-  ('Speakers',           'Stereo Waves',               30,   5, 100, 1),
+  ('Display',            'PixelSense 13\"',            80,  10, 150, 1), 
+  ('Keyboard',           'Type Cover',                120,  10, 300, 1), 
+  ('Battery',            'Li-Ion 47.4 Wh',             70,   5, 120, 1), 
+  ('Kickstand',          'Integrado ajustável',        25,   5, 100, 1), 
+  ('Camera',             'Windows Hello IR',           50,   5, 150, 1), 
+  ('Speakers',           'Stereo Waves',               30,   5, 100, 1), 
 
   -- iPhone 16 Pro
   ('Display',            'AMOLED 6.1\"',               300,  20, 500, 1),
   ('SoC',                'Apple A18',                  250,  10, 400, 1),
   ('Battery',            'Li-Ion 3279 mAh',            200,  10, 300, 1),
-  ('Storage',            'SSD NVMe 256 GB',           240,  10, 400, 1),
-  ('Camera Rear',        'Tripla 48+12+12 MP',        200,  10, 300, 1),
-  ('Camera Front',       'TrueDepth',                  30,   5, 100, 1),
-  ('Chassis',            'Aço inoxidável',             40,  10, 150, 1),
+  ('Storage',            'SSD NVMe 256 GB',           240,  10, 400, 1), 
+  ('Camera Rear',        'Tripla 48+12+12 MP',        200,  10, 300, 1), 
+  ('Camera Front',       'TrueDepth',                  30,   5, 100, 1), 
+  ('Chassis',            'Aço inoxidável',             40,  10, 150, 1), 
 
   -- Galaxy S24 Ultra
   ('Display',            'AMOLED 6.8\"',               250,  20, 400, 1),
-  ('SoC',                'Snapdragon 8 Gen 3',        200,  10, 350, 1),
-  ('Battery',            'Li-Po 5000 mAh',            180,  10, 300, 1),
-  ('RAM',                '12 GB LPDDR5X',             210,  20, 400, 1),
-  ('Storage',            'UFS 256 GB',                230,  10, 400, 1),
-  ('S Pen',              'Active Pen',                 40,   5, 100, 1),
-  ('Camera Quad',        '200 MP+3 auxiliares',       250,  10, 400, 1),
-  ('Chassis',            'Armor Aluminum',             60,  10, 200, 1),
+  ('Battery',            'Li-Po 5000 mAh',            180,  10, 300, 1), 
+  ('RAM',                '12 GB LPDDR5X',             210,  20, 400, 1), 
+  ('Storage',            'UFS 256 GB',                230,  10, 400, 1), 
+  ('S Pen',              'Active Pen',                 40,   5, 100, 1), 
+  ('Camera Quad',        '200 MP+3 auxiliares',       250,  10, 400, 1), 
+  ('Chassis',            'Armor Aluminum',             60,  10, 200, 1), 
 
   -- Google Pixel 8 Pro
   ('Display',            'LTPO OLED 6.7\"',            120,  10, 300, 1),
   ('SoC',                'Tensor G3',                  100,   5, 200, 1),
-  ('Battery',            'Li-Po 5050 mAh',            140,  10, 300, 1),
-  ('Storage',            'UFS 128 GB',                150,  10, 300, 1),
-  ('Security',           'Titan M2',                   25,   5,  50, 1),
-  ('Camera',             'Tripla 50+48+12 MP',        220,  10, 300, 1),
-  ('Chassis',            'Policarbonato',              45,  10, 150, 1),
+  ('Battery',            'Li-Po 5050 mAh',            140,  10, 300, 1), 
+  ('Storage',            'UFS 128 GB',                150,  10, 300, 1), 
+  ('Security',           'Titan M2',                   25,   5,  50, 1), 
+  ('Camera',             'Tripla 50+48+12 MP',        220,  10, 300, 1), 
+  ('Chassis',            'Policarbonato',              45,  10, 150, 1), 
 
   -- OnePlus 12
   ('Display',            'AMOLED 6.7\"',               160,  10, 300, 1),
-  ('SoC',                'Snapdragon 8 Gen 3',        140,  10, 300, 1),
-  ('Battery',            'Li-Po 5200 mAh',            120,  10, 300, 1),
-  ('Storage',            'UFS 256 GB',                170,  10, 300, 1),
-  ('Camera',             'Hasselblad',                230,  10, 300, 1),
-  ('Charging',           'Warp Charge 100W',           50,   5, 100, 1),
-  ('Chassis',            'Sandstone Black',            55,  10, 150, 1);
+  ('SoC',                'Snapdragon 8 Gen 3',        140,  10, 300, 1), 
+  ('Battery',            'Li-Po 5200 mAh',            120,  10, 300, 1), 
+  ('Camera',             'Hasselblad',                230,  10, 300, 1), 
+  ('Charging',           'Warp Charge 100W',           50,   5, 100, 1), 
+  ('Chassis',            'Sandstone Black',            55,  10, 150, 1); 
 GO
 
---FORNECEDOR_COMPONENTE
+-- FORNECEDOR_COMPONENTE
 -- MacBook Air M2
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 1, c.componente_id, 1500.00 FROM Componente c WHERE c.nome='Display'         AND c.especificacao='Retina IPS 13.6\"' UNION ALL
-SELECT 1, c.componente_id,  200.00 FROM Componente c WHERE c.nome='Keyboard'        AND c.especificacao='Magic Keyboard retroiluminado' UNION ALL
-SELECT 1, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Trackpad'        AND c.especificacao='Force Touch' UNION ALL
-SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'         AND c.especificacao='Li-Po 52.6 Wh' UNION ALL
-SELECT 1, c.componente_id,   80.00 FROM Componente c WHERE c.nome='RAM'             AND c.especificacao='8 GB LPDDR5' UNION ALL
-SELECT 1, c.componente_id, 2000.00 FROM Componente c WHERE c.nome='Logic Board'     AND c.especificacao='Apple M2' UNION ALL
-SELECT 4, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Cooling'         AND c.especificacao='Dissipador passivo' UNION ALL
+VALUES
+  (1,  1, 1500.00),
+  (1,  2,  200.00),
+  (1,  3,  100.00),
+  (4,  4,  120.00),
+  (1,  5,   80.00),
+  (1,  6, 2000.00),
+  (4,  7,   90.00);
 GO
 
 -- Dell XPS 13 (2024)
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 4, c.componente_id,  400.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='IPS 13.4\" QHD+' UNION ALL
-SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 51 Wh' UNION ALL
-SELECT 4, c.componente_id,   70.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='16 GB LPDDR4X' UNION ALL
-SELECT 4, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 512 GB' UNION ALL
-SELECT 4, c.componente_id,  500.00 FROM Componente c WHERE c.nome='Logic Board'  AND c.especificacao='Custom XPS' UNION ALL
-SELECT 2, c.componente_id,  130.00 FROM Componente c WHERE c.nome='Cooling'      AND c.especificacao='Ventoinha PWM' UNION ALL
-SELECT 4, c.componente_id,   80.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Fibra de carbono';
+VALUES
+  (4,  9,  400.00),
+  (3, 11,   90.00),
+  (4, 12,   70.00),
+  (4, 18,  120.00),
+  (4, 13,  500.00),
+  (2, 14,  130.00),
+  (4, 15,   80.00);
 GO
 
 -- HP Spectre x360 14"
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 1, c.componente_id,  550.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='OLED 14\" 3K2K' UNION ALL
-SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Chiclet retroiluminado' UNION ALL
-SELECT 3, c.componente_id,  100.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 60 Wh' UNION ALL
-SELECT 4, c.componente_id,  480.00 FROM Componente c WHERE c.nome='Logic Board'  AND c.especificacao='Custom Spectre' UNION ALL
-SELECT 2, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Cooling'      AND c.especificacao='Cooler a vapor' UNION ALL
-SELECT 4, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Alumínio usinado';
+VALUES
+  (1, 16,  550.00),
+  (1, 10,  120.00),
+  (3, 17,  100.00),
+  (4, 19,  480.00),
+  (2, 20,   50.00),
+  (4, 21,   65.00);
 GO
 
 -- iPad Air (5ª Geração)
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 1, c.componente_id,  320.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='Liquid Retina 10.9\"' UNION ALL
-SELECT 1, c.componente_id,  650.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple M1' UNION ALL
-SELECT 3, c.componente_id,  110.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 28.6 Wh' UNION ALL
-SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
-SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Unibody alumínio' UNION ALL
-SELECT 3, c.componente_id,   25.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Estéreo dual' UNION ALL
-SELECT 2, c.componente_id,   40.00 FROM Componente c WHERE c.nome='Touch IC'     AND c.especificacao='Controlador touch';
+VALUES
+  (1, 22,  320.00),
+  (1, 23,  650.00),
+  (3, 24,  110.00),
+  (3, 25,   90.00),
+  (4,  8,   75.00),
+  (3, 26,   25.00),
+  (2, 27,   40.00);
 GO
 
 -- Galaxy Tab S9
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 3, c.componente_id,  280.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPS 11\"' UNION ALL
-SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 2' UNION ALL
-SELECT 2, c.componente_id,   70.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 8000 mAh' UNION ALL
-SELECT 3, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
-SELECT 2, c.componente_id,   65.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='13 MP' UNION ALL
-SELECT 2, c.componente_id,   45.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='8 MP' UNION ALL
-SELECT 4, c.componente_id,   70.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Mg-alloy';
+VALUES
+  (3, 28,  280.00),
+  (3, 29,  500.00),
+  (2, 30,   70.00),
+  (3, 57,  160.00),
+  (2, 31,   65.00),
+  (2, 32,   45.00),
+  (4, 33,   70.00);
 GO
 
 -- Surface Pro 9
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 4, c.componente_id,  380.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='PixelSense 13\"' UNION ALL
-SELECT 4, c.componente_id,  130.00 FROM Componente c WHERE c.nome='Keyboard'     AND c.especificacao='Type Cover' UNION ALL
-SELECT 4, c.componente_id,   85.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 47.4 Wh' UNION ALL
-SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='8 GB LPDDR4X' UNION ALL
-SELECT 1, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Kickstand'    AND c.especificacao='Integrado ajustável' UNION ALL
-SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Windows Hello IR' UNION ALL
-SELECT 4, c.componente_id,   35.00 FROM Componente c WHERE c.nome='Speakers'     AND c.especificacao='Stereo Waves';
+VALUES
+  (4, 34,  380.00),
+  (4, 35,  130.00),
+  (4, 36,   85.00),
+  (1, 37,   30.00),
+  (1, 38,   60.00),
+  (4, 39,   35.00);
 GO
 
 -- iPhone 16 Pro
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 1, c.componente_id,  350.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.1\"' UNION ALL
-SELECT 1, c.componente_id,  700.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Apple A18' UNION ALL
-SELECT 1, c.componente_id,  120.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Ion 3279 mAh' UNION ALL
-SELECT 1, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='SSD NVMe 256 GB' UNION ALL
-SELECT 1, c.componente_id,  220.00 FROM Componente c WHERE c.nome='Camera Rear'  AND c.especificacao='Tripla 48+12+12 MP' UNION ALL
-SELECT 1, c.componente_id,   50.00 FROM Componente c WHERE c.nome='Camera Front' AND c.especificacao='TrueDepth' UNION ALL
-SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Aço inoxidável';
+VALUES
+  (1, 40,  350.00),
+  (1, 41,  700.00),
+  (1, 42,  120.00),
+  (1, 43,  180.00),
+  (1, 44,  220.00),
+  (1, 45,   50.00),
+  (1, 46,   60.00);
 GO
 
 -- Galaxy S24 Ultra
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 3, c.componente_id,  300.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.8\"' UNION ALL
-SELECT 3, c.componente_id,  500.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 3' UNION ALL
-SELECT 3, c.componente_id,   90.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5000 mAh' UNION ALL
-SELECT 3, c.componente_id,  210.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 256 GB' UNION ALL
-SELECT 3, c.componente_id,   45.00 FROM Componente c WHERE c.nome='S Pen'         AND c.especificacao='Active Pen' UNION ALL
-SELECT 3, c.componente_id,  270.00 FROM Componente c WHERE c.nome='Camera Quad'  AND c.especificacao='200 MP+3 auxiliares' UNION ALL
-SELECT 4, c.componente_id,   80.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Armor Aluminum';
+VALUES
+  (3, 47,  300.00),
+  (3, 48,   90.00),
+  (3, 52,  210.00),
+  (3, 50,   45.00),
+  (3, 51,  270.00),
+  (4, 53,   80.00);
 GO
 
 -- Google Pixel 8 Pro
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 2, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='LTPO OLED 6.7\"' UNION ALL
-SELECT 2, c.componente_id,  220.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Tensor G3' UNION ALL
-SELECT 3, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5050 mAh' UNION ALL
-SELECT 2, c.componente_id,  160.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 128 GB' UNION ALL
-SELECT 3, c.componente_id,   30.00 FROM Componente c WHERE c.nome='Security'     AND c.especificacao='Titan M2' UNION ALL
-SELECT 2, c.componente_id,  250.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Tripla 50+48+12 MP' UNION ALL
-SELECT 4, c.componente_id,   55.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Policarbonato';
+VALUES
+  (2, 54,  180.00),
+  (2, 55,  220.00),
+  (3, 56,   75.00),
+  (3, 58,   30.00),
+  (2, 59,  250.00),
+  (4, 60,   55.00);
 GO
 
 -- OnePlus 12
 INSERT INTO Fornecedor_Componente (fk_fornecedor, fk_componente, custo_componente)
-SELECT 2, c.componente_id,  190.00 FROM Componente c WHERE c.nome='Display'      AND c.especificacao='AMOLED 6.7\"' UNION ALL
-SELECT 2, c.componente_id,  220.00 FROM Componente c WHERE c.nome='SoC'          AND c.especificacao='Snapdragon 8 Gen 3' UNION ALL
-SELECT 2, c.componente_id,   85.00 FROM Componente c WHERE c.nome='Battery'      AND c.especificacao='Li-Po 5200 mAh' UNION ALL
-SELECT 2, c.componente_id,  120.00 FROM Componente c WHERE c.nome='RAM'          AND c.especificacao='12 GB LPDDR5X' UNION ALL
-SELECT 2, c.componente_id,  180.00 FROM Componente c WHERE c.nome='Storage'      AND c.especificacao='UFS 256 GB' UNION ALL
-SELECT 1, c.componente_id,  310.00 FROM Componente c WHERE c.nome='Camera'       AND c.especificacao='Hasselblad' UNION ALL
-SELECT 1, c.componente_id,   60.00 FROM Componente c WHERE c.nome='Charging'     AND c.especificacao='Warp Charge 100W' UNION ALL
-SELECT 4, c.componente_id,   75.00 FROM Componente c WHERE c.nome='Chassis'      AND c.especificacao='Sandstone Black';
+VALUES
+  (2, 61,  190.00),
+  (2, 62,  220.00),
+  (2, 63,   85.00),
+  (2, 49,  120.00),
+  (1, 64,  310.00),
+  (1, 65,   60.00),
+  (4, 66,   75.00);
 GO
+
 
 --PRODUCAO
 INSERT INTO Producao (nome, custo, ativo) VALUES
@@ -828,126 +829,138 @@ VALUES
   (10, 'OnePlus 12',           'Snapdragon 8 Gen 3, 12 GB RAM, 256 GB, 6.7\" AMOLED',                4500.00,  70,  7, 140, 7, 1);
 GO
 
---ETAPA_PRODUCAO
+-- ETAPA_PRODUCAO
+
 -- Etapas de produção para MacBook Air M2 (fk_producao = 1)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 1, 1, 'Soldagem dos conectores da placa lógica',   c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Apple M2'            UNION ALL
-SELECT 1, 2, 'Aplicação de pasta térmica no módulo',     c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Dissipador passivo'   UNION ALL
-SELECT 1, 3, 'Instalação do módulo de RAM',             c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'           UNION ALL
-SELECT 1, 4, 'Fixação do display',                      c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Retina IPS 13.6"'      UNION ALL
-SELECT 1, 5, 'Conexão dos cabos de vídeo',              c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Retina IPS 13.6"'      UNION ALL
-SELECT 1, 6, 'Montagem do teclado',                     c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Magic Keyboard retroiluminado' UNION ALL
-SELECT 1, 7, 'Integração do trackpad',                  c.componente_id FROM Componente c WHERE c.nome='Trackpad'    AND c.especificacao='Force Touch'           UNION ALL
-SELECT 1, 8, 'Fixação do chassi e fechamento',          c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Unibody alumínio';
+VALUES
+  (1, 1, 'Soldagem dos conectores da placa lógica',   6),
+  (1, 2, 'Aplicação de pasta térmica no módulo',     7), 
+  (1, 3, 'Instalação do módulo de RAM',             5),  
+  (1, 4, 'Fixação do display',                      1),  
+  (1, 5, 'Conexão dos cabos de vídeo',              1),  
+  (1, 6, 'Montagem do teclado',                     2),  
+  (1, 7, 'Integração do trackpad',                  3),  
+  (1, 8, 'Fixação do chassi e fechamento',          8);  
 GO
 
 -- Etapas de produção para Dell XPS 13 (2024) (fk_producao = 2)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 2, 1, 'Verificação estrutural do chassi',        c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Fibra de carbono'      UNION ALL
-SELECT 2, 2, 'Soldagem da placa lógica XPS',           c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Custom XPS'          UNION ALL
-SELECT 2, 3, 'Instalação do processador e RAM',        c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='16 GB LPDDR4X'         UNION ALL
-SELECT 2, 4, 'Montagem do SSD NVMe',                   c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 512 GB'       UNION ALL
-SELECT 2, 5, 'Fixação do display e cabos',             c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='IPS 13.4\" QHD+'       UNION ALL
-SELECT 2, 6, 'Colocação da bateria',                   c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 51 Wh'          UNION ALL
-SELECT 2, 7, 'Instalação do teclado retroiluminado',   c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Chiclet retroiluminado' UNION ALL
-SELECT 2, 8, 'Engate da ventoinha PWM',                c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Ventoinha PWM';
+VALUES
+  (2, 1, 'Verificação estrutural do chassi',        15),
+  (2, 2, 'Soldagem da placa lógica XPS',           13), 
+  (2, 3, 'Instalação do processador e RAM',        12), 
+  (2, 4, 'Montagem do SSD NVMe',                   18), 
+  (2, 5, 'Fixação do display e cabos',              9), 
+  (2, 6, 'Colocação da bateria',                   11), 
+  (2, 7, 'Instalação do teclado retroiluminado',   10), 
+  (2, 8, 'Engate da ventoinha PWM',                14); 
 GO
 
 -- Etapas de produção para HP Spectre x360 14" (fk_producao = 3)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 3, 1, 'Instalação do painel OLED',               c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='OLED 14\" 3K2K'        UNION ALL
-SELECT 3, 2, 'Soldagem de chips na placa-mãe',         c.componente_id FROM Componente c WHERE c.nome='Logic Board' AND c.especificacao='Custom Spectre'     UNION ALL
-SELECT 3, 3, 'Inserção de módulos de RAM',             c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='16 GB LPDDR4X'         UNION ALL
-SELECT 3, 4, 'Montagem de SSD',                        c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 512 GB'       UNION ALL
-SELECT 3, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 60 Wh'          UNION ALL
-SELECT 3, 6, 'Instalação do teclado',                  c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Chiclet retroiluminado' UNION ALL
-SELECT 3, 7, 'Fixação do cooler a vapor',              c.componente_id FROM Componente c WHERE c.nome='Cooling'     AND c.especificacao='Cooler a vapor'        UNION ALL
-SELECT 3, 8, 'Fechamento do chassi',                   c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Alumínio usinado';
+VALUES
+  (3, 1, 'Instalação do painel OLED',               16),
+  (3, 2, 'Soldagem de chips na placa-mãe',          19),
+  (3, 3, 'Inserção de módulos de RAM',              12),
+  (3, 4, 'Montagem de SSD',                         18),
+  (3, 5, 'Acoplamento da bateria',                  17),
+  (3, 6, 'Instalação do teclado',                   10),
+  (3, 7, 'Fixação do cooler a vapor',               20),
+  (3, 8, 'Fechamento do chassi',                    21);
 GO
 
 -- Etapas de produção para iPad Air (5ª Geração) (fk_producao = 4)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 4, 1, 'Colocação do display Liquid Retina',      c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='Liquid Retina 10.9\"'  UNION ALL
-SELECT 4, 2, 'Soldagem do chip Apple M1',              c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Apple M1'             UNION ALL
-SELECT 4, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR4X'          UNION ALL
-SELECT 4, 4, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'       UNION ALL
-SELECT 4, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 28.6 Wh'         UNION ALL
-SELECT 4, 6, 'Fixação dos alto-falantes',              c.componente_id FROM Componente c WHERE c.nome='Speakers'    AND c.especificacao='Estéreo dual'          UNION ALL
-SELECT 4, 7, 'Programação do controlador touch',       c.componente_id FROM Componente c WHERE c.nome='Touch IC'    AND c.especificacao='Controlador touch'     UNION ALL
-SELECT 4, 8, 'Fechamento do corpo em alumínio',        c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Unibody alumínio';
+VALUES
+  (4, 1, 'Colocação do display Liquid Retina',      22),
+  (4, 2, 'Soldagem do chip Apple M1',               23),
+  (4, 3, 'Inserção de memória RAM',                 25),
+  (4, 4, 'Montagem do SSD 256 GB',                  43),
+  (4, 5, 'Acoplamento da bateria',                  24),
+  (4, 6, 'Fixação dos alto-falantes',               26),
+  (4, 7, 'Programação do controlador touch',        27),
+  (4, 8, 'Fechamento do corpo em alumínio',         8); 
 GO
 
 -- Etapas de produção para Galaxy Tab S9 (fk_producao = 5)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 5, 1, 'Montagem do painel LTPS',                c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='LTPS 11\"'            UNION ALL
-SELECT 5, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 2'   UNION ALL
-SELECT 5, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'          UNION ALL
-SELECT 5, 4, 'Instalação do UFS 128 GB',               c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 128 GB'           UNION ALL
-SELECT 5, 5, 'Acoplamento da bateria',                 c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 8000 mAh'       UNION ALL
-SELECT 5, 6, 'Fixação da câmera traseira',             c.componente_id FROM Componente c WHERE c.nome='Camera Rear' AND c.especificacao='13 MP'               UNION ALL
-SELECT 5, 7, 'Fixação da câmera frontal',              c.componente_id FROM Componente c WHERE c.nome='Camera Front'AND c.especificacao='8 MP'                UNION ALL
-SELECT 5, 8, 'Encaixe do chassi em liga leve',         c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Mg-alloy';
+VALUES
+  (5, 1, 'Montagem do painel LTPS',                 28),
+  (5, 2, 'Soldagem do SoC Snapdragon',              29),
+  (5, 3, 'Inserção de memória RAM',                 5), 
+  (5, 4, 'Instalação do UFS 128 GB',                57),
+  (5, 5, 'Acoplamento da bateria',                  30),
+  (5, 6, 'Fixação da câmera traseira',              31),
+  (5, 7, 'Fixação da câmera frontal',               32),
+  (5, 8, 'Encaixe do chassi em liga leve',          33);
 GO
 
 -- Etapas de produção para Surface Pro 9 (fk_producao = 6)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 6, 1, 'Instalação do display PixelSense',        c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='PixelSense 13\"'      UNION ALL
-SELECT 6, 2, 'Conexão do Type Cover',                  c.componente_id FROM Componente c WHERE c.nome='Keyboard'    AND c.especificacao='Type Cover'            UNION ALL
-SELECT 6, 3, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'       UNION ALL
-SELECT 6, 4, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR4X'          UNION ALL
-SELECT 6, 5, 'Instalação da bateria',                  c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 47.4 Wh'        UNION ALL
-SELECT 6, 6, 'Fixação do kickstand integrado',         c.componente_id FROM Componente c WHERE c.nome='Kickstand'  AND c.especificacao='Integrado ajustável'   UNION ALL
-SELECT 6, 7, 'Conexão do Windows Hello IR',            c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Windows Hello IR'      UNION ALL
-SELECT 6, 8, 'Instalação dos alto-falantes',           c.componente_id FROM Componente c WHERE c.nome='Speakers'    AND c.especificacao='Stereo Waves';
+VALUES
+  (6, 1, 'Instalação do display PixelSense',        34),
+  (6, 2, 'Conexão do Type Cover',                   35),
+  (6, 3, 'Montagem do SSD 256 GB',                  43),
+  (6, 4, 'Inserção de memória RAM',                 25),
+  (6, 5, 'Instalação da bateria',                   36),
+  (6, 6, 'Fixação do kickstand integrado',          37),
+  (6, 7, 'Conexão do Windows Hello IR',             38),
+  (6, 8, 'Instalação dos alto-falantes',            39);
 GO
 
 -- Etapas de produção para iPhone 16 Pro (fk_producao = 7)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 7, 1, 'Montagem do display AMOLED',              c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.1\"'           UNION ALL
-SELECT 7, 2, 'Soldagem do chip A18 Bionic',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Apple A18'              UNION ALL
-SELECT 7, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='8 GB LPDDR5'            UNION ALL
-SELECT 7, 4, 'Montagem do SSD 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='SSD NVMe 256 GB'        UNION ALL
-SELECT 7, 5, 'Fixação da bateria',                      c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Ion 3279 mAh'        UNION ALL
-SELECT 7, 6, 'Instalação das câmeras traseiras',        c.componente_id FROM Componente c WHERE c.nome='Camera Rear' AND c.especificacao='Tripla 48+12+12 MP'    UNION ALL
-SELECT 7, 7, 'Configuração do TrueDepth frontal',       c.componente_id FROM Componente c WHERE c.nome='Camera Front'AND c.especificacao='TrueDepth'             UNION ALL
-SELECT 7, 8, 'Fechamento do corpo metálico',            c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Aço inoxidável';
+VALUES
+  (7, 1, 'Montagem do display AMOLED',              40),
+  (7, 2, 'Soldagem do chip A18 Bionic',             41),
+  (7, 3, 'Inserção de memória RAM',                 5), 
+  (7, 4, 'Montagem do SSD 256 GB',                  43),
+  (7, 5, 'Fixação da bateria',                      42),
+  (7, 6, 'Instalação das câmeras traseiras',        44),
+  (7, 7, 'Configuração do TrueDepth frontal',       45),
+  (7, 8, 'Fechamento do corpo metálico',            46);
 GO
 
 -- Etapas de produção para Galaxy S24 Ultra (fk_producao = 8)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 8, 1, 'Instalação do display AMOLED',            c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.8\"'           UNION ALL
-SELECT 8, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 3'     UNION ALL
-SELECT 8, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'           UNION ALL
-SELECT 8, 4, 'Montagem de UFS 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 256 GB'              UNION ALL
-SELECT 8, 5, 'Fixação da S Pen',                       c.componente_id FROM Componente c WHERE c.nome='S Pen'       AND c.especificacao='Active Pen'              UNION ALL
-SELECT 8, 6, 'Instalação da bateria',                  c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5000 mAh'          UNION ALL
-SELECT 8, 7, 'Configuração das câmeras traseiras',     c.componente_id FROM Componente c WHERE c.nome='Camera Quad' AND c.especificacao='200 MP+3 auxiliares'   UNION ALL
-SELECT 8, 8, 'Encaixe do chassi reforçado',             c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Armor Aluminum';
+VALUES
+  (8, 1, 'Instalação do display AMOLED',            47),
+  (8, 2, 'Soldagem do SoC Snapdragon',              62),
+  (8, 3, 'Inserção de memória RAM',                 49),
+  (8, 4, 'Montagem de UFS 256 GB',                  50),
+  (8, 5, 'Fixação da S Pen',                        51),
+  (8, 6, 'Instalação da bateria',                   48),
+  (8, 7, 'Configuração das câmeras traseiras',      52),
+  (8, 8, 'Encaixe do chassi reforçado',             53);
 GO
 
 -- Etapas de produção para Google Pixel 8 Pro (fk_producao = 9)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 9, 1, 'Montagem do display LTPO OLED',           c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='LTPO OLED 6.7\"'         UNION ALL
-SELECT 9, 2, 'Soldagem do chip Tensor G3',              c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Tensor G3'               UNION ALL
-SELECT 9, 3, 'Inserção de memória RAM',                c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'            UNION ALL
-SELECT 9, 4, 'Montagem de UFS 128 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 128 GB'               UNION ALL
-SELECT 9, 5, 'Integração do módulo Titan M2',          c.componente_id FROM Componente c WHERE c.nome='Security'    AND c.especificacao='Titan M2'                 UNION ALL
-SELECT 9, 6, 'Fixação da bateria',                      c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5050 mAh'           UNION ALL
-SELECT 9, 7, 'Configuração das câmeras traseiras',     c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Tripla 50+48+12 MP'       UNION ALL
-SELECT 9, 8, 'Fechamento do corpo em policarbonato',    c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Policarbonato';
+VALUES
+  (9, 1, 'Montagem do display LTPO OLED',           54),
+  (9, 2, 'Soldagem do chip Tensor G3',              55),
+  (9, 3, 'Inserção de memória RAM',                 49),
+  (9, 4, 'Montagem de UFS 128 GB',                  57),
+  (9, 5, 'Integração do módulo Titan M2',           58),
+  (9, 6, 'Fixação da bateria',                      56),
+  (9, 7, 'Configuração das câmeras traseiras',      59),
+  (9, 8, 'Fechamento do corpo em policarbonato',    60);
 GO
 
 -- Etapas de produção para OnePlus 12 (fk_producao = 10)
 INSERT INTO Etapa_Producao (fk_producao, ordem, nome, fk_componente)
-SELECT 10, 1, 'Instalação do display AMOLED',           c.componente_id FROM Componente c WHERE c.nome='Display'     AND c.especificacao='AMOLED 6.7\"'             UNION ALL
-SELECT 10, 2, 'Soldagem do SoC Snapdragon',             c.componente_id FROM Componente c WHERE c.nome='SoC'         AND c.especificacao='Snapdragon 8 Gen 3'       UNION ALL
-SELECT 10, 3, 'Inserção de memória RAM',               c.componente_id FROM Componente c WHERE c.nome='RAM'         AND c.especificacao='12 GB LPDDR5X'            UNION ALL
-SELECT 10, 4, 'Montagem de UFS 256 GB',                 c.componente_id FROM Componente c WHERE c.nome='Storage'     AND c.especificacao='UFS 256 GB'               UNION ALL
-SELECT 10, 5, 'Fixação da bateria',                     c.componente_id FROM Componente c WHERE c.nome='Battery'     AND c.especificacao='Li-Po 5200 mAh'           UNION ALL
-SELECT 10, 6, 'Integração da câmera Hasselblad',       c.componente_id FROM Componente c WHERE c.nome='Camera'      AND c.especificacao='Hasselblad'               UNION ALL
-SELECT 10, 7, 'Configuração do módulo de carregamento',c.componente_id FROM Componente c WHERE c.nome='Charging'    AND c.especificacao='Warp Charge 100W'         UNION ALL
-SELECT 10, 8, 'Encaixe final do chassi',               c.componente_id FROM Componente c WHERE c.nome='Chassis'     AND c.especificacao='Sandstone Black';
+VALUES
+  (10, 1, 'Instalação do display AMOLED',           61),
+  (10, 2, 'Soldagem do SoC Snapdragon',             62),
+  (10, 3, 'Inserção de memória RAM',                49),
+  (10, 4, 'Montagem de UFS 256 GB',                 50),
+  (10, 5, 'Fixação da bateria',                     63),
+  (10, 6, 'Integração da câmera Hasselblad',        64),
+  (10, 7, 'Configuração do módulo de carregamento', 65),
+  (10, 8, 'Encaixe final do chassi',                66);
 GO
+
 
 --PEDIDO
 INSERT INTO Pedido (data_hora, fk_usuario, valor_total, situacao) VALUES

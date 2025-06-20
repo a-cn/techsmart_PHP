@@ -99,7 +99,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                                         mostrarMensagem("Sucesso", "Feedback inativado com sucesso.", "sucesso");
                                         oTable.ajax.reload();
                                     } else {
-                                        mostrarMensagem("Erro", "Erro ao inativar feedback.", "erro");
+                                        mostrarMensagem("Erro", data.mensagem || "Erro ao inativar feedback.", "erro");
                                     }
                                 });
                             },
