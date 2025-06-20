@@ -73,7 +73,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                         class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="complemento">Complemento:</label>
+                    <label for="complemento">Complemento (opcional):</label>
                     <input type="text" id="complemento" name="complemento" maxlength="100" placeholder="Ex.: Bloco 1"
                         class="form-control">
                 </div>
@@ -88,12 +88,12 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
                 <div class="form-group">
                     <label for="num_principal">Número Principal para Contato:</label>
                     <input type="text" id="num_principal" name="num_principal" maxlength="15"
-                        placeholder="Ex.: (41) 3333-3333" required>
+                        placeholder="Ex.: 4133333333" required>
                 </div>
                 <div class="form-group">
-                    <label for="num_secundario">Número de Recado:</label>
+                    <label for="num_secundario">Número de Recado (opcional):</label>
                     <input type="text" id="num_secundario" name="num_secundario" maxlength="15"
-                        placeholder="Ex.: (41) 99876-5432">
+                        placeholder="Ex.: 41999999999">
                 </div>
             </div>
 

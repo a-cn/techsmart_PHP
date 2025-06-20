@@ -145,7 +145,7 @@
                         <input type="number" id="numero" name="numero" placeholder="Digite o número do imóvel" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label for="complemento">Complemento:</label>
+                        <label for="complemento">Complemento (opcional):</label>
                         <input type="text" id="complemento" name="complemento" maxlength="100" placeholder="Ex.: Bloco 1" class="form-control">
                     </div>
                 </div>
@@ -163,11 +163,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="num_principal">Número Principal para Contato:</label>
-                        <input type="text" id="num_principal" name="num_principal" maxlength="15" placeholder="Ex.: (41) 99876-5432" required>
+                        <input type="text" id="num_principal" name="num_principal" maxlength="15" placeholder="Ex.: 41999999999" required>
                     </div>
                     <div class="form-group">
-                        <label for="num_recado">Número de Recado:</label>
-                        <input type="text" id="num_recado" name="num_recado" maxlength="15" placeholder="Ex.: (41) 3333-3333">
+                        <label for="num_recado">Número de Recado (opcional):</label>
+                        <input type="text" id="num_recado" name="num_recado" maxlength="15" placeholder="Ex.: 4133333333">
                     </div>
                 </div>
                 <div class="form-row">
