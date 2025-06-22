@@ -68,22 +68,26 @@ A TechSmart é uma empresa consolidada no setor de eletrônicos de consumo, com 
 ## 📁 Estrutura de Pastas do Projeto
 ```plaintext
 techsmart_PHP/
-├── _doc/                        → Documentação do projeto.
-│   ├── Diagramas/               → Diagramas da arquitetura e banco de dados.
-│   └── Script_SQL/              → Scripts de criação e inserção no banco de dados SQL Server.
+├── _doc/                                           → Documentação do projeto.
+│   ├── Banco_de_Dados/                             → Contém arquivos de banco de dados.
+│   │   ├── Script_SQL/                             → Todos os scripts de criação e inserção no banco de dados SQL Server.
+│   │   │   ├── Scripts_Individuais/                → Contém scripts separados por função (criação de tabelas, views, inserts, triggers).
+│   │   │   └── Script_Completo_NewTechSmartDB.txt  → Script completo de criação do banco de dados, incluindo views, inserts, triggers.
+│   │   └── Export_NewTechSmartDB.bacpac            → Arquivo para importação do banco de dados completo.
+│   └── Diagramas/                                  → Diagramas da arquitetura e banco de dados.             
 │
-├── back/                        → Código backend em PHP (includes gerais: login, sessões, validações, controladores).
-│   └── api/                     → Endpoints específicos para fornecer dados via JSON.
+├── back/                                           → Código backend em PHP (includes gerais: login, sessões, validações, controladores).
+│   └── api/                                        → Endpoints específicos para fornecer dados via JSON para dashboards.
 │
-├── front/                       → Código da interface e interação com o usuário.
-│   ├── css/                     → Arquivos CSS personalizados (temas, layouts).
-│   ├── data/                    → Arquivos auxiliares como traduções e configurações do DataTables.
-│   ├── dashboard/               → Gráficos, relatórios e dashboards organizados por categoria.
-│   └── scr/                     → Scripts JavaScript personalizados (ex: janelas modais).
+├── front/                                          → Código da interface e interação com o usuário.
+│   ├── css/                                        → Arquivos CSS personalizados (temas, layouts).
+│   ├── data/                                       → Arquivos auxiliares como traduções e configurações do DataTables.
+│   ├── dashboard/                                  → Gráficos, relatórios e dashboards organizados por categoria.
+│   └── scr/                                        → Scripts JavaScript personalizados (ex: janelas modais).
 │
-├── imgs/                        → Imagens e vídeos usados na interface do sistema.
+├── imgs/                                           → Imagens e vídeos usados na interface do sistema.
 │
-└── index.html                   → Página de entrada principal do sistema (pode redirecionar ao login).
+└── index.html                                      → Página de entrada principal do sistema (login).
 ```
 
 
