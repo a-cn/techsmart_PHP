@@ -30,7 +30,7 @@ if ($result) {
 <div>
     <div class="janela-cadastro oculta" id="divCadastroUsuario">
         <span class="titulo-janela" id="form-usr-titulo">Cadastro de Usuário</span>
-        <form id="form-cadastro" class="form-content" action="../back/putUsuario.php" method="POST" onsubmit="return validateForm()" novalidate>
+        <form id="form-cadastro" class="form-content" action="../back/putUsuario.php" method="POST" onsubmit="return validateForm()">
 
             <!-- Seleção entre CPF e CNPJ -->
             <div class="form-row">

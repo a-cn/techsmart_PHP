@@ -9,7 +9,7 @@ $loginTimestamp = time(); //Redefine o momento de início da sessão
 <div>
     <div class="janela-cadastro oculta" id="divCadastroFornecedor">
         <span class="titulo-janela" id="form-fornecedor-titulo">Cadastro de Fornecedor</span>
-        <form id="form-cadastro" class="form-content" action="../back/putFornecedor.php" method="POST" onsubmit="return validateForm()" novalidate>
+        <form id="form-cadastro" class="form-content" action="../back/putFornecedor.php" method="POST" onsubmit="return validateForm()">
 
             <div class="form-group" style="display: none;">
                 <label>Id
