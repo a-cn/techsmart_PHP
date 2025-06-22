@@ -2,6 +2,9 @@
 -- Responsável: Amanda Caetano Nasser
 -- Data: 22/06/2025
 
+USE NewTechSmartDB;
+GO
+
 -- ================================================================================
 -- INSERTS PARA TODAS AS TABELAS, INCLUINDO MOVIMENTACAO
 -- ================================================================================
@@ -646,79 +649,4 @@ INSERT INTO Historico_Producao (fk_producao, quantidade_produto, data_inicio, da
 
   -- Google Pixel 8 Pro (7 dias) – previsto 2025-06-14, hoje é 13/06 → dentro do prazo
   (9, 10, '20250607 08:30:00', '20250614 08:30:00', NULL, 5);
-GO
-
-
-
--- ================================================================================
--- TRIGGERS PARA A TABELA MOVIMENTACAO
--- ================================================================================
-
-/*
- Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando um novo produto é cadastrado no sistema
- OBS: Rodar o comando de maneira individual
-*/
-CREATE TRIGGER trg_after_insert_ProdutoFinal
-ON ProdutoFinal
-AFTER INSERT
-AS
-BEGIN
-    INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade)
-    SELECT GETDATE(), 'Entrada', NULL, produtofinal_id, quantidade
-    FROM inserted;
-END;
-GO
-
-/*
- Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando um novo pedido é registrado via banco de dados
- OBS: Rodar o comando de maneira individual
-*/
-CREATE TRIGGER trg_after_insert_Pedido_ProdutoFinal
-ON Pedido_ProdutoFinal
-AFTER INSERT
-AS
-BEGIN
-    INSERT INTO Movimentacao (data_hora, tipo_movimentacao, fk_pedido, fk_produtofinal, quantidade)
-    SELECT GETDATE(), 'Saída', fk_pedido, fk_produtofinal, quantidade_item
-    FROM inserted;
-END;
-GO
-
-/*
- Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando a coluna "quantidade" é atualizada
- OBS: Rodar o comando de maneira individual
-*/
-CREATE TRIGGER trg_after_update_ProdutoFinal_Quantidade
-ON ProdutoFinal
-AFTER UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    -- Só executa se a coluna 'quantidade' foi efetivamente atualizada
-    IF UPDATE(quantidade)
-    BEGIN
-        INSERT INTO [dbo].[Movimentacao]
-            ([data_hora]
-            ,[tipo_movimentacao]
-            ,[fk_pedido]
-            ,[fk_produtofinal]
-            ,[quantidade])
-        SELECT
-            GETDATE() AS data_hora,
-            -- Define o tipo de movimentação conforme aumento ou diminuição
-            CASE
-                WHEN i.quantidade > d.quantidade THEN 'Entrada'
-                WHEN i.quantidade < d.quantidade THEN 'Saída'
-            END AS tipo_movimentacao,
-            NULL AS fk_pedido,
-            i.produtofinal_id,
-            -- Usa a diferença absoluta para registrar a quantidade movimentada
-            ABS(i.quantidade - d.quantidade) AS quantidade
-        FROM inserted i
-        INNER JOIN deleted  d
-            ON i.produtofinal_id = d.produtofinal_id
-        WHERE i.quantidade <> d.quantidade;  -- evite zero-diferença
-    END
-END
 GO

@@ -4,6 +4,9 @@
 
 USE master; -- Importante começar no banco de dados "master"
 
+CREATE LOGIN techsmart_user WITH PASSWORD = 'Teste123!'; -- Cria um login com usuário e senha para permitir conexão com o SQL Server
+GO
+
 CREATE DATABASE NewTechSmartDB; -- Cria um banco de dados chamado "NewTechSmartDB" para garantir a padronização em todas as máquinas
 GO
 
@@ -23,7 +26,7 @@ GO
 CREATE TABLE Tipo_Usuario (
 	tipo_usuario_id	INT			NOT NULL	IDENTITY(1,1),
 	descricao		VARCHAR(15)	NOT NULL,
-	CONSTRAINT PK_Tipo_Usuario	-- Define a chave prim ria
+	CONSTRAINT PK_Tipo_Usuario	-- Define a chave primária
 		PRIMARY KEY CLUSTERED (tipo_usuario_id ASC)
 );
 GO
@@ -105,7 +108,7 @@ CREATE TABLE Usuario (
 		FOREIGN KEY (fk_pergunta_seguranca) REFERENCES Pergunta_Seguranca (pergunta_seguranca_id)
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION,
-	CONSTRAINT UQ_Usuario_Email UNIQUE (email)
+	CONSTRAINT UQ_Usuario_Email UNIQUE (email) -- O mesmo email não poderá ser cadastrado mais de uma vez
 );
 GO
 
@@ -329,7 +332,7 @@ CREATE TABLE Historico_Producao (
     data_inicio				DATETIME	NOT NULL,
     data_previsao			DATETIME	NOT NULL,
     data_conclusao			DATETIME	NULL,	-- Será nula, até que seja registrada a conclusão da última etapa da linha de produção.
-    ultima_etapa			INT			NULL,	-- Pode ser nula, pois existe a possibilidade de iniciar uma produção e n o marcar uma etapa como concluída na mesma sessão. A partir do momento em que a 1ª etapa for concluída, isso será registrado.
+    ultima_etapa			INT			NULL,	-- Pode ser nula, pois existe a possibilidade de iniciar uma produção e não marcar uma etapa como concluída na mesma sessão. A partir do momento em que a 1ª etapa for concluída, isso será registrado.
     CONSTRAINT PK_Historico_Producao
         PRIMARY KEY CLUSTERED (historico_producao_id ASC),
     CONSTRAINT FK_Historico_Producao_Producao

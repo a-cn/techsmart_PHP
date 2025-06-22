@@ -1,51 +1,26 @@
 -- SCRIPTS PARA:
 -- > Criação de credenciais para o banco de dados (responsável por conectá-lo ao back-end);
--- > Criação do banco de dados e tabelas do projeto ("TechSmartDB");
+-- > Criação do banco de dados e tabelas do projeto ("NewTechSmartDB");
 -- > Inserts de dados padronizados nas tabelas "Tipo_Usuario" e "Pergunta_Seguranca".
 
 -- Responsável: Amanda Caetano Nasser
--- Última alteração em: 16/06/2025
+-- Última alteração em: 22/06/2025
 
-USE master; -- Acessa o banco de dados "master"
-GO
-
--- Dropa (deleta) o banco de dados, se existir
-BEGIN
-    DECLARE @sql NVARCHAR(MAX)
-    IF DB_ID('TechSmartDB') IS NOT NULL
-    BEGIN
-        SET @sql = 'DROP DATABASE TechSmartDB'
-        EXEC(@sql)
-    END
-END
-GO
-
--- Dropa o Login, se existir
-BEGIN
-    DECLARE @sql NVARCHAR(MAX)
-    IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = 'techsmart_user')
-    BEGIN
-        SET @sql = 'DROP LOGIN techsmart_user'
-        EXEC(@sql)
-    END
-END
-GO
-
-USE master; --Importante começar no banco de dados "master"
+USE master; -- Importante começar no banco de dados "master"
 
 CREATE LOGIN techsmart_user WITH PASSWORD = 'Teste123!'; -- Cria um login com usuário e senha para permitir conexão com o SQL Server
 GO
 
-CREATE DATABASE TechSmartDB; -- Cria um banco de dados chamado "TechSmartDB" para garantir a padronização em todas as máquinas
+CREATE DATABASE NewTechSmartDB; -- Cria um banco de dados chamado "NewTechSmartDB" para garantir a padronização em todas as máquinas
 GO
 
-USE TechSmartDB; -- Acessa o banco que será utilizado. A partir daqui, as linhas seguintes serão executadas dentro do banco "TechSmartDB"
+USE NewTechSmartDB; -- Acessa o banco que será utilizado. A partir daqui, as linhas seguintes serão executadas dentro do banco "NewTechSmartDB"
 GO
 
 CREATE USER techsmart_user FOR LOGIN techsmart_user; -- Cria um usuário de banco de dados chamado "techsmart_user" com base no login criado acima
 GO
 
-ALTER ROLE db_owner ADD MEMBER techsmart_user; -- Atribui o papel de dono ao usuário "techsmart_user", dando permissões administrativas completas dentro do banco "TechSmartDB"
+ALTER ROLE db_owner ADD MEMBER techsmart_user; -- Atribui o papel de dono ao usuário "techsmart_user", dando permissões administrativas completas dentro do banco "NewTechSmartDB"
 GO
 
 -- ================================================================================
@@ -137,7 +112,7 @@ CREATE TABLE Usuario (
 		FOREIGN KEY (fk_pergunta_seguranca) REFERENCES Pergunta_Seguranca (pergunta_seguranca_id)
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION,
-	CONSTRAINT UQ_Usuario_Email UNIQUE (email)
+	CONSTRAINT UQ_Usuario_Email UNIQUE (email) -- O mesmo email não poderá ser cadastrado mais de uma vez
 );
 GO
 

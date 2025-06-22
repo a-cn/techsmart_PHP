@@ -1,9 +1,13 @@
 -- TRIGGERS PARA AUTOMAÇÃO DA TABELA MOVIMENTACAO
 -- Responsável: Amanda Caetano Nasser
--- Última alteração em: 20/06/2025
+-- Última alteração em: 22/06/2025
 
-USE TechSmartDB;
+USE NewTechSmartDB;
 GO
+
+-- ================================================================================
+-- TRIGGERS PARA A TABELA MOVIMENTACAO
+-- ================================================================================
 
 /*
  Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando um novo produto é cadastrado no sistema
@@ -35,5 +39,41 @@ BEGIN
 END;
 GO
 
-select * from ProdutoFinal
-select * from Movimentacao
+/*
+ Esta trigger é responsável por incluir dados na tabela "Movimentacao" quando a coluna "quantidade" é atualizada
+ OBS: Rodar o comando de maneira individual
+*/
+CREATE TRIGGER trg_after_update_ProdutoFinal_Quantidade
+ON ProdutoFinal
+AFTER UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Só executa se a coluna 'quantidade' foi efetivamente atualizada
+    IF UPDATE(quantidade)
+    BEGIN
+        INSERT INTO [dbo].[Movimentacao]
+            ([data_hora]
+            ,[tipo_movimentacao]
+            ,[fk_pedido]
+            ,[fk_produtofinal]
+            ,[quantidade])
+        SELECT
+            GETDATE() AS data_hora,
+            -- Define o tipo de movimentação conforme aumento ou diminuição
+            CASE
+                WHEN i.quantidade > d.quantidade THEN 'Entrada'
+                WHEN i.quantidade < d.quantidade THEN 'Saída'
+            END AS tipo_movimentacao,
+            NULL AS fk_pedido,
+            i.produtofinal_id,
+            -- Usa a diferença absoluta para registrar a quantidade movimentada
+            ABS(i.quantidade - d.quantidade) AS quantidade
+        FROM inserted i
+        INNER JOIN deleted  d
+            ON i.produtofinal_id = d.produtofinal_id
+        WHERE i.quantidade <> d.quantidade;  -- evite zero-diferença
+    END
+END
+GO

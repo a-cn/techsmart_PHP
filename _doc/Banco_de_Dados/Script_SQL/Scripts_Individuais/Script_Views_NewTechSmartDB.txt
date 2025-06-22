@@ -1,9 +1,13 @@
 -- VIEWS (lógicas de consulta reutilizáveis) PARA RELATÓRIOS DO SISTEMA
 -- Responsável: Amanda Caetano Nasser
--- Última alteração em: 20/06/2025
+-- Última alteração em: 22/06/2025
 
-USE TechSmartDB;
+USE NewTechSmartDB;
 GO
+
+-- ================================================================================
+-- VIEWS PARA OS DASHBOARDS
+-- ================================================================================
 
 -- ================================================================================
 -- 1) Registrar o consumo de componentes por item do pedido
@@ -114,7 +118,7 @@ SELECT
             THEN 'Em produção'
 
         -- 5. Caso contrário
-        ELSE 'Situação não definida'
+        ELSE 'Acabado com antecedência'
     END AS Status,
     pf.nome AS produto_nome
 FROM

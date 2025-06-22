@@ -4,7 +4,7 @@
 $serverName = ".\\SQLEXPRESS"; //serverName\instanceName
 
 $connectionInfo = array(
-    "Database"=>"NewTechSmartDB", //TechSmartDB
+    "Database"=>"NewTechSmartDB",
     "UID"=>"techsmart_user",
     "PWD"=>"Teste123!",
     "CharacterSet" => "UTF-8"
