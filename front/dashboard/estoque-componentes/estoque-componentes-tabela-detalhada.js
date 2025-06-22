@@ -154,7 +154,7 @@ export async function renderTabelaEstoqueComponentes(containerId) {
                 </select>
             </div>
         </div>
-        <table id="tabelaEstoqueComponentes" class="display responsive nowrap" style="width:100%">
+        <table id="tabelaEstoqueComponentes" class="display responsive" style="width:100%">
             <thead>
             <tr>
                 <th>Componente</th>

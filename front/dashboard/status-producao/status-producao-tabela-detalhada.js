@@ -20,6 +20,9 @@ export async function renderTabelaStatusProducao(containerId) {
         #tabelaStatusProducao tbody tr.status-acabado-com-atraso {
             background-color: rgba(255, 193, 7, 0.15) !important;
         }
+        #tabelaStatusProducao tbody tr.status-acabado-com-antecedencia {
+            background-color: rgba(0, 123, 255, 0.15) !important;
+        }
         /* Hover states para melhor contraste */
         #tabelaStatusProducao tbody tr.status-acabado:hover {
             background-color: rgba(40, 167, 69, 0.25) !important;
@@ -29,6 +32,9 @@ export async function renderTabelaStatusProducao(containerId) {
         }
         #tabelaStatusProducao tbody tr.status-acabado-com-atraso:hover {
             background-color: rgba(255, 193, 7, 0.25) !important;
+        }
+        #tabelaStatusProducao tbody tr.status-acabado-com-antecedencia:hover {
+            background-color: rgba(0, 123, 255, 0.25) !important;
         }
     `;
     document.head.appendChild(styles);

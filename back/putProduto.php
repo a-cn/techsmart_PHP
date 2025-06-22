@@ -14,6 +14,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nivel_maximo=campoObrigatorio('nivel_maximo', 'Nível Máximo de Estoque do Produto');
     $tempo_producao_dias=campoObrigatorio('tempo_prod', 'Tempo de Produção do Produto');
     $ativo=1;
+
+    //Valida se o valor de venda é menor que o valor de produção
+    $sql = "SELECT
+                ISNULL(SUM(fc.custo_componente), 0) as valor_producao
+            FROM
+                Producao p
+                LEFT JOIN Etapa_Producao ep ON ep.fk_producao = p.producao_id
+                LEFT JOIN Componente c ON c.componente_id = ep.fk_componente
+                LEFT JOIN Fornecedor_Componente fc ON fc.fk_componente = c.componente_id
+            WHERE
+                p.producao_id = $fk_producao
+        ";
+    $stmt = sqlsrv_query($conn, $sql);
+    if (!$stmt) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'sucesso' => false,
+            'mensagem' => 'Erro ao calcular valor de produção: ' . implode(', ', sqlsrv_errors())
+        ]);
+        exit;
+    }
+    
+    $valor_producao = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    $valor_producao_total = $valor_producao['valor_producao'] ?? 0;
+    
+    if ($valor_producao_total > $valor_venda) {
+        // Retorna JSON para ser tratado pelo frontend
+        header('Content-Type: application/json');
+        echo json_encode([
+            'sucesso' => false,
+            'mensagem' => 'O valor de venda não pode ser menor que o valor de produção.',
+            'valor_producao' => $valor_producao_total,
+            'valor_venda' => $valor_venda
+        ]);
+        exit;
+    }
     
     // Se $id for vazio inclui o produto, senão vai atualizar os dados do $id informado
     if (empty($id)) {
@@ -57,11 +93,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         sqlsrv_free_stmt($stmt);
         sqlsrv_close($conn);
 
-        // Após gravados devemos carregar a página inicial com o parâmetro da página que chamou a gravação
-        header("Location: ../front/index.php?pg=produtos");
-        exit(); // Para evitar execução de código após o redirecionamento
+        // Retorna sucesso em JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'sucesso' => true,
+            'mensagem' => 'Produto salvo com sucesso!'
+        ]);
+        exit;
     } else {
-        die(print_r(sqlsrv_errors(), true));
-        //die(var_dump(sqlsrv_errors()));  // Bom para debug
+        // Retorna erro em JSON
+        header('Content-Type: application/json');
+        echo json_encode([
+            'sucesso' => false,
+            'mensagem' => 'Erro ao salvar produto: ' . implode(', ', sqlsrv_errors())
+        ]);
+        exit;
     }
 }

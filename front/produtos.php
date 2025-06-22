@@ -305,12 +305,48 @@ if ($stmtProducao) {
 
     // Adiciona validação do formulário
     document.getElementById('form-cadastro').addEventListener('submit', function(e) {
+        e.preventDefault(); // Previne o envio tradicional do formulário
+        
         const nivelMinimo = parseFloat(document.getElementById('nivel_minimo').value);
         const nivelMaximo = parseFloat(document.getElementById('nivel_maximo').value);
 
         if (nivelMaximo < nivelMinimo) {
-            e.preventDefault();
             mostrarMensagem("Aviso", "O nível máximo não pode ser menor que o nível mínimo.", "alerta");
+            return;
         }
+
+        // Prepara os dados do formulário
+        const formData = new FormData(this);
+        
+        // Envia via AJAX
+        fetch('../back/putProduto.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sucesso) {
+                mostrarMensagem("Sucesso", data.mensagem, "sucesso", () => {
+                    // Recarrega a tabela e volta para a consulta
+                    if (typeof oTable !== 'undefined') {
+                        oTable.ajax.reload();
+                    }
+                    limpaCadastroAlternaEdicao('divCadastroProduto', 'divConsultaProdutos');
+                });
+            } else {
+                // Se for erro de validação de valor de produção, mostra detalhes
+                if (data.valor_producao && data.valor_venda) {
+                    mostrarMensagem("Erro de Validação", 
+                        `${data.mensagem}\n\nValor de Produção: R$ ${parseFloat(data.valor_producao).toFixed(2)}\n\nValor de Venda: R$ ${parseFloat(data.valor_venda).toFixed(2)}`, 
+                        "erro");
+                } else {
+                    mostrarMensagem("Erro", data.mensagem, "erro");
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            mostrarMensagem("Erro", "Erro ao processar requisição. Tente novamente.", "erro");
+        });
     });
 </script>
