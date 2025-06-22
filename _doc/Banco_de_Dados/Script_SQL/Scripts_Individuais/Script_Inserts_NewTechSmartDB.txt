@@ -624,7 +624,7 @@ INSERT INTO Historico_Producao (fk_producao, quantidade_produto, data_inicio, da
   -- iPhone 16 Pro (8 dias)
   (7, 10, '20250602 07:30:00', '20250610 07:30:00', '20250610 07:30:00', 8),
   -- Galaxy S24 Ultra (8 dias)
-  (8, 10, '20250622 10:00:00', '20250630 10:00:00', NULL, 8),
+  (8, 10, '20250622 10:00:00', '20250630 10:00:00', NULL, 1),
   -- Google Pixel 8 Pro (7 dias)
   (9, 10, '20250602 08:30:00', '20250609 08:30:00', '20250609 08:30:00', 8),
   -- OnePlus 12 (7 dias)
