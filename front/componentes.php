@@ -48,7 +48,7 @@ if ($stmtFornecedores) {
                     </div>
                     <div class="form-group" id="divQuantidade">
                         <label for="quantidade">Quantidade Inicial:</label>
-                        <input type="number" id="quantidade" name="quantidade" step="1" min="1" required>
+                        <input type="number" id="quantidade" name="quantidade" step="1" min="0" required>
                     </div>
                     <div class="form-group" id="divFornecedor">
                         <label for="fk_fornecedor">Fornecedor:</label>

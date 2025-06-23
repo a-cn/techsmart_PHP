@@ -10,6 +10,7 @@ $sql = "SELECT
             pf.nome, 
             pf.descricao, 
             pf.quantidade, 
+            pf.valor_venda,
             p.custo as custo, 
             pf.nivel_minimo, 
             pf.nivel_maximo, 

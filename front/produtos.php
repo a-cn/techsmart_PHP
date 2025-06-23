@@ -48,7 +48,7 @@ if ($stmtProducao) {
                     </div>
                     <div class="form-group" id="divQuantidade">
                         <label for="quantidade">Quantidade Inicial:</label>
-                        <input type="number" id="quantidade" name="quantidade" step="1" min="1" required>
+                        <input type="number" id="quantidade" name="quantidade" step="1" min="0" required>
                     </div>
                     <div class="form-group" id="divValorVenda">
                         <label for="valor_venda">Valor de Venda (R$):</label>
@@ -88,26 +88,6 @@ if ($stmtProducao) {
                 </div>
             </form>
         </div>
-
-        <?php
-        $sql = "SELECT 
-                    pf.[produtofinal_id],
-                    pf.[descricao],
-                    pf.[nome],
-                    pf.[quantidade],
-                    p.[custo],
-                    pf.[nivel_minimo],
-                    pf.[nivel_maximo],
-                    pf.[tempo_producao_dias],
-                    pf.[ativo] 
-                FROM 
-                    [dbo].[ProdutoFinal] pf
-                    JOIN [dbo].[Producao] p ON p.producao_id = pf.fk_producao";
-        $stmt = sqlsrv_query($conn, $sql, [], ["Scrollable" => 'static']);
-        if ($stmt == false) {
-            die(print_r(sqlsrv_errors(), false));
-        }
-        ?>
 
         <div class="janela-consulta" id="divConsultaProdutos">
         <span class="titulo-janela">Produtos Cadastrados</span>

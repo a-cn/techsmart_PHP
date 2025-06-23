@@ -26,6 +26,7 @@ if ($result) {
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/janelas.css">
+<script src="scr/janelas.js"></script>
 <script src="scr/script.js"></script>
 <script type="module" src="scr/validacoes.js"></script>
 <script>
@@ -106,7 +107,7 @@ if ($result) {
                     </div>
                     <div id="dvDtNasc" class="form-group">
                         <label for="data_nascimento">Data de Nascimento:</label>
-                        <input type="date" id="data_nascimento" name="data_nascimento" max="<?= date('d-m-Y') ?>" required>
+                        <input type="date" id="data_nascimento" name="data_nascimento" max="<?= date('d-m-Y') ?>">
                         <!-- O atributo "max" impede que datas futuras à atual sejam selecionadas -->
                     </div>
                 </div>
@@ -197,13 +198,12 @@ if ($result) {
             <div class="form-row">
                 <div class="form-group">
                     <label for="senha">Nova Senha (opcional):</label>
-                    <input type="password" id="senha" name="senha" maxlength="15" placeholder="Digite sua senha"
-                        required>
+                    <input type="password" id="senha" name="senha" maxlength="15" placeholder="Digite sua senha">
                 </div>
                 <div class="form-group">
                     <label for="confirmSenha">Confirmar Nova Senha:</label>
                     <input type="password" id="confirmSenha" name="confirmSenha" maxlength="15"
-                        placeholder="Confirme sua senha" required>
+                        placeholder="Confirme sua senha">
                 </div>
             </div>
             <div class="form-group" id="regraSenha" style="display: none; margin-top: -20px;">
@@ -214,7 +214,7 @@ if ($result) {
             <div class="form-row">
                 <div class="form-group">
                     <label for="securityQuestion">Escolha uma pergunta de segurança (opcional):</label>
-                    <select id="securityQuestion" name="fk_pergunta_seguranca" class="form-control" required>
+                    <select id="securityQuestion" name="fk_pergunta_seguranca" class="form-control">
                         <option value="">Selecione uma pergunta</option>
                         <?php 
                         foreach ($perguntas as $p):
@@ -232,7 +232,7 @@ if ($result) {
                 <div class="form-group">
                     <label for="securityAnswer">Resposta para a pergunta escolhida (opcional):</label>
                     <input type="text" id="securityAnswer" name="resposta_seguranca" maxlength="100"
-                    placeholder="Digite sua resposta" required>
+                    placeholder="Digite sua resposta">
                 </div>
             </div>
 
@@ -265,5 +265,110 @@ if ($result) {
         // Marcar conforme a quantidade de dígitos
         cbCPF.checked  = (tam === 11);
         cbCNPJ.checked = (tam === 14);
+    }
+
+    // Função de validação específica para alteração de conta
+    function validateForm() {
+        const tipoPessoa = document.querySelector('input[name="tipo_pessoa"]:checked');
+        if (!tipoPessoa) {
+            mostrarMensagem('Aviso', 'Selecione se você é Pessoa Física (CPF) ou Jurídica (CNPJ).', 'alerta');
+            return false;
+        }
+
+        let Nome     = (tipoPessoa.value === "cpf") ? "Nome" : "Razão Social";
+        let Cpf_Cnpj = (tipoPessoa.value === "cpf") ? "CPF"  : "CNPJ";
+
+        const nome = document.getElementById("nome").value.trim();
+        if (!nome) {
+            mostrarMensagem('Aviso', `O campo ${Nome} é obrigatório!`, 'alerta');
+            return false;
+        }
+
+        const cpf_cnpj = document.getElementById("cpf_cnpj").value.trim();
+        if (!cpf_cnpj) {
+            mostrarMensagem('Aviso', `O campo ${Cpf_Cnpj} é obrigatório!`, 'alerta');
+            return false;
+        }
+
+        const nascimento = document.getElementById("data_nascimento").value;
+        if (!nascimento && tipoPessoa.value === "cpf") {
+            mostrarMensagem('Aviso', 'O campo Data de Nascimento é obrigatório.', 'alerta');
+            return false;
+        }
+
+        // Validação de CPF/CNPJ
+        if (tipoPessoa.value === "cpf") {
+            if (!validaCPF(cpf_cnpj)) {
+                mostrarMensagem('Aviso', 'CPF inválido.', 'alerta');
+                return false;
+            }
+        } else {
+            if (!validarCNPJ(cpf_cnpj)) {
+                mostrarMensagem('Aviso', 'CNPJ inválido.', 'alerta');
+                return false;
+            }
+        }
+
+        // Campos obrigatórios
+        const camposComuns = [
+            { id: "cep", nome: "CEP" },
+            { id: "estado", nome: "Estado" },
+            { id: "cidade", nome: "Cidade" },
+            { id: "bairro", nome: "Bairro" },
+            { id: "logradouro", nome: "Logradouro" },
+            { id: "numero", nome: "Número do Imóvel" },
+            { id: "email", nome: "Email" },
+            { id: "confirmEmail", nome: "Confirmação de Email" },
+            { id: "num_principal", nome: "Número Principal para Contato" }
+        ];
+        
+        for (let campo of camposComuns) {
+            const valor = document.getElementById(campo.id).value.trim();
+            if (valor === "") {
+                mostrarMensagem('Aviso', `O Campo ${campo.nome} é obrigatório!`, 'alerta');
+                return false;
+            }
+        }
+
+        const email = document.getElementById("email").value;
+        const confirmEmail = document.getElementById("confirmEmail").value;
+        if (email !== confirmEmail) {
+            mostrarMensagem('Aviso', 'Os emails não coincidem!', 'alerta');
+            return false;
+        }
+
+        // Validação condicional de senha (só se o usuário preencher)
+        const senha = document.getElementById("senha").value;
+        const confirmSenha = document.getElementById("confirmSenha").value;
+        
+        if (senha || confirmSenha) {
+            if (!senha || !confirmSenha) {
+                mostrarMensagem('Aviso', 'Se você deseja alterar a senha, preencha ambos os campos de senha.', 'alerta');
+                return false;
+            }
+            if (senha !== confirmSenha) {
+                mostrarMensagem('Aviso', 'As senhas não coincidem!', 'alerta');
+                return false;
+            }
+            // Validação da força da senha
+            const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{9,}$/;
+            if (!regexSenha.test(senha)) {
+                mostrarMensagem('Aviso', 'A senha deve ter no mínimo 9 caracteres, incluindo uma letra maiúscula, uma minúscula, um número e um caractere especial.', 'alerta');
+                return false;
+            }
+        }
+
+        // Validação condicional de pergunta de segurança (só se o usuário preencher)
+        const pergunta = document.getElementById("securityQuestion").value;
+        const resposta = document.getElementById("securityAnswer").value;
+        
+        if (pergunta || resposta) {
+            if (!pergunta || !resposta) {
+                mostrarMensagem('Aviso', 'Se você deseja alterar a pergunta de segurança, preencha tanto a pergunta quanto a resposta.', 'alerta');
+                return false;
+            }
+        }
+
+        return true;
     }
 </script>

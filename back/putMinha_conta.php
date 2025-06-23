@@ -58,8 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $num_recado = $_POST['num_recado'] ?? null; //Pode ser vazio ou nulo
     $senha = $_POST['senha'] ?? null; //Usuário pode escolher não alterar
     $confirmSenha = $_POST['confirmSenha'] ?? null; //Usuário pode escolher não alterar
-    $fk_pergunta = $_POST['securityQuestion'] ?? null; //Usuário pode escolher não alterar
-    $resposta = $_POST['securityAnswer'] ?? null; //Usuário pode escolher não alterar
+    $fk_pergunta = $_POST['fk_pergunta_seguranca'] ?? null; //Usuário pode escolher não alterar
+    $resposta = $_POST['resposta_seguranca'] ?? null; //Usuário pode escolher não alterar
     $ativo = 1;
 
     $senha_hash = null;
@@ -80,6 +80,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (!empty($resposta)) {
         $resposta_hash = hash('sha256', $resposta); //Gera hash para a resposta de segurança
+    }
+
+    // Validação condicional de pergunta de segurança
+    if (!empty($fk_pergunta) && empty($resposta)) {
+        echo "<script>alert('Se você selecionar uma pergunta de segurança, deve fornecer uma resposta.'); window.history.back();</script>";
+        exit;
+    }
+    if (empty($fk_pergunta) && !empty($resposta)) {
+        echo "<script>alert('Se você fornecer uma resposta de segurança, deve selecionar uma pergunta.'); window.history.back();</script>";
+        exit;
     }
 
     //Coleta dados de ENDEREÇO
