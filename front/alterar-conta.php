@@ -66,7 +66,7 @@ if ($result) {
 <div>
     <div class="janela-cadastro" id="divAlterarConta">
         <span class="titulo-janela" id="form-usr-titulo">Alterar Dados da Conta</span>
-        <form id="form-cadastro" class="form-content" action="../back/putMinha_conta.php" method="POST" onsubmit="return validateForm()" novalidate>
+        <form id="form-cadastro" class="form-content" action="../back/putMinha_conta.php" method="POST" onsubmit="return validateForm()">
 
             <!-- Seleção entre CPF e CNPJ -->
             <div class="form-row">
